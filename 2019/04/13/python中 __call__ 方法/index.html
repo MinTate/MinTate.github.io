@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Python,">
 
 
 
@@ -79,16 +79,18 @@
 
 
 
-<meta name="description" content="Stay hungry, Stay foolish">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hello World For Min">
-<meta property="og:url" content="http://yoursite.com/tags/BUG/index.html">
+<meta name="description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python中 __call__ 方法">
+<meta property="og:url" content="http://yoursite.com/2019/04/13/python中 __call__ 方法/index.html">
 <meta property="og:site_name" content="Hello World For Min">
-<meta property="og:description" content="Stay hungry, Stay foolish">
+<meta property="og:description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-04-13T13:56:31.271Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hello World For Min">
-<meta name="twitter:description" content="Stay hungry, Stay foolish">
+<meta name="twitter:title" content="python中 __call__ 方法">
+<meta name="twitter:description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
 
 
 
@@ -118,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/BUG/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/13/python中 __call__ 方法/">
 
 
 
 
 
-  <title>Tag: BUG | Hello World For Min</title>
+  <title>python中 __call__ 方法 | Hello World For Min</title>
   
 
 
@@ -143,7 +145,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -237,52 +239,183 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>BUG<small>Tag</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/python中 __call__ 方法/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello World For Min">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/04/13/Android Settings中账户图片冲突问题的分析/" itemprop="url">
-              
-                <span itemprop="name">Android Settings中账户图片冲突问题的分析</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">python中 __call__ 方法</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-04-13T16:44:44+08:00" content="2019-04-13">
-          04-13
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T21:55:22+08:00">
+                2019-04-13
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Python-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    </div>
+      
 
+      
+        <p><strong>前言</strong></p>
+<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
+<a id="more"></a>
+<p>###一、目标<br>1）搞清楚<code>__call__</code>是什么？</p>
+<p>2）搞清楚<code>__call__</code>能做什么？</p>
+<h3 id="二、-call-解析"><a href="#二、-call-解析" class="headerlink" title="二、__call__解析"></a>二、<code>__call__</code>解析</h3><p>首先需要明确的一点是：<code>__call__</code>方法是python的魔术方法，就是增加一些特殊功能。</p>
+<p>python中所有的东西都被称为对象，对象分为可以被调用和不可以被调用<br>，可调用对象：即是任何通过函数操作符()来调用的对象。</p>
+<p><strong>1）例如函数,函数是对象，可以被调用</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def foo(x):</span><br><span class="line">  retuen x</span><br><span class="line"></span><br><span class="line">a=foo(3) #a被调用</span><br><span class="line">print(a)</span><br><span class="line">callable(foo())</span><br><span class="line">callable(a)#输出是true，代表foo是可被调用的,注意，这里可不是指a是可以被调用的，因为foo是赋值给a的</span><br></pre></td></tr></table></figure>
+<p><strong>2.但是如果是类的话会发生什么情况呢？</strong></p>
+<p>Python给类提供了名为<code>__call__</code>的特别方法，该方法允许程序员创建可调用的对象(实例)。默认情况下，<code>__call__</code>方法是没有实现的，这意味着大多数情况下实例是不可调用的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class test():</span><br><span class="line"></span><br><span class="line">  def method(self):</span><br><span class="line">    return 1</span><br><span class="line">    </span><br><span class="line">a = test()</span><br><span class="line">callable(a)	#false,代表实例a是不可被调用</span><br></pre></td></tr></table></figure>
+<p>如何解决这一个问题？这里就用到<strong>call</strong>函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class test():</span><br><span class="line"></span><br><span class="line">  def __call__(self):</span><br><span class="line">    return 1</span><br><span class="line">    </span><br><span class="line">a = test()</span><br><span class="line">callable(a)	#true,代表实例a是可被调用</span><br></pre></td></tr></table></figure>
+<h3 id="三、-call-用途"><a href="#三、-call-用途" class="headerlink" title="三、__call__用途"></a>三、<code>__call__</code>用途</h3><p>任何设计都是为了解决问题而存在的，那么<code>__call__</code>方法的用途是什么呢？<code>__call__</code>在那些类的实例经常改变状态的时候会非常有效。调用这个实例是一种改变这个对象状态的直接和优雅的做法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class Entity:</span><br><span class="line">&apos;&apos;&apos;调用实体来改变实体的位置。&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">def __init__(self, size, x, y):</span><br><span class="line">    self.x, self.y = x, y</span><br><span class="line">    self.size = size</span><br><span class="line"></span><br><span class="line">def __call__(self, x, y):</span><br><span class="line">    &apos;&apos;&apos;改变实体的位置&apos;&apos;&apos;</span><br><span class="line">    self.x, self.y = x, y</span><br><span class="line"></span><br><span class="line">e = Entity(1, 2, 3) // 创建实例</span><br><span class="line">e(4, 5) //实例可以象函数那样执行，并传入x y值，修改对象的x y</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/13/Python基础学习/" rel="next" title="Python基础学习">
+                <i class="fa fa-chevron-left"></i> Python基础学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -290,6 +423,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -310,8 +447,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -415,6 +561,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二、-call-解析"><span class="nav-number">1.</span> <span class="nav-text">二、__call__解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、-call-用途"><span class="nav-number">2.</span> <span class="nav-text">三、__call__用途</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -548,6 +710,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
