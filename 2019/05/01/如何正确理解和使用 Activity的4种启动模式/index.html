@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。 ​         Activity的启动模式有4种，分别是standard.singleTop. SingleTask. singleInstance，可以在AndroidMainifest.xml文件中指">
+<meta name="description" content="关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。">
 <meta name="keywords" content="Android,基础知识">
 <meta property="og:type" content="article">
 <meta property="og:title" content="正确理解和使用Activity的4种启动模式">
 <meta property="og:url" content="http://yoursite.com/2019/05/01/如何正确理解和使用 Activity的4种启动模式/index.html">
 <meta property="og:site_name" content="Hello World For Min">
-<meta property="og:description" content="关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。 ​         Activity的启动模式有4种，分别是standard.singleTop. SingleTask. singleInstance，可以在AndroidMainifest.xml文件中指">
+<meta property="og:description" content="关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-01T03:02:45.343Z">
+<meta property="og:updated_time" content="2019-05-01T03:09:31.351Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="正确理解和使用Activity的4种启动模式">
-<meta name="twitter:description" content="关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。 ​         Activity的启动模式有4种，分别是standard.singleTop. SingleTask. singleInstance，可以在AndroidMainifest.xml文件中指">
+<meta name="twitter:description" content="关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。">
 
 
 
@@ -343,8 +343,8 @@
 
       
         <p>关于Activity启动模式的文章已经很多，但有的文章写得过于简单，有的则过于注重细节，本文想取一个折中，只关注最重要和最常用的概念，原理和使用方法，并提供一个简单的Demo，便于大家理解。</p>
-<p>​         Activity的启动模式有4种，分别是standard.singleTop. SingleTask. singleInstance，可以在AndroidMainifest.xml文件中指定每一个Activity的启动模式。一个Android应用一般都会有多个Activity，系统会通过任务栈来管理这些Activity，栈是一种后进先出的集合，当前的Activity就在栈顶，按返回键，栈顶Activity就会退出。Activity启动模式不同，系统通过任务栈管理Activity的方式也会不同，以下将分别介绍。</p>
 <a id="more"></a>
+<p>​         Activity的启动模式有4种，分别是standard.singleTop. SingleTask. singleInstance，可以在AndroidMainifest.xml文件中指定每一个Activity的启动模式。一个Android应用一般都会有多个Activity，系统会通过任务栈来管理这些Activity，栈是一种后进先出的集合，当前的Activity就在栈顶，按返回键，栈顶Activity就会退出。Activity启动模式不同，系统通过任务栈管理Activity的方式也会不同，以下将分别介绍。</p>
 <p>####1 Standard模式</p>
 <p>Standard模式是Android的默认启动模式，你不在配置文件中做任何设置，那么这个Activity就是standard模式，这种模式下，Activity可以有多个实例，每次启动Activity，无论任务栈中是否已经有这个Activity的实例，系统都会创建一个新的Activity实例。</p>
 <p>什么时候用standard模式呢？standartd模式是activity的默认模式，大部分情况下，都应该使用这种模式，也就是在配置文件中什么都不用做，当确实有特殊需求时，再考虑其他模式。</p>
