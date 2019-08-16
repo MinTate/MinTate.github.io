@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="description" content="之前一直以Java作为第一工作语言，初始在接触Django源码时，经常会遇到一个问题，就是：卧槽，这怎么调过来的？？习惯了Java语言Function to Next Funcation的分析步骤，突然间发现没有任何显式调用方法，这个Object怎么就执行了，这个时候就不得不提一下__call__方法，本文就这个方法简单做一个说明，方便记忆～">
 <meta name="keywords" content="Python">
 <meta property="og:type" content="article">
-<meta property="og:title" content="python中 __call__ 方法">
+<meta property="og:title" content="Python的&quot;__call__&quot;方法">
 <meta property="og:url" content="http://yoursite.com/2019/04/13/python中 __call__ 方法/index.html">
 <meta property="og:site_name" content="Hello World For Min">
-<meta property="og:description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta property="og:description" content="之前一直以Java作为第一工作语言，初始在接触Django源码时，经常会遇到一个问题，就是：卧槽，这怎么调过来的？？习惯了Java语言Function to Next Funcation的分析步骤，突然间发现没有任何显式调用方法，这个Object怎么就执行了，这个时候就不得不提一下__call__方法，本文就这个方法简单做一个说明，方便记忆～">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T13:56:31.271Z">
+<meta property="og:updated_time" content="2019-08-16T09:52:24.665Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="python中 __call__ 方法">
-<meta name="twitter:description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="twitter:title" content="Python的&quot;__call__&quot;方法">
+<meta name="twitter:description" content="之前一直以Java作为第一工作语言，初始在接触Django源码时，经常会遇到一个问题，就是：卧槽，这怎么调过来的？？习惯了Java语言Function to Next Funcation的分析步骤，突然间发现没有任何显式调用方法，这个Object怎么就执行了，这个时候就不得不提一下__call__方法，本文就这个方法简单做一个说明，方便记忆～">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>python中 __call__ 方法 | Hello World For Min</title>
+  <title>Python的"__call__"方法 | Hello World For Min</title>
   
 
 
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">python中 __call__ 方法</h1>
+          <h1 class="post-title" itemprop="name headline">Python的"__call__"方法</h1>
         
 
         <div class="post-meta">
@@ -342,12 +342,9 @@
       
 
       
-        <p><strong>前言</strong></p>
-<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
+        <p>之前一直以Java作为第一工作语言，初始在接触Django源码时，经常会遇到一个问题，就是：卧槽，这怎么调过来的？？习惯了Java语言Function to Next Funcation的分析步骤，突然间发现没有任何显式调用方法，这个Object怎么就执行了，这个时候就不得不提一下<code>__call__</code>方法，本文就这个方法简单做一个说明，方便记忆～</p>
 <a id="more"></a>
-<p>###一、目标<br>1）搞清楚<code>__call__</code>是什么？</p>
-<p>2）搞清楚<code>__call__</code>能做什么？</p>
-<h3 id="二、-call-解析"><a href="#二、-call-解析" class="headerlink" title="二、__call__解析"></a>二、<code>__call__</code>解析</h3><p>首先需要明确的一点是：<code>__call__</code>方法是python的魔术方法，就是增加一些特殊功能。</p>
+<h3 id="一、-call-解析"><a href="#一、-call-解析" class="headerlink" title="一、__call__解析"></a>一、<code>__call__</code>解析</h3><p>首先需要明确的一点是：<code>__call__</code>方法是python的魔术方法，就是增加一些特殊功能。</p>
 <p>python中所有的东西都被称为对象，对象分为可以被调用和不可以被调用<br>，可调用对象：即是任何通过函数操作符()来调用的对象。</p>
 <p><strong>1）例如函数,函数是对象，可以被调用</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def foo(x):</span><br><span class="line">  retuen x</span><br><span class="line"></span><br><span class="line">a=foo(3) #a被调用</span><br><span class="line">print(a)</span><br><span class="line">callable(foo())</span><br><span class="line">callable(a)#输出是true，代表foo是可被调用的,注意，这里可不是指a是可以被调用的，因为foo是赋值给a的</span><br></pre></td></tr></table></figure>
@@ -356,7 +353,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class test():</span><br><span class="line"></span><br><span class="line">  def method(self):</span><br><span class="line">    return 1</span><br><span class="line">    </span><br><span class="line">a = test()</span><br><span class="line">callable(a)	#false,代表实例a是不可被调用</span><br></pre></td></tr></table></figure>
 <p>如何解决这一个问题？这里就用到<strong>call</strong>函数</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class test():</span><br><span class="line"></span><br><span class="line">  def __call__(self):</span><br><span class="line">    return 1</span><br><span class="line">    </span><br><span class="line">a = test()</span><br><span class="line">callable(a)	#true,代表实例a是可被调用</span><br></pre></td></tr></table></figure>
-<h3 id="三、-call-用途"><a href="#三、-call-用途" class="headerlink" title="三、__call__用途"></a>三、<code>__call__</code>用途</h3><p>任何设计都是为了解决问题而存在的，那么<code>__call__</code>方法的用途是什么呢？<code>__call__</code>在那些类的实例经常改变状态的时候会非常有效。调用这个实例是一种改变这个对象状态的直接和优雅的做法:</p>
+<h3 id="二、-call-用途"><a href="#二、-call-用途" class="headerlink" title="二、__call__用途"></a>二、<code>__call__</code>用途</h3><p>任何设计都是为了解决问题而存在的，那么<code>__call__</code>方法的用途是什么呢？<code>__call__</code>在那些类的实例经常改变状态的时候会非常有效。调用这个实例是一种改变这个对象状态的直接和优雅的做法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class Entity:</span><br><span class="line">&apos;&apos;&apos;调用实体来改变实体的位置。&apos;&apos;&apos;</span><br><span class="line"></span><br><span class="line">def __init__(self, size, x, y):</span><br><span class="line">    self.x, self.y = x, y</span><br><span class="line">    self.size = size</span><br><span class="line"></span><br><span class="line">def __call__(self, x, y):</span><br><span class="line">    &apos;&apos;&apos;改变实体的位置&apos;&apos;&apos;</span><br><span class="line">    self.x, self.y = x, y</span><br><span class="line"></span><br><span class="line">e = Entity(1, 2, 3) // 创建实例</span><br><span class="line">e(4, 5) //实例可以象函数那样执行，并传入x y值，修改对象的x y</span><br></pre></td></tr></table></figure>
       
     </div>
@@ -387,8 +384,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/13/Python字符编码/" rel="next" title="Python字符编码">
-                <i class="fa fa-chevron-left"></i> Python字符编码
+              <a href="/2019/04/13/Python基础学习/" rel="next" title="Python基础学习">
+                <i class="fa fa-chevron-left"></i> Python基础学习
               </a>
             
           </div>
@@ -489,7 +486,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -575,7 +572,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#二、-call-解析"><span class="nav-number">1.</span> <span class="nav-text">二、__call__解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、-call-用途"><span class="nav-number">2.</span> <span class="nav-text">三、__call__用途</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、-call-解析"><span class="nav-number">1.</span> <span class="nav-text">一、__call__解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、-call-用途"><span class="nav-number">2.</span> <span class="nav-text">二、__call__用途</span></a></li></ol></div>
             
 
           </div>

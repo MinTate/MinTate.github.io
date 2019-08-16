@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="description" content="字典类型是Python中最常用的数据类型之一，它是一个键值对的集合，字典通过键来索引，关联到相对的值，理论上它的查询复杂度是 O(1) ：1234&amp;gt;&amp;gt;&amp;gt;&amp;gt; d = &amp;#123;&apos;a&apos;: 1, &apos;b&apos;: 2&amp;#125;&amp;gt;&amp;gt;&amp;gt; d[&apos;c&apos;] = 3&amp;gt;&amp;gt;&amp;gt; d&amp;#123;&apos;a&apos;: 1, &apos;b&apos;: 2, &apos;c&apos;: 3&amp;#125; 在字符串的实现原">
 <meta name="keywords" content="Python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python字典对象实现原理">
 <meta property="og:url" content="http://yoursite.com/2019/04/13/Python字典对象实现原理/index.html">
 <meta property="og:site_name" content="Hello World For Min">
-<meta property="og:description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta property="og:description" content="字典类型是Python中最常用的数据类型之一，它是一个键值对的集合，字典通过键来索引，关联到相对的值，理论上它的查询复杂度是 O(1) ：1234&amp;gt;&amp;gt;&amp;gt;&amp;gt; d = &amp;#123;&apos;a&apos;: 1, &apos;b&apos;: 2&amp;#125;&amp;gt;&amp;gt;&amp;gt; d[&apos;c&apos;] = 3&amp;gt;&amp;gt;&amp;gt; d&amp;#123;&apos;a&apos;: 1, &apos;b&apos;: 2, &apos;c&apos;: 3&amp;#125; 在字符串的实现原">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T14:00:09.943Z">
+<meta property="og:updated_time" content="2019-08-16T09:43:39.720Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python字典对象实现原理">
-<meta name="twitter:description" content="前言 千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="twitter:description" content="字典类型是Python中最常用的数据类型之一，它是一个键值对的集合，字典通过键来索引，关联到相对的值，理论上它的查询复杂度是 O(1) ：1234&amp;gt;&amp;gt;&amp;gt;&amp;gt; d = &amp;#123;&apos;a&apos;: 1, &apos;b&apos;: 2&amp;#125;&amp;gt;&amp;gt;&amp;gt; d[&apos;c&apos;] = 3&amp;gt;&amp;gt;&amp;gt; d&amp;#123;&apos;a&apos;: 1, &apos;b&apos;: 2, &apos;c&apos;: 3&amp;#125; 在字符串的实现原">
 
 
 
@@ -342,11 +342,9 @@
       
 
       
-        <p><strong>前言</strong></p>
-<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
-<a id="more"></a>
-<p>字典类型是Python中最常用的数据类型之一，它是一个键值对的集合，字典通过键来索引，关联到相对的值，理论上它的查询复杂度是 O(1) ：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;&gt; d = &#123;<span class="string">'a'</span>: 1, <span class="string">'b'</span>: 2&#125;</span><br><span class="line">&gt;&gt;&gt; d[<span class="string">'c'</span>] = 3</span><br><span class="line">&gt;&gt;&gt; d</span><br><span class="line">&#123;<span class="string">'a'</span>: 1, <span class="string">'b'</span>: 2, <span class="string">'c'</span>: 3&#125;</span><br></pre></td></tr></table></figure></p>
+        <p>字典类型是Python中最常用的数据类型之一，它是一个键值对的集合，字典通过键来索引，关联到相对的值，理论上它的查询复杂度是 O(1) ：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;&gt; d = &#123;<span class="string">'a'</span>: 1, <span class="string">'b'</span>: 2&#125;</span><br><span class="line">&gt;&gt;&gt; d[<span class="string">'c'</span>] = 3</span><br><span class="line">&gt;&gt;&gt; d</span><br><span class="line">&#123;<span class="string">'a'</span>: 1, <span class="string">'b'</span>: 2, <span class="string">'c'</span>: 3&#125;</span><br></pre></td></tr></table></figure></p>
 <p>在<a href="http://foofish.net/blog/91/python-str-implements" target="_blank" rel="noopener">字符串的实现原理</a>文章中，曾经出现过字典对象用于intern操作，那么字典的内部结构是怎样的呢？PyDictObject对象就是dict的内部实现。</p>
+<a id="more"></a>
 <h4 id="哈希表-HASH-TABLES"><a href="#哈希表-HASH-TABLES" class="headerlink" title="哈希表 (HASH TABLES)"></a>哈希表 (HASH TABLES)</h4><p>哈希表（也叫散列表），根据关键值对(Key-value)而直接进行访问的数据结构。它通过把key和value映射到表中一个位置来访问记录，这种查询速度非常快，更新也快。而这个映射函数叫做哈希函数，存放值的数组叫做哈希表。 哈希函数的实现方式决定了哈希表的搜索效率。具体操作过程是：</p>
 <ol>
 <li>数据添加：把key通过哈希函数转换成一个整型数字，然后就将该数字对数组长度进行取余，取余结果就当作数组的下标，将value存储在以该数字为下标的数组空间里。</li>
@@ -417,8 +415,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/13/python中 __call__ 方法/" rel="next" title="python中 __call__ 方法">
-                <i class="fa fa-chevron-left"></i> python中 __call__ 方法
+              <a href="/2019/04/13/python中 __call__ 方法/" rel="next" title="Python的" __call__"方法">
+                <i class="fa fa-chevron-left"></i> Python的"__call__"方法
               </a>
             
           </div>
@@ -427,8 +425,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/14/urllib.request踩坑记录/" rel="prev" title="urllib.request踩坑记录">
-                urllib.request踩坑记录 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/14/urllib.request踩坑记录/" rel="prev" title="urllib.request 踩坑">
+                urllib.request 踩坑 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -519,7 +517,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>

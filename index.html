@@ -598,8 +598,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CV-学习/" itemprop="url" rel="index">
-                    <span itemprop="name">CV-学习</span>
+                  <a href="/categories/Tips/" itemprop="url" rel="index">
+                    <span itemprop="name">Tips</span>
                   </a>
                 </span>
 
@@ -636,7 +636,10 @@
 
       
         
-          <p><strong><strong> 图像工程领域小白，蹒跚前行</strong></strong></p>
+          <h4 id="1-将图片转成nv21格式"><a href="#1-将图片转成nv21格式" class="headerlink" title="1.将图片转成nv21格式"></a>1.将图片转成nv21格式</h4><ul>
+<li>将input.png转成nv21格式<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i input.png -pix_fmt nv21 output.yuv</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/05/20/FFmpeg图片格式转换命令/#more" rel="contents">
@@ -855,7 +858,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/04/14/Django源码分析--服务启动/" itemprop="url">Django源码分析--服务启动</a></h1>
+                <a class="post-title-link" href="/2019/04/14/Django源码分析--服务启动/" itemprop="url">Django源码分析：服务启动</a></h1>
         
 
         <div class="post-meta">
@@ -928,7 +931,12 @@
 
       
         
-          <p><strong><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></strong></p>
+          <h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
+<li>Python 3.5.2</li>
+<li>Django 2.1.2 </li>
+<li>PyCharm 2018.2.1 (Professional Edition) </li>
+<li>启动项目</li>
+</ul>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/04/14/Django源码分析--服务启动/#more" rel="contents">
@@ -1001,7 +1009,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/04/14/urllib.request踩坑记录/" itemprop="url">urllib.request踩坑记录</a></h1>
+                <a class="post-title-link" href="/2019/04/14/urllib.request踩坑记录/" itemprop="url">urllib.request 踩坑</a></h1>
         
 
         <div class="post-meta">
@@ -1074,7 +1082,7 @@
 
       
         
-          <p><strong>前言：Python BUG记录-且踩且珍惜，争取不在同一个地方摔倒两次</strong></p>
+          <p>Python BUG记录-且踩且珍惜，争取不在同一个地方摔倒两次</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/04/14/urllib.request踩坑记录/#more" rel="contents">
@@ -1220,8 +1228,8 @@
 
       
         
-          <p><strong>前言</strong></p>
-<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
+          <p>字典类型是Python中最常用的数据类型之一，它是一个键值对的集合，字典通过键来索引，关联到相对的值，理论上它的查询复杂度是 O(1) ：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;&gt; d = &#123;<span class="string">'a'</span>: 1, <span class="string">'b'</span>: 2&#125;</span><br><span class="line">&gt;&gt;&gt; d[<span class="string">'c'</span>] = 3</span><br><span class="line">&gt;&gt;&gt; d</span><br><span class="line">&#123;<span class="string">'a'</span>: 1, <span class="string">'b'</span>: 2, <span class="string">'c'</span>: 3&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在<a href="http://foofish.net/blog/91/python-str-implements" target="_blank" rel="noopener">字符串的实现原理</a>文章中，曾经出现过字典对象用于intern操作，那么字典的内部结构是怎样的呢？PyDictObject对象就是dict的内部实现。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/04/13/Python字典对象实现原理/#more" rel="contents">
@@ -1294,7 +1302,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/04/13/python中 __call__ 方法/" itemprop="url">python中 __call__ 方法</a></h1>
+                <a class="post-title-link" href="/2019/04/13/python中 __call__ 方法/" itemprop="url">Python的"__call__"方法</a></h1>
         
 
         <div class="post-meta">
@@ -1367,158 +1375,10 @@
 
       
         
-          <p><strong>前言</strong></p>
-<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
+          <p>之前一直以Java作为第一工作语言，初始在接触Django源码时，经常会遇到一个问题，就是：卧槽，这怎么调过来的？？习惯了Java语言Function to Next Funcation的分析步骤，突然间发现没有任何显式调用方法，这个Object怎么就执行了，这个时候就不得不提一下<code>__call__</code>方法，本文就这个方法简单做一个说明，方便记忆～</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/04/13/python中 __call__ 方法/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/Python字符编码/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="MinTate">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hello World For Min">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/13/Python字符编码/" itemprop="url">Python字符编码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T21:10:02+08:00">
-                2019-04-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Python-学习/" itemprop="url" rel="index">
-                    <span itemprop="name">Python-学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><strong>前言</strong></p>
-<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/04/13/Python字符编码/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1661,11 +1521,156 @@
 
       
         
-          <p><strong>前言</strong></p>
-<p><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></p>
+          <p>在Python的学习过程中，总会断断续续遇到一些比较重要、或者容易遗忘的知识点，需要在笔头记忆，时常翻阅，温故知新。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/04/13/Python基础学习/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/Python字符编码/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello World For Min">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/13/Python字符编码/" itemprop="url">Python字符编码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T21:10:02+08:00">
+                2019-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Python-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>我们知道在，Python中字符串是一种基本类型，但是，字符串和其他基本类型相比较特殊的是还有一个编码问题。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/04/13/Python字符编码/#more" rel="contents">
               Read more &raquo;
             </a>
           </div>
@@ -1766,7 +1771,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>

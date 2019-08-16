@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 <meta name="keywords" content="Python,Django,源码分析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Django源码分析--服务启动">
+<meta property="og:title" content="Django源码分析：服务启动">
 <meta property="og:url" content="http://yoursite.com/2019/04/14/Django源码分析--服务启动/index.html">
 <meta property="og:site_name" content="Hello World For Min">
-<meta property="og:description" content="千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta property="og:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-01T03:31:19.298Z">
+<meta property="og:updated_time" content="2019-08-16T09:43:12.401Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Django源码分析--服务启动">
-<meta name="twitter:description" content="千里之行，始于足下，挥舞着Python的大宝剑～">
+<meta name="twitter:title" content="Django源码分析：服务启动">
+<meta name="twitter:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>Django源码分析--服务启动 | Hello World For Min</title>
+  <title>Django源码分析：服务启动 | Hello World For Min</title>
   
 
 
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Django源码分析--服务启动</h1>
+          <h1 class="post-title" itemprop="name headline">Django源码分析：服务启动</h1>
         
 
         <div class="post-meta">
@@ -342,14 +342,13 @@
       
 
       
-        <p><strong><strong>千里之行，始于足下，挥舞着Python的大宝剑～</strong></strong></p>
-<a id="more"></a>
-<h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
+        <h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
 <li>Python 3.5.2</li>
 <li>Django 2.1.2 </li>
 <li>PyCharm 2018.2.1 (Professional Edition) </li>
-<li>######启动项目</li>
+<li>启动项目</li>
 </ul>
+<a id="more"></a>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[min:] ~/Desktop/python/Demo$ python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
 <h3 id="二、说明"><a href="#二、说明" class="headerlink" title="二、说明"></a>二、说明</h3><p>Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Django采用wsgi是纯python代码实现，开源项目有一个uWSGI是C语言代码实现，因此现在更多的django项目实际上是运行在uWSGI上的，uWSGI不再讨论范围之内)。</p>
 <p>接下来是记录我利用pycharm提供的断点调试功能以及自己打日志整个过程的梳理和总结。</p>
@@ -498,8 +497,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/14/urllib.request踩坑记录/" rel="next" title="urllib.request踩坑记录">
-                <i class="fa fa-chevron-left"></i> urllib.request踩坑记录
+              <a href="/2019/04/14/urllib.request踩坑记录/" rel="next" title="urllib.request 踩坑">
+                <i class="fa fa-chevron-left"></i> urllib.request 踩坑
               </a>
             
           </div>
@@ -600,7 +599,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
