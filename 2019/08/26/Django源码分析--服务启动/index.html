@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Django,源码分析,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta name="keywords" content="Python,Django,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django源码分析一：服务启动">
+<meta property="og:url" content="http://yoursite.com/2019/08/26/Django源码分析--服务启动/index.html">
+<meta property="og:site_name" content="Hello World For Min">
+<meta property="og:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-08-26T05:00:52.193Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django源码分析一：服务启动">
+<meta name="twitter:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/26/Django源码分析--服务启动/">
+
+
+
+
+
+  <title>Django源码分析一：服务启动 | Hello World For Min</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hello World For Min</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/26/Django源码分析--服务启动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hello World For Min">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django源码分析一：服务启动</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-26T13:10:02+08:00">
+                2019-08-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Django-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
+<li>Python 3.5.2</li>
+<li>Django 2.1.2 </li>
+<li>PyCharm 2018.2.1 (Professional Edition) </li>
+<li>启动项目</li>
+</ul>
+<a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[min:] ~/Desktop/python/Demo$ python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
+<h3 id="二、说明"><a href="#二、说明" class="headerlink" title="二、说明"></a>二、说明</h3><p>Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Django采用wsgi是纯python代码实现，开源项目有一个uWSGI是C语言代码实现，因此现在更多的django项目实际上是运行在uWSGI上的，uWSGI不再讨论范围之内)。</p>
+<p>接下来是记录我利用pycharm提供的断点调试功能以及自己打日志整个过程的梳理和总结。</p>
+<p>源码的分析过程取决与分析人员想要关注的原理点，不同的需求就会有不同的侧重点，我当前的需求点是，想要知道django是如何通过网络层接收数据(wsgi)并将请求转发给django的urls层，因此我会朝着这个主题方向列出每个流转环节中的核心代码并做相应的注解。以后如果有机会的话我将会从另外一个侧重点(程序设计)去分析源码。</p>
+<p>每个过程我都会先将代码列出来然后在后面做注解，因此告诫自己以后重读自己的笔记时不需要努力的去看代码，而是直接看注解，然后找到对应的代码进行理解。</p>
+<h3 id="三、分析流程"><a href="#三、分析流程" class="headerlink" title="三、分析流程"></a>三、分析流程</h3><h5 id="manage-py"><a href="#manage-py" class="headerlink" title="manage.py"></a>manage.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    os.environ.setdefault(<span class="string">"DJANGO_SETTINGS_MODULE"</span>, <span class="string">"TestDrivenDjango.settings"</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">from</span> django.core.management <span class="keyword">import</span> execute_from_command_line</span><br><span class="line">    <span class="keyword">except</span> ImportError:</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    execute_from_command_line(sys.argv)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>from django.core.management import execute_from_command_line</code>当这行代码开始执行时，首先会去运行<code>django.core.management.__init__.py</code>这一整个文件，接着找到<code>execute_from_command_line</code>函数并将其导入到当前程序的命名空间中；</li>
+<li>另外在导入之前，我们不可忽视的就是这个文件本身的import语句。</li>
+</ul>
+<h5 id="django-core-management-init-py"><a href="#django-core-management-init-py" class="headerlink" title="django/core/management/__init__.py"></a>django/core/management/__init__.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> __future__ <span class="keyword">import</span> unicode_literals</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pkgutil</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> OrderedDict, defaultdict</span><br><span class="line"><span class="keyword">from</span> importlib <span class="keyword">import</span> import_module</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> django                               <span class="comment"># 这里</span></span><br><span class="line"><span class="keyword">from</span> django.apps <span class="keyword">import</span> apps                <span class="comment"># 这里</span></span><br><span class="line"><span class="keyword">from</span> django.conf <span class="keyword">import</span> settings</span><br><span class="line"><span class="keyword">from</span> django.core.exceptions <span class="keyword">import</span> ImproperlyConfigured</span><br><span class="line"><span class="keyword">from</span> django.core.management.base <span class="keyword">import</span> (</span><br><span class="line">    BaseCommand, CommandError, CommandParser, handle_default_options,</span><br><span class="line">)</span><br><span class="line"><span class="keyword">from</span> django.core.management.color <span class="keyword">import</span> color_style</span><br><span class="line"><span class="keyword">from</span> django.utils <span class="keyword">import</span> autoreload, lru_cache, six</span><br><span class="line"><span class="keyword">from</span> django.utils._os <span class="keyword">import</span> npath, upath</span><br><span class="line"><span class="keyword">from</span> django.utils.encoding <span class="keyword">import</span> force_text</span><br><span class="line"></span><br><span class="line"><span class="meta">@lru_cache.lru_cache(maxsize=None)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_commands</span><span class="params">()</span>:</span></span><br><span class="line">    commands = &#123;name: <span class="string">'django.core'</span> <span class="keyword">for</span> name <span class="keyword">in</span> find_commands(upath(__path__[<span class="number">0</span>]))&#125;</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> settings.configured:</span><br><span class="line">        <span class="keyword">return</span> commands</span><br><span class="line">    <span class="keyword">for</span> app_config <span class="keyword">in</span> reversed(list(apps.get_app_configs())):</span><br><span class="line">        path = os.path.join(app_config.path, <span class="string">'management'</span>)</span><br><span class="line">        commands.update(&#123;name: app_config.name <span class="keyword">for</span> name <span class="keyword">in</span> find_commands(path)&#125;)</span><br><span class="line">    <span class="keyword">return</span> commands</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ManagementUtility</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, argv=None)</span>:</span></span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fetch_command</span><span class="params">(self, subcommand)</span>:</span></span><br><span class="line">        commands = get_commands()</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            app_name = commands[subcommand]</span><br><span class="line">        <span class="keyword">except</span> KeyError:</span><br><span class="line">            ...</span><br><span class="line">        <span class="keyword">if</span> isinstance(app_name, BaseCommand):</span><br><span class="line">            klass = app_name</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            klass = load_command_class(app_name, subcommand)</span><br><span class="line">        <span class="keyword">return</span> klass        </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">execute</span><span class="params">(self)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">if</span> subcommand == <span class="string">'help'</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="string">'--commands'</span> <span class="keyword">in</span> args:</span><br><span class="line">                sys.stdout.write(self.main_help_text(commands_only=<span class="literal">True</span>) + <span class="string">'\n'</span>)</span><br><span class="line">            <span class="keyword">elif</span> len(options.args) &lt; <span class="number">1</span>:</span><br><span class="line">                sys.stdout.write(self.main_help_text() + <span class="string">'\n'</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.fetch_command(options.args[<span class="number">0</span>]).print_help(self.prog_name, options.args[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">elif</span> subcommand == <span class="string">'version'</span> <span class="keyword">or</span> self.argv[<span class="number">1</span>:] == [<span class="string">'--version'</span>]:</span><br><span class="line">            sys.stdout.write(django.get_version() + <span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">elif</span> self.argv[<span class="number">1</span>:] <span class="keyword">in</span> ([<span class="string">'--help'</span>], [<span class="string">'-h'</span>]):</span><br><span class="line">            sys.stdout.write(self.main_help_text() + <span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.fetch_command(subcommand).run_from_argv(self.argv)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute_from_command_line</span><span class="params">(argv=None)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A simple method that runs a ManagementUtility.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    utility = ManagementUtility(argv)</span><br><span class="line">    utility.execute()</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>import django</code> 这行代码运行了<code>django.__init__.py</code>文件。<code>from django.apps import apps</code>这行代码运行了<code>django.apps.__init__.py</code>文件，然而整个django的开端就是从这里开始的，它落实了非常多的事情（例如：初始化日志模块、加载INSTALL_APP、检查各APP是否正常、检查缓存模块是否正常等），当一切无误时才会往下走，否则将会报错退出程序。</p>
+</li>
+<li><p><code>execute_from_command_line</code>这个方法是一个工厂函数，它负责指挥ManagementUtility类利用<code>execute</code>方法来解析参数和启动wsgi服务。<code>ManagementUtility.execute</code>方法中的一大堆if条件就是判断参数是否合法，重点还是在<code>self.fetch_command(subcommand).run_from_argv(self.argv)</code>，这条命令应该拆成两部分去看。</p>
+<ul>
+<li><p><strong>self.fetch_command</strong></p>
+<p>是利用django内置的命令管理工具去匹配到具体的模块，例如<code>self.fetch_command(subcommand)</code>其实就相当于是<code>self.fetch_command(&#39;runserver&#39;)</code>，它最终找到了==django.contrib.staticfiles.management.commands.runserver.Command==这个命令工具。<br>django中的命令工具代码组织采用的是策略模式+接口模式，也就是说<code>django.core.management.commands</code>这个目录下面存在各种命令工具，每个工具下面都有一个Command接口，当匹配到’runserver’时调用’runserver’命令工具的Command接口，当匹配到’migrate’时调用’migrate’命令工具的Command接口。</p>
+</li>
+<li><p><strong>run_from_argv(self.argv)</strong></p>
+<p>run_from_argv的作用是初始化中间件、启动服务，也就是拉起wgsi(但实际上并不是由它来直接完成，而是由后续很多其他代码来完成)，直观上看它应该是runserver.Command对象的一个方法，但实际上要稍微更复杂一些，因为没有列出关联代码，所以在下一个代码块中进行说明。</p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>小结</strong><br>这部分代码实际上分为两部分，第一部分负责执行一些Django的基础服务，第二部分是一个匹配命令行参数的一个过程，比如本例中通过提供的参数’runserver’到命令工具集中去找到runserver模块。</p>
+<h5 id="django-contrib-staticfiles-management-commands-runserver-py"><a href="#django-contrib-staticfiles-management-commands-runserver-py" class="headerlink" title="django/contrib/staticfiles/management/commands/runserver.py"></a>django/contrib/staticfiles/management/commands/runserver.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.contrib.staticfiles.handlers <span class="keyword">import</span> StaticFilesHandler</span><br><span class="line"><span class="keyword">from</span> django.core.management.commands.runserver <span class="keyword">import</span> \</span><br><span class="line">    Command <span class="keyword">as</span> RunserverCommand</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Command</span><span class="params">(RunserverCommand)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">add_arguments</span><span class="params">(self, parser)</span>:</span></span><br><span class="line">        super(Command, self).add_arguments(parser)</span><br><span class="line">        parser.add_argument(</span><br><span class="line">            <span class="string">'--nostatic'</span>, action=<span class="string">"store_false"</span>, dest=<span class="string">'use_static_handler'</span>, default=<span class="literal">True</span>,</span><br><span class="line">            help=<span class="string">'Tells Django to NOT automatically serve static files at STATIC_URL.'</span>,</span><br><span class="line">        )</span><br><span class="line">        parser.add_argument(</span><br><span class="line">            <span class="string">'--insecure'</span>, action=<span class="string">"store_true"</span>, dest=<span class="string">'insecure_serving'</span>, default=<span class="literal">False</span>,</span><br><span class="line">            help=<span class="string">'Allows serving static files even if DEBUG is False.'</span>,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_handler</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">        handler = super(Command, self).get_handler(*args, **options)</span><br><span class="line">        use_static_handler = options[<span class="string">'use_static_handler'</span>]</span><br><span class="line">        insecure_serving = options[<span class="string">'insecure_serving'</span>]</span><br><span class="line">        <span class="keyword">if</span> use_static_handler <span class="keyword">and</span> (settings.DEBUG <span class="keyword">or</span> insecure_serving):</span><br><span class="line">            <span class="keyword">return</span> StaticFilesHandler(handler)</span><br><span class="line">        <span class="keyword">return</span> handler</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当前类对象中不存在<code>run_from_argv</code>方法，因此我们要往下看它的继承对象<code>django.core.management.commands.runserver.Command</code>。</li>
+</ul>
+<h5 id="django-core-management-commands-runserver-py"><a href="#django-core-management-commands-runserver-py" class="headerlink" title="django/core/management/commands/runserver.py"></a>django/core/management/commands/runserver.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.core.servers.basehttp <span class="keyword">import</span> get_internal_wsgi_application, run</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Command</span><span class="params">(BaseCommand)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">execute</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> options[<span class="string">'no_color'</span>]:</span><br><span class="line">            os.environ[str(<span class="string">"DJANGO_COLORS"</span>)] = str(<span class="string">"nocolor"</span>)</span><br><span class="line">        super(Command, self).execute(*args, **options)    </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_handler</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> get_internal_wsgi_application()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        self.run(**options)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self, **options)</span>:</span></span><br><span class="line">        use_reloader = options[<span class="string">'use_reloader'</span>]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> use_reloader:</span><br><span class="line">            autoreload.main(self.inner_run, <span class="literal">None</span>, options)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.inner_run(<span class="literal">None</span>, **options)        </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">inner_run</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            handler = self.get_handler(*args, **options)</span><br><span class="line">            run(self.addr, int(self.port), handler,</span><br><span class="line">                ipv6=self.use_ipv6, threading=threading)</span><br><span class="line">        <span class="keyword">except</span> socket.error <span class="keyword">as</span> e:</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
+<ul>
+<li>当前这个类对象中也没有<code>run_from_argv</code>这个方法，因此我们要往下看它的继承对象<code>django.core.management.base.BaseCommand</code>。</li>
+</ul>
+<h5 id="django-core-management-base-py"><a href="#django-core-management-base-py" class="headerlink" title="django/core/management/base.py"></a>django/core/management/base.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseCommand</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run_from_argv</span><span class="params">(self, argv)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.execute(*args, **cmd_options)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            ...</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            connections.close_all()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">execute</span><span class="params">(self, *args, **options)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            ...</span><br><span class="line">            output = self.handle(*args, **options)</span><br><span class="line">            ...</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            <span class="keyword">if</span> saved_locale <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                translation.activate(saved_locale)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>由于接下来的代码重度使用了继承、多态、接口等设计模式的方式来运作，但是追溯起来并不复杂，所以就不列举出来了，这里重点强调一下<code>django.core.management.commands.runserver.Command#inner_run</code>中的<code>self.get_handler(*args, **options)</code>方法，它非常重要，三个重点:</p>
+<blockquote>
+<ol>
+<li>因为它负责获取WSGIHandler。</li>
+<li>self.get_handler并不会返回一个常规的<code>WSGIHandler</code>而是返回一个<code>StaticFilesHandler</code>。</li>
+<li><code>StaticFilesHandler</code>类对象继承<code>WSGIHandler</code>，它的目的是为了判断每个请求，如果是常规的url请求则直接分配到某个view中去执行，如果是静态文件规则那么将不会找view而是响应这个文件。</li>
+</ol>
+</blockquote>
+</li>
+<li><p><code>Command.inner_run</code>方法调用了<code>run</code>(即：<code>django.core.servers.basehttp.run</code>)，由于没有列出代码块，因此在下一个环节中进行说明。</p>
+</li>
+</ul>
+<p><strong>小结</strong><br>这部分代码实际上就是一个初始化过程，全部都为’runserver’服务，虽然很多代码我没有列出来，但是它确实做了一些，例如参数解析、端口指定检测、ipv4检测、ipv6检测、端口是否占用、线程检查等工作。</p>
+<h5 id="django-core-servers-basehttp-py"><a href="#django-core-servers-basehttp-py" class="headerlink" title="django/core/servers/basehttp.py"></a>django/core/servers/basehttp.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> wsgiref <span class="keyword">import</span> simple_server</span><br><span class="line"><span class="keyword">from</span> django.utils.six.moves <span class="keyword">import</span> socketserver</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WSGIServer</span><span class="params">(simple_server.WSGIServer, object)</span>:</span></span><br><span class="line"></span><br><span class="line">    request_queue_size = <span class="number">10</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> kwargs.pop(<span class="string">'ipv6'</span>, <span class="literal">False</span>):</span><br><span class="line">            self.address_family = socket.AF_INET6</span><br><span class="line">        self.allow_reuse_address = kwargs.pop(<span class="string">'allow_reuse_address'</span>, <span class="literal">True</span>)</span><br><span class="line">        super(WSGIServer, self).__init__(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">server_bind</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(WSGIServer, self).server_bind()</span><br><span class="line">        self.setup_environ()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle_error</span><span class="params">(self, request, client_address)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> is_broken_pipe_error():</span><br><span class="line">            logger.info(<span class="string">"- Broken pipe from %s\n"</span>, client_address)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            super(WSGIServer, self).handle_error(request, client_address)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WSGIRequestHandler</span><span class="params">(simple_server.WSGIRequestHandler, object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">address_string</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.client_address[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(addr, port, wsgi_handler, ipv6=False, threading=False)</span>:</span></span><br><span class="line">    server_address = (addr, port)</span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        httpd_cls = type(str(<span class="string">'WSGIServer'</span>), (socketserver.ThreadingMixIn, WSGIServer), &#123;&#125;)   <span class="comment"># Work Here</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        httpd_cls = WSGIServer</span><br><span class="line">    httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)</span><br><span class="line">    <span class="keyword">if</span> threading:</span><br><span class="line">        httpd.daemon_threads = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    httpd.set_app(wsgi_handler)</span><br><span class="line">    httpd.serve_forever()</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>run</code>函数负责指挥各个对象负责启动wsgi服务。<code>wsgi_handler</code>参数，这里传递的是<code>StaticFilesHandler</code>；</li>
+<li><p><code>httpd_cls</code>这个变量被定义完成之后，由于大量的继承关系，它其实已经不单纯的属于django，它其实更像是一个传统意义上的WSGI服务对象了。<code>httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)</code>这行代码非常重要，因为它是WSGI服务器与django之间相互通信的唯一枢纽通道，也就是说，当WSGI服务对象收到socket请求后，会将这个请求传递给django的WSGIRequestHandler(下节会列出WSGIRequestHandler是如何工作的)。</p>
+</li>
+<li><p><code>httpd.set_app(wsgi_handler)</code>是将<code>StaticFilesHandler</code> 传递给WSGIServer当作一个application，当WSGIServer收到网络请求后，可以将数据分发给<code>django.core.servers.basehttp.WSGIRequestHandler</code>，最终由<code>django.core.servers.basehttp.WSGIRequestHandler</code>将数据传递给application(即：<code>django.contrib.staticfiles.handlers.StaticFilesHandler</code>)。</p>
+</li>
+<li><p>httpd.serve.forever()`启动非堵塞网络监听服务。</p>
+</li>
+</ul>
+<h5 id="lib-python3-6-socketserver-py"><a href="#lib-python3-6-socketserver-py" class="headerlink" title="lib/python3.6/socketserver.py"></a>lib/python3.6/socketserver.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseServer</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, server_address, RequestHandlerClass)</span>:</span></span><br><span class="line">        self.server_address = server_address</span><br><span class="line">        self.RequestHandlerClass = RequestHandlerClass</span><br><span class="line">        self.__is_shut_down = threading.Event()</span><br><span class="line">        self.__shutdown_request = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">serve_forever</span><span class="params">(self, poll_interval=<span class="number">0.5</span>)</span>:</span></span><br><span class="line">        self.__is_shut_down.clear()</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line"></span><br><span class="line">            <span class="keyword">with</span> _ServerSelector() <span class="keyword">as</span> selector:</span><br><span class="line">                selector.register(self, selectors.EVENT_READ)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> <span class="keyword">not</span> self.__shutdown_request:</span><br><span class="line">                    ready = selector.select(poll_interval)</span><br><span class="line">                    <span class="keyword">if</span> ready:</span><br><span class="line">                        self._handle_request_noblock()              <span class="comment"># 这里</span></span><br><span class="line"></span><br><span class="line">                    self.service_actions()</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            self.__shutdown_request = <span class="literal">False</span></span><br><span class="line">            self.__is_shut_down.set()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_handle_request_noblock</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            request, client_address = self.get_request()</span><br><span class="line">        <span class="keyword">except</span> OSError:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">if</span> self.verify_request(request, client_address):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                self.process_request(request, client_address)       <span class="comment"># 这里</span></span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                self.handle_error(request, client_address)</span><br><span class="line">                self.shutdown_request(request)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.shutdown_request(request)    </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">verify_request</span><span class="params">(self, request, client_address)</span>:</span></span><br><span class="line">        <span class="string">"""Verify the request.  May be overridden.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        Return True if we should proceed with this request.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span>            </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_request</span><span class="params">(self, request, client_address)</span>:</span></span><br><span class="line">        self.finish_request(request, client_address)                <span class="comment"># 这里</span></span><br><span class="line">        self.shutdown_request(request)     </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">finish_request</span><span class="params">(self, request, client_address)</span>:</span></span><br><span class="line">        self.RequestHandlerClass(request, client_address, self)     <span class="comment"># 这里</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>上面我们看到最后一个动作是<code>httpd.serve_forever</code>，调用是<code>socketserver.BaseServer.serve_forever</code>方法。该方法采用了selector网络模型进行等待数据，每0.5秒遍历一次文件描述符，当有数据进来时，ready变量会是一个socket请求对象，这时会将后续工作转交给<code>self._handler_request_noblock</code>方法去处理，然后经过一系列的流转：</p>
+<ol>
+<li><p><code>_handler_request_noblock</code></p>
+</li>
+<li><p><code>process_request</code></p>
+</li>
+<li><p><code>finish_request</code></p>
+</li>
+<li><p><code>socketserver.BaseServer.RequestHandlerClass</code></p>
+</li>
+</ol>
+</li>
+</ul>
+<p><code>RequestHandlerClass</code>是由<code>httpd = httpd_cls(server_address, WSGIRequestHandler, ipv6=ipv6)</code>传递过来的参数<code>django.core.servers.basehttp.WSGIRequestHandler</code>。 也就是说具体执行的是<code>WSGIRequestHandler(request, client_address, self)</code>。</p>
+<p><strong>小结</strong><br>serve_forever开启了一个while来无限监听网络层的scoket请求，当一条请求过来时，就层层转交到<code>django.core.servers.basehttp.WSGIRequestHandler</code>手中。</p>
+<h5 id="django-core-servers-basehttp-py-1"><a href="#django-core-servers-basehttp-py-1" class="headerlink" title="django.core.servers.basehttp.py"></a>django.core.servers.basehttp.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WSGIRequestHandler</span><span class="params">(simple_server.WSGIRequestHandler, object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">address_string</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.client_address[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_environ</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> k, v <span class="keyword">in</span> self.headers.items():</span><br><span class="line">            <span class="keyword">if</span> <span class="string">'_'</span> <span class="keyword">in</span> k:</span><br><span class="line">                <span class="keyword">del</span> self.headers[k]</span><br><span class="line"></span><br><span class="line">        env = super(WSGIRequestHandler, self).get_environ()</span><br><span class="line">        path = self.path</span><br><span class="line">        <span class="keyword">if</span> <span class="string">'?'</span> <span class="keyword">in</span> path:</span><br><span class="line">            path = path.partition(<span class="string">'?'</span>)[<span class="number">0</span>]</span><br><span class="line">        path = uri_to_iri(path).encode(UTF_8)</span><br><span class="line">        env[<span class="string">'PATH_INFO'</span>] = path.decode(ISO_8859_1) <span class="keyword">if</span> six.PY3 <span class="keyword">else</span> path</span><br><span class="line">        <span class="keyword">return</span> env</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">handle</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.raw_requestline = self.rfile.readline(<span class="number">65537</span>)</span><br><span class="line">        <span class="keyword">if</span> len(self.raw_requestline) &gt; <span class="number">65536</span>:</span><br><span class="line">            self.requestline = <span class="string">''</span></span><br><span class="line">            self.request_version = <span class="string">''</span></span><br><span class="line">            self.command = <span class="string">''</span></span><br><span class="line">            self.send_error(<span class="number">414</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.parse_request():  <span class="comment"># An error code has been sent, just exit</span></span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        handler = ServerHandler(</span><br><span class="line">            self.rfile, self.wfile, self.get_stderr(), self.get_environ()</span><br><span class="line">        )  <span class="comment"># 实例化了ServerHandler对象</span></span><br><span class="line"></span><br><span class="line">        handler.request_handler = self      <span class="comment"># backpointer for logging</span></span><br><span class="line">        handler.run(self.server.get_app())  <span class="comment"># 将StaticFilesHandler转交给ServerHandler去运行。</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>首先列举出来<code>django.core.servers.basehttp.WSGIRequestHandler</code>的继承分布，这个将对我们在分析源码的过程中起到一个非常重要的作用，方便我们理清楚各个类的作用：</p>
+<ul>
+<li><code>django.core.servers.basehttp.WSGIRequestHandler</code></li>
+<li><code>wsgiref.simple_server.WSGIRequestHandler</code></li>
+<li><code>http.server.BaseHTTPRequestHandler</code></li>
+<li><code>socketserver.StreamRequestHandler</code></li>
+<li><code>socketserver.BaseRequestHandler</code></li>
+<li><code>object</code></li>
+</ul>
+<p>因为<code>WSGIRequestHandler</code>并没有<code>__init__</code>或者<code>__call__</code>方法，因此需要遍历所有父类对象，最终在<code>BaseRequestHandler</code>中看到了<code>__init__</code>实例初始化方法，它调用了self.handle方法(即回调了：<code>WSGIRequestHandler.handle</code>)，具体见代码注释。</p>
+</li>
+<li><p><code>ServerHandler</code>对象并没有run方法，最终在 <code>wsgiref.handlers.BaseHandler</code> 中找到了run方法。</p>
+</li>
+</ul>
+<h5 id="wsgiref-handlers-py"><a href="#wsgiref-handlers-py" class="headerlink" title="wsgiref.handlers.py"></a>wsgiref.handlers.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BaseHandler</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self, application)</span>:</span></span><br><span class="line">        ...</span><br><span class="line">        self.result = application(self.environ, self.start_response)    <span class="comment"># 这里</span></span><br><span class="line">        self.finish_response()</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>application(self.environ, self.start_response)</code>也就相当于是<code>StaticFilesHandler.__call__(self.environ, self.start_response)</code>。</li>
+</ul>
+<h5 id="django-contrib-staticfiles-handlers-py"><a href="#django-contrib-staticfiles-handlers-py" class="headerlink" title="django.contrib.staticfiles.handlers.py"></a>django.contrib.staticfiles.handlers.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StaticFilesHandler</span><span class="params">(WSGIHandler)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self._should_handle(get_path_info(environ)):</span><br><span class="line">            <span class="keyword">return</span> self.application(environ, start_response)</span><br><span class="line">        <span class="keyword">return</span> super(StaticFilesHandler, self).__call__(environ, start_response)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过层层流转，最终进入django的静态文件处理的Handler，后续的动作我们会在接下来的章节继续介绍。</li>
+<li><code>environ</code>这个变量在django的WSGIServer和WSGIRequestHandler中扮演这非常重要的角色，因为所有的<code>客户端ip</code>、<code>请求的URL</code>、<code>cookie</code>、<code>session</code>、<code>header</code>等等信息都保存在其中。</li>
+</ul>
+<h3 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h3><p>上面所有的过程都是django内部代码的为了启动服务而做的准备，简单的把流程给列出来。</p>
+<ol>
+<li>解析运行 python manage.py 所提供的参数，例如: runserver；</li>
+<li>根据参数 找到相对应的 命令管理工具；</li>
+<li>加载所有的app；</li>
+<li>检查端口、ipv4检测、ipv6检测、端口是否占用、线程检查、orm对象检查(表是否创建)；</li>
+<li>实例化WSGIRequestHandler，并且将它注册到python Lib库中的WSGIServer中；</li>
+<li>最后启动python Lib库中的WSGIServer；</li>
+<li>WSGIServer处理socket请求、对接WSGIRequestHandler；</li>
+<li>WSGIRequestHandler针对<code>environ</code>进行预处理、对接ServerHandler；</li>
+<li>ServerHandler最后调用了StaticFilesHandler；</li>
+<li>StaticFilesHandler用于执行应用程序(application)和返回响应给WSGIServer。</li>
+</ol>
+<p><strong>参考</strong>：<a href="https://www.jianshu.com/p/17d78b52c732" target="_blank" rel="noopener">https://www.jianshu.com/p/17d78b52c732</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/16/Python code style guide/" rel="next" title="Python code style guide">
+                <i class="fa fa-chevron-left"></i> Python code style guide
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、准备工作"><span class="nav-number">1.</span> <span class="nav-text">一、准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、说明"><span class="nav-number">2.</span> <span class="nav-text">二、说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、分析流程"><span class="nav-number">3.</span> <span class="nav-text">三、分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#manage-py"><span class="nav-number">3.0.1.</span> <span class="nav-text">manage.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-init-py"><span class="nav-number">3.0.2.</span> <span class="nav-text">django/core/management/__init__.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-contrib-staticfiles-management-commands-runserver-py"><span class="nav-number">3.0.3.</span> <span class="nav-text">django/contrib/staticfiles/management/commands/runserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-commands-runserver-py"><span class="nav-number">3.0.4.</span> <span class="nav-text">django/core/management/commands/runserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-base-py"><span class="nav-number">3.0.5.</span> <span class="nav-text">django/core/management/base.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-servers-basehttp-py"><span class="nav-number">3.0.6.</span> <span class="nav-text">django/core/servers/basehttp.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-python3-6-socketserver-py"><span class="nav-number">3.0.7.</span> <span class="nav-text">lib/python3.6/socketserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-servers-basehttp-py-1"><span class="nav-number">3.0.8.</span> <span class="nav-text">django.core.servers.basehttp.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wsgiref-handlers-py"><span class="nav-number">3.0.9.</span> <span class="nav-text">wsgiref.handlers.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-contrib-staticfiles-handlers-py"><span class="nav-number">3.0.10.</span> <span class="nav-text">django.contrib.staticfiles.handlers.py</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#四、总结"><span class="nav-number">4.</span> <span class="nav-text">四、总结</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
