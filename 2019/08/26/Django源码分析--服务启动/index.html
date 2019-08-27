@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Hello World For Min">
 <meta property="og:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-27T11:58:18.402Z">
+<meta property="og:updated_time" content="2019-08-27T14:28:34.521Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Django源码分析一：服务启动">
 <meta name="twitter:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
@@ -461,7 +461,7 @@
 <li>WSGIServer处理socket请求、对接WSGIRequestHandler；</li>
 <li>WSGIRequestHandler针对<code>environ</code>进行预处理、对接ServerHandler；</li>
 <li>ServerHandler最后调用了WSGIHandler；</li>
-<li>StaticFilesHandler用于执行应用程序(application)和返回响应给WSGIServer。</li>
+<li>WSGIHandler用于执行应用程序(application)和返回响应给WSGIServer。</li>
 </ol>
 <p><strong>参考</strong>：<a href="https://www.jianshu.com/p/17d78b52c732" target="_blank" rel="noopener">https://www.jianshu.com/p/17d78b52c732</a></p>
 
