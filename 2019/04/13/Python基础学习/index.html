@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Hello World For Min">
 <meta property="og:description" content="在Python的学习过程中，总会断断续续遇到一些比较重要、或者容易遗忘的知识点，需要在笔头记忆，时常翻阅，温故知新。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-16T09:41:01.669Z">
+<meta property="og:updated_time" content="2019-08-28T02:48:15.624Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python基础学习">
 <meta name="twitter:description" content="在Python的学习过程中，总会断断续续遇到一些比较重要、或者容易遗忘的知识点，需要在笔头记忆，时常翻阅，温故知新。">
@@ -381,7 +381,8 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> reduce</span><br><span class="line"></span><br><span class="line">DIGITS = &#123;<span class="string">'0'</span>: <span class="number">0</span>, <span class="string">'1'</span>: <span class="number">1</span>, <span class="string">'2'</span>: <span class="number">2</span>, <span class="string">'3'</span>: <span class="number">3</span>, <span class="string">'4'</span>: <span class="number">4</span>, <span class="string">'5'</span>: <span class="number">5</span>, <span class="string">'6'</span>: <span class="number">6</span>, <span class="string">'7'</span>: <span class="number">7</span>, <span class="string">'8'</span>: <span class="number">8</span>, <span class="string">'9'</span>: <span class="number">9</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">str2int</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fn</span><span class="params">(x, y)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> x * <span class="number">10</span> + y</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">char2num</span><span class="params">(s)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> DIGITS[s]</span><br><span class="line">    <span class="keyword">return</span> reduce(fn, map(char2num, s))</span><br></pre></td></tr></table></figure>
 <p>19、返回函数：一个函数可以返回一个计算结果，也可以返回一个函数；返回一个函数时，牢记该函数并未执行，返回函数中不要引用任何可能会变化的变量。</p>
 <p>20、偏函数：当函数的参数个数太多，需要简化时，使用functools.partial可以创建一个新的函数，这个新函数可以固定住原函数的部分参数，从而在调用时更简单。</p>
-
+<p>21、reversed 函数：返回一个反转的迭代器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">reversed(seq) <span class="comment"># seq -- 要转换的序列，可以是 tuple, string, list 或 range。</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 字符串</span></span><br><span class="line">seqString = <span class="string">'Runoob'</span></span><br><span class="line">print(list(reversed(seqString)))</span><br></pre></td></tr></table></figure>
       
     </div>
     
