@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,自动化测试,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在工作过程中，部分项目收到客户反馈，出现偶发性Crash，为了尽可能的复现客户问题，需要在程序内模拟用户输入，比如拍照，切换模式，切换分辨率，开关HDR模式等，之前有大概介绍过，目前在Android上做这类UI测试的几种主要方式：">
+<meta name="keywords" content="Android,自动化测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android UI自动化-InputEvent Record">
+<meta property="og:url" content="http://yoursite.com/2019/04/12/Android UI自动化-Input Event Record/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="在工作过程中，部分项目收到客户反馈，出现偶发性Crash，为了尽可能的复现客户问题，需要在程序内模拟用户输入，比如拍照，切换模式，切换分辨率，开关HDR模式等，之前有大概介绍过，目前在Android上做这类UI测试的几种主要方式：">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-09-17T10:01:11.367Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android UI自动化-InputEvent Record">
+<meta name="twitter:description" content="在工作过程中，部分项目收到客户反馈，出现偶发性Crash，为了尽可能的复现客户问题，需要在程序内模拟用户输入，比如拍照，切换模式，切换分辨率，开关HDR模式等，之前有大概介绍过，目前在Android上做这类UI测试的几种主要方式：">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/12/Android UI自动化-Input Event Record/">
+
+
+
+
+
+  <title>Android UI自动化-InputEvent Record | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/12/Android UI自动化-Input Event Record/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android UI自动化-InputEvent Record</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-12T10:44:44+08:00">
+                2019-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Android-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在工作过程中，部分项目收到客户反馈，出现偶发性Crash，为了尽可能的复现客户问题，需要在程序内模拟用户输入，比如拍照，切换模式，切换分辨率，开关HDR模式等，之前有大概介绍过，目前在Android上做这类UI测试的几种主要方式：</p>
+<a id="more"></a>
+<ul>
+<li>利用espresso，uiautomator等UI测试框架去寻找特定的View，并执行对应操作。优点是：应用场景全面，包括普通的点击滑动，还有自动输入等高级操作；大概率可以忽略屏幕适配的问题；可以在user版本运行。缺点：学习成本较高；复杂场景脚本维护工作了较大。</li>
+<li>利用adb shell input x y 的方式去模拟用户点击，组合操作可以通过脚本的方式完成。优点：方便实用；快。缺点：复杂场景脚本的设计会比较艰难，需要连接PC。</li>
+<li>因为Android也是类Linux系统，可以模拟鼠标等驱动事件，直接往Linux底层写事件。优点：可以进行事件等录制，适应场景极多；快速。缺点：学习成本较高。</li>
+</ul>
+<p>考虑到我们的场景，以及后面还有类似的项目问题，所以我们选择了第三种，可以录制用户操作，然后按照录制的操作开始循环执行的方式。</p>
+<h2 id="1-原理分析"><a href="#1-原理分析" class="headerlink" title="1.原理分析"></a>1.原理分析</h2><h4 id="1-1-Android界面点击事件流程"><a href="#1-1-Android界面点击事件流程" class="headerlink" title="1.1.Android界面点击事件流程"></a>1.1.Android界面点击事件流程</h4><p>用户在屏幕上点击一下后，程序里面的OnClickListener是怎样收到这个事件的。大致流程如下 ：</p>
+<blockquote>
+<p>用户点击 -&gt; (硬件驱动部分)硬件产生一个中断 -&gt; /dev/input/event* 写入一个相应的信号 -&gt; jni部分 android循环读取/dev/input/event的事件 -&gt; 分发给WindowManagerServer -&gt; 最后再发到相应的ViewGroup和View。</p>
+</blockquote>
+<p>这里我们就可以通过往/dev/input/event* 写信号的方式，来达到模拟事件的目的。</p>
+<h4 id="1-2-触摸协议分析"><a href="#1-2-触摸协议分析" class="headerlink" title="1.2.触摸协议分析"></a>1.2.触摸协议分析</h4><p>在2，1中，我们知道可以通过模拟的方式来达到我们模拟事件的目的，但是有个问题在于，事件的种类分为很多种，比如物理按键事件，触摸屏事件，蓝牙等，此处我们重点分析触摸屏事件。</p>
+<p>触摸协议分单点触摸和多点触摸。以单点触摸为例，打开手机，同样关闭自动旋屏，输入adb shell getevent，鼠标点击一下屏幕，要足够快，不然数据太多。得到输出和下面类似。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">[min@bogon:] ~ $ adb shell getevent</span><br><span class="line">could not get driver version <span class="keyword">for</span> /dev/input/mouse0, Not a typewriter</span><br><span class="line">could not get driver version <span class="keyword">for</span> /dev/input/mice, Not a typewriter</span><br><span class="line">add device 1: /dev/input/event6</span><br><span class="line">  name:     <span class="string">"huawei,ts_kit"</span></span><br><span class="line">add device 2: /dev/input/event0</span><br><span class="line">  name:     <span class="string">"soundtrigger_input_dev"</span></span><br><span class="line">add device 3: /dev/input/event2</span><br><span class="line">  name:     <span class="string">"hisi_on"</span></span><br><span class="line">add device 4: /dev/input/event3</span><br><span class="line">  name:     <span class="string">"minibugreport_key"</span></span><br><span class="line">add device 5: /dev/input/event4</span><br><span class="line">  name:     <span class="string">"fingerprint"</span></span><br><span class="line">add device 6: /dev/input/event5</span><br><span class="line">  name:     <span class="string">"hi3xxx_hi6405_card Headset Jack"</span></span><br><span class="line">add device 7: /dev/input/event1</span><br><span class="line">  name:     <span class="string">"hisi_gpio_key"</span></span><br><span class="line">/dev/input/event6: 0003 003a 00000033</span><br><span class="line">/dev/input/event6: 0003 0035 00000251</span><br><span class="line">/dev/input/event6: 0003 0036 000002f2</span><br><span class="line">/dev/input/event6: 0003 0039 00000000</span><br><span class="line">/dev/input/event6: 0000 0002 00000000</span><br><span class="line">/dev/input/event6: 0001 014a 00000001</span><br><span class="line">/dev/input/event6: 0000 0000 00000000</span><br><span class="line">/dev/input/event6: 0003 003a 00000033</span><br><span class="line">/dev/input/event6: 0003 0035 00000251</span><br><span class="line">/dev/input/event6: 0003 0036 000002f2</span><br><span class="line">/dev/input/event6: 0003 0039 00000000</span><br><span class="line">/dev/input/event6: 0000 0002 00000000</span><br><span class="line">/dev/input/event6: 0000 0000 00000000</span><br><span class="line">/dev/input/event6: 0003 003a 00000034</span><br><span class="line">/dev/input/event6: 0003 0035 00000251</span><br><span class="line">/dev/input/event6: 0003 0036 000002f2</span><br><span class="line">/dev/input/event6: 0003 0039 00000000</span><br><span class="line">/dev/input/event6: 0000 0002 00000000</span><br><span class="line">/dev/input/event6: 0000 0000 00000000</span><br><span class="line">/dev/input/event6: 0003 003a 00000034</span><br><span class="line">/dev/input/event6: 0003 0035 00000251</span><br><span class="line">/dev/input/event6: 0003 0036 000002f2</span><br><span class="line">/dev/input/event6: 0003 0039 00000000</span><br><span class="line">/dev/input/event6: 0000 0002 00000000</span><br><span class="line">/dev/input/event6: 0000 0000 00000000</span><br></pre></td></tr></table></figure>
+<p>可单点触摸的协议每次点击会写6条信号，按照这个的格式：type code value，具体type含义，在本段末尾有贴出，结合type说明分析单点触摸事件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event0: 0003 0000 00000117 EV_ABS ABS_X 0x117</span><br></pre></td></tr></table></figure>
+<p>触摸点的x坐标</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event0: 0003 0001 0000020f EV_ABS ABS_Y 0x20f</span><br></pre></td></tr></table></figure>
+<p>触摸点的y坐标</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event0: 0001 014a 00000001 EV_KEY BTN_TOUCH 1</span><br></pre></td></tr></table></figure>
+<p>touch down</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event0: 0000 0000 00000000 EV_SYN 0 0</span><br></pre></td></tr></table></figure>
+<p>同步信号量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event0: 0001 014a 00000000 EV_KEY BTN_TOUCH 0</span><br></pre></td></tr></table></figure>
+<p>touch up</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event0: 0000 0000 00000000 EV_SYN 0 0</span><br></pre></td></tr></table></figure>
+<p>同步信号量</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">其中，<span class="built_in">type</span>定义如下：</span><br><span class="line">/* </span><br><span class="line">* Event types </span><br><span class="line">*/ </span><br><span class="line"><span class="comment">#define EV_SYN 0x00 </span></span><br><span class="line"><span class="comment">#define EV_KEY 0x01 </span></span><br><span class="line"><span class="comment">#define EV_REL 0x02 </span></span><br><span class="line"><span class="comment">#define EV_ABS 0x03 </span></span><br><span class="line"><span class="comment">#define EV_MSC 0x04 </span></span><br><span class="line"><span class="comment">#define EV_SW 0x05 </span></span><br><span class="line"><span class="comment">#define EV_LED 0x11 </span></span><br><span class="line"><span class="comment">#define EV_SND 0x12 </span></span><br><span class="line"><span class="comment">#define EV_REP 0x14 </span></span><br><span class="line"><span class="comment">#define EV_FF 0x15 </span></span><br><span class="line"><span class="comment">#define EV_PWR 0x16 </span></span><br><span class="line"><span class="comment">#define EV_FF_STATUS 0x17 </span></span><br><span class="line"><span class="comment">#define EV_MAX 0x1f </span></span><br><span class="line"><span class="comment">#define EV_CNT (EV_MAX+1)</span></span><br><span class="line"></span><br><span class="line">常用的是EV_KEY, EV_REL, EV_ABS, EV_SYN分别对应按键, 相对坐标, 绝对坐标, 同步事件。</span><br><span class="line">EV_SYN则表示一组完整事件完成上报，需要处理。</span><br></pre></td></tr></table></figure>
+<h4 id="1-3-可行性验证"><a href="#1-3-可行性验证" class="headerlink" title="1.3.可行性验证"></a>1.3.可行性验证</h4><p>那么具体等事件分析已经结束，我们是否可以将这些事件写入对应的/dev/input/event* 来达到我们模拟事件点击的目的呢？进入开发者模式，打开show touches 和pointer locations勾上后，可以看到点击的轨迹，再结合adb shell sendevent输入以上消息，可以看到屏幕上出现点击效果。</p>
+<p><strong>实践证明我们是可以模拟的点击事件的</strong>，而且已经有现成的getevent 和 sendevent的方式可以很方便的使用。但是实际上，当我们使用这样的方式在Lenovo，Vivo的部分机型上验证的时候发现，getevent得到响应的事件输出的速度让人捉急，这中间产生的耗时对我们的UI测试来说其实很难忍受。</p>
+<h2 id="2-实践改造"><a href="#2-实践改造" class="headerlink" title="2.实践改造"></a>2.实践改造</h2><p>基于getevent和setevent的原理，<a href="http://androidxref.com/8.1.0_r33/xref/system/core/toolbox/getevent.c" target="_blank" rel="noopener">源码路径</a>, 我们实现了一套可以从/dev/input/event*读取并写入的Kit，有兴趣的可以邮件联系我获得源码</p>
+<p><strong>备注：目前已经在MI 6，Lenovo zap，Vivo X21，HW nova4上验证通过。</strong></p>
+<hr>
+<p><strong>参考</strong>：<br><a href="https://blog.csdn.net/superbigcupid/article/details/52228230" target="_blank" rel="noopener">android跨进程事件注入——直接往linux底层写事件</a></p>
+<p><a href="https://blog.csdn.net/coolpad007/article/details/78499089" target="_blank" rel="noopener">Android getevent命令分析Input事件</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/自动化测试/" rel="tag"># 自动化测试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/12/如何正确理解和使用 Activity的4种启动模式/" rel="next" title="正确理解和使用Activity的4种启动模式">
+                <i class="fa fa-chevron-left"></i> 正确理解和使用Activity的4种启动模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/12/Android Handle的理解/" rel="prev" title="Android Handle的理解">
+                Android Handle的理解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理分析"><span class="nav-number">1.</span> <span class="nav-text">1.原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-Android界面点击事件流程"><span class="nav-number">1.0.1.</span> <span class="nav-text">1.1.Android界面点击事件流程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-触摸协议分析"><span class="nav-number">1.0.2.</span> <span class="nav-text">1.2.触摸协议分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-可行性验证"><span class="nav-number">1.0.3.</span> <span class="nav-text">1.3.可行性验证</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#2-实践改造"><span class="nav-number">2.</span> <span class="nav-text">2.实践改造</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

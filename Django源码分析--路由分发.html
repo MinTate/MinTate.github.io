@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Python,Django,源码分析,">
+  <meta name="keywords" content=",,,">
 
 
 
@@ -81,15 +81,15 @@
 
 <meta name="description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 <meta name="keywords" content="Python,Django,源码分析">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Django源码分析一：服务启动">
-<meta property="og:url" content="http://yoursite.com/2019/08/26/Django源码分析--服务启动/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Django源码分析二：路由分发">
+<meta property="og:url" content="http://yoursite.com/Django源码分析--路由分发.html">
 <meta property="og:site_name" content="Min HelloWorld">
 <meta property="og:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-27T14:29:12.341Z">
+<meta property="og:updated_time" content="2019-09-09T02:19:54.263Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Django源码分析一：服务启动">
+<meta name="twitter:title" content="Django源码分析二：路由分发">
 <meta name="twitter:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/08/26/Django源码分析--服务启动/">
+  <link rel="canonical" href="http://yoursite.com/Django源码分析--路由分发.html">
 
 
 
 
 
-  <title>Django源码分析一：服务启动 | Min HelloWorld</title>
+  <title>Django源码分析二：路由分发 | Min HelloWorld</title>
   
 
 
@@ -241,108 +241,24 @@
 
   <div id="posts" class="posts-expand">
     
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/26/Django源码分析--服务启动/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="MinTate">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Min HelloWorld">
-    </span>
-
     
+    
+    <div class="post-block page">
       <header class="post-header">
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">Django源码分析一：服务启动</h1>
-        
+	<h1 class="post-title" itemprop="name headline">Django源码分析二：路由分发</h1>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-26T13:10:02+08:00">
-                2019-08-26
-              </time>
-            
 
-            
 
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Django-学习/" itemprop="url" rel="index">
-                    <span itemprop="name">Django-学习</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
+</header>
 
       
       
-
       
-        <h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
+      <div class="post-body">
+        
+        
+          <h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
 <li>Python 3.5.2</li>
 <li>Django 2.1.2 </li>
 <li>PyCharm 2018.2.1 (Professional Edition) </li>
@@ -350,10 +266,7 @@
 </ul>
 <a id="more"></a>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[min:] ~/Desktop/python/Demo$ python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
-<h3 id="二、说明"><a href="#二、说明" class="headerlink" title="二、说明"></a>二、说明</h3><p>Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Django采用wsgi是纯python代码实现，开源项目有一个uWSGI是C语言代码实现，因此现在更多的django项目实际上是运行在uWSGI上的，uWSGI不再讨论范围之内)。</p>
-<p>接下来是记录我利用pycharm提供的断点调试功能以及自己打日志整个过程的梳理和总结。</p>
-<p>源码的分析过程取决与分析人员想要关注的原理点，不同的需求就会有不同的侧重点，我当前的需求点是，想要知道django是如何通过网络层接收数据(wsgi)并将请求转发给django的urls层，因此我会朝着这个主题方向列出每个流转环节中的核心代码并做相应的注解。以后如果有机会的话我将会从另外一个侧重点(程序设计)去分析源码。</p>
-<p>每个过程我都会先将代码列出来然后在后面做注解，因此告诫自己以后重读自己的笔记时不需要努力的去看代码，而是直接看注解，然后找到对应的代码进行理解。</p>
+<h3 id="二、说明"><a href="#二、说明" class="headerlink" title="二、说明"></a>二、说明</h3><p>上一节，我们分析了Django的网络服务的启动流程，以及它如何通过网络层接收到数并将请求转发给Django Application。那么这一节，我们主要分析，当Request到达Django Application之后，Django内部的路由规则是如何将其导入到正确的View（视图）方法中的呢？</p>
 <h3 id="三、分析流程"><a href="#三、分析流程" class="headerlink" title="三、分析流程"></a>三、分析流程</h3><h5 id="manage-py"><a href="#manage-py" class="headerlink" title="manage.py"></a>manage.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    os.environ.setdefault(<span class="string">"DJANGO_SETTINGS_MODULE"</span>, <span class="string">"TestDrivenDjango.settings"</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">from</span> django.core.management <span class="keyword">import</span> execute_from_command_line</span><br><span class="line">    <span class="keyword">except</span> ImportError:</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    execute_from_command_line(sys.argv)</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>from django.core.management import execute_from_command_line</code>当这行代码开始执行时，首先会去运行<code>django.core.management.__init__.py</code>这一整个文件，接着找到<code>execute_from_command_line</code>函数并将其导入到当前程序的命名空间中；</li>
@@ -465,67 +378,15 @@
 </ol>
 <p><strong>参考</strong>：<a href="https://www.jianshu.com/p/17d78b52c732" target="_blank" rel="noopener">https://www.jianshu.com/p/17d78b52c732</a></p>
 
+        
+      </div>
+      
+      
       
     </div>
     
     
     
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/Python/" rel="tag"># Python</a>
-          
-            <a href="/tags/Django/" rel="tag"># Django</a>
-          
-            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/08/16/Python code style guide/" rel="next" title="Python code style guide">
-                <i class="fa fa-chevron-left"></i> Python code style guide
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
   </div>
 
 
