@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Django,源码分析,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta name="keywords" content="Python,Django,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django源码分析二：路由分发">
+<meta property="og:url" content="http://yoursite.com/2019/09/06/Django源码分析--路由分发/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-09-20T11:52:50.291Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django源码分析二：路由分发">
+<meta name="twitter:description" content="一、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/09/06/Django源码分析--路由分发/">
+
+
+
+
+
+  <title>Django源码分析二：路由分发 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/06/Django源码分析--路由分发/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django源码分析二：路由分发</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-09-06T19:10:02+08:00">
+                2019-09-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Django-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一、准备工作"><a href="#一、准备工作" class="headerlink" title="一、准备工作"></a>一、准备工作</h3><ul>
+<li>Python 3.5.2</li>
+<li>Django 2.1.2 </li>
+<li>PyCharm 2018.2.1 (Professional Edition) </li>
+<li>启动项目</li>
+</ul>
+<a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[min:] ~/Desktop/python/Demo$ python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
+<h3 id="二、说明"><a href="#二、说明" class="headerlink" title="二、说明"></a>二、说明</h3><p>上一节，我们分析了Django的网络服务的启动流程，以及它如何通过网络层接收到数并将请求转发给Django Application。那么这一节，我们主要分析，当Request到达Django Application之后，Django内部的路由规则是如何将其导入到正确的View（视图）方法中的呢？</p>
+<h3 id="三、分析流程"><a href="#三、分析流程" class="headerlink" title="三、分析流程"></a>三、分析流程</h3><p><strong>django.core.handlers.base.BaseHandler#get_response</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_response</span><span class="params">(self, request)</span>:</span></span><br><span class="line">    <span class="string">"""Return an HttpResponse object for the given HttpRequest."""</span></span><br><span class="line">    <span class="comment"># Setup default url resolver for this thread</span></span><br><span class="line">    set_urlconf(settings.ROOT_URLCONF)</span><br><span class="line"></span><br><span class="line">    response = self._middleware_chain(request)  <span class="comment"># 重点关注！！</span></span><br><span class="line"></span><br><span class="line">    response._closable_objects.append(request)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># If the exception handler returns a TemplateResponse that has not</span></span><br><span class="line">    <span class="comment"># been rendered, force it to be rendered.</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> getattr(response, <span class="string">'is_rendered'</span>, <span class="literal">True</span>) <span class="keyword">and</span> callable(getattr(response, <span class="string">'render'</span>, <span class="literal">None</span>)):</span><br><span class="line">        response = response.render()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> response.status_code &gt;= <span class="number">400</span>:</span><br><span class="line">        log_response(</span><br><span class="line">            <span class="string">'%s: %s'</span>, response.reason_phrase, request.path,</span><br><span class="line">            response=response,</span><br><span class="line">            request=request,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure>
+<ul>
+<li>从<a href="https://mintate.github.io/2019/08/26/Django%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90--%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8/" target="_blank" rel="noopener">Django源码分析–服务启动</a>中，我们知道了当请求到达时，最后会调用到WSGIHandler的<code>__call__</code>方法，然后会执行<code>response = self.get_response(request)</code>，即调用父类中的<code>get_reponse</code>方法；</li>
+<li>在此方法中我们重点关注一下<code>response = self._middleware_chain(request)</code>，发现该属性来自于<code>load_middleware</code>方法。</li>
+</ul>
+<p><strong>django.core.handlers.base.BaseHandler#load_middleware</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_middleware</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Populate middleware lists from settings.MIDDLEWARE.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Must be called after the environment is fixed (see __call__ in subclasses).</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    self._view_middleware = []</span><br><span class="line">    self._template_response_middleware = []</span><br><span class="line">    self._exception_middleware = []</span><br><span class="line"></span><br><span class="line">    handler = convert_exception_to_response(self._get_response)</span><br><span class="line">    <span class="keyword">for</span> middleware_path <span class="keyword">in</span> reversed(settings.MIDDLEWARE):</span><br><span class="line">        middleware = import_string(middleware_path) <span class="comment"># 通过类似反射的方法获得对象实例；</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            mw_instance = middleware(handler)   <span class="comment"># 调用MiddlewareMixin的__init__方法；</span></span><br><span class="line">        <span class="keyword">except</span> MiddlewareNotUsed <span class="keyword">as</span> exc:</span><br><span class="line">            <span class="keyword">if</span> settings.DEBUG:</span><br><span class="line">                <span class="keyword">if</span> str(exc):</span><br><span class="line">                    logger.debug(<span class="string">'MiddlewareNotUsed(%r): %s'</span>, middleware_path, exc)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    logger.debug(<span class="string">'MiddlewareNotUsed: %r'</span>, middleware_path)</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">				<span class="comment">########省 略######</span></span><br><span class="line">        handler = convert_exception_to_response(mw_instance)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># We only assign to this when initialization is complete as it is used</span></span><br><span class="line">    <span class="comment"># as a flag for initialization being complete.</span></span><br><span class="line">    self._middleware_chain = handler</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MiddlewareMixin</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, get_response=None)</span>:</span></span><br><span class="line">        self.get_response = get_response</span><br><span class="line">        super().__init__()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        response = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">'process_request'</span>):</span><br><span class="line">            response = self.process_request(request)</span><br><span class="line">        <span class="comment"># 这步比较关键，决定了会按照MIDDLEWARE中的顺序依次倒序执行；</span></span><br><span class="line">        response = response <span class="keyword">or</span> self.get_response(request) </span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">'process_response'</span>):</span><br><span class="line">            response = self.process_response(request, response)</span><br><span class="line">        <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>这个方法就很重要，如果大家有看过我们的上一个章节，就会知道这个方法是WSGIHandler的<code>__init__</code>方法中调用的，也就是在执行runserver命令的时候就执行的；</p>
+</li>
+<li><p><code>convert_exception_to_response</code>是一个装饰器，通过这装饰器和MiddlewareMixin方法结合，使得最后的</p>
+<p>handler实例可以依次倒序执行 settings.MIDDLEWARE中配置的所有的中间件方法，最后执行<code>_get_response</code>方法！</p>
+<p>备注：这块比较考察对装饰器的理解，需要好好琢磨一下，关键点在于理解在于MiddlewareMixin的get_response对应的就是类似于SecurityMiddleware的实例，所以每次<code>__call__</code>方法中<code>response = response or self.get_response(request)</code>就相当于重新调用了新的Middleware的<code>__call__</code>；</p>
+</li>
+</ul>
+<p><strong>django.core.handlers.base.BaseHandler#_get_response</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_get_response</span><span class="params">(self, request)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Resolve and call the view, then apply view, exception, and</span></span><br><span class="line"><span class="string">    template_response middleware. This method is everything that happens</span></span><br><span class="line"><span class="string">    inside the request/response middleware.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    response = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 获得Django App的Root URLResolver</span></span><br><span class="line">    <span class="keyword">if</span> hasattr(request, <span class="string">'urlconf'</span>):</span><br><span class="line">        urlconf = request.urlconf</span><br><span class="line">        set_urlconf(urlconf)</span><br><span class="line">        resolver = get_resolver(urlconf)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        resolver = get_resolver()</span><br><span class="line">	</span><br><span class="line">  	<span class="comment"># 根据URL完成匹配，返回一个ResolverMatch示例</span></span><br><span class="line">    resolver_match = resolver.resolve(request.path_info)</span><br><span class="line">    <span class="comment"># 分解ResolverMatch示例，得到对应的view方法，即callback</span></span><br><span class="line">    callback, callback_args, callback_kwargs = resolver_match</span><br><span class="line">    request.resolver_match = resolver_match</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Apply view middleware</span></span><br><span class="line">    <span class="keyword">for</span> middleware_method <span class="keyword">in</span> self._view_middleware:</span><br><span class="line">        response = middleware_method(request, callback, callback_args, callback_kwargs)</span><br><span class="line">        <span class="keyword">if</span> response:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> response <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        wrapped_callback = self.make_view_atomic(callback)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 重要，在此处完成了对view方法对执行；</span></span><br><span class="line">            response = wrapped_callback(request, *callback_args, **callback_kwargs)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            response = self.process_exception_by_middleware(e, request)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Complain if the view returned None (a common error).</span></span><br><span class="line">    <span class="keyword">if</span> response <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">if</span> isinstance(callback, types.FunctionType):  <span class="comment"># FBV</span></span><br><span class="line">            view_name = callback.__name__</span><br><span class="line">        <span class="keyword">else</span>:  <span class="comment"># CBV</span></span><br><span class="line">            view_name = callback.__class__.__name__ + <span class="string">'.__call__'</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">raise</span> ValueError(</span><br><span class="line">            <span class="string">"The view %s.%s didn't return an HttpResponse object. It "</span></span><br><span class="line">            <span class="string">"returned None instead."</span> % (callback.__module__, view_name)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># If the response supports deferred rendering, apply template</span></span><br><span class="line">    <span class="comment"># response middleware and then render the response</span></span><br><span class="line">    <span class="keyword">elif</span> hasattr(response, <span class="string">'render'</span>) <span class="keyword">and</span> callable(response.render):</span><br><span class="line">        <span class="keyword">for</span> middleware_method <span class="keyword">in</span> self._template_response_middleware:</span><br><span class="line">            response = middleware_method(request, response)</span><br><span class="line">            <span class="comment"># Complain if the template response middleware returned None (a common error).</span></span><br><span class="line">            <span class="keyword">if</span> response <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">raise</span> ValueError(</span><br><span class="line">                    <span class="string">"%s.process_template_response didn't return an "</span></span><br><span class="line">                    <span class="string">"HttpResponse object. It returned None instead."</span></span><br><span class="line">                    % (middleware_method.__self__.__class__.__name__)</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            response = response.render()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            response = self.process_exception_by_middleware(e, request)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个方法是整个路由分发系统的核心，可以看到就是在这个方法，request对应的视图方法被匹配到，执行并返回结果，即URLResolver根据path info匹配到正确的ResolverMatch，然后调用其中的view方法，并返回respone，具体的过程看上述代码注释，接下来我们进入详细分析；</li>
+<li>还有一个需要说明的就是在这个方法中判断respone中有没有render，有就调用；<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@functools.lru_cache(maxsize=None)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_resolver</span><span class="params">(urlconf=None)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> urlconf <span class="keyword">is</span> <span class="literal">None</span></span><br><span class="line">        urlconf = settings.ROOT_URLCONF</span><br><span class="line">    <span class="keyword">return</span> URLResolver(RegexPattern(<span class="string">r'^/'</span>), urlconf)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>tutorial/settings.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ROOT_URLCONF = <span class="string">'tutorial.urls'</span></span><br></pre></td></tr></table></figure>
+<p><strong>tutorial/urls.py</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^'</span>, include(<span class="string">'snippets.urls'</span>)),</span><br><span class="line">    url(<span class="string">r'^api-auth/'</span>, include(<span class="string">'rest_framework.urls'</span>, namespace=<span class="string">'rest_framework'</span>)),</span><br><span class="line">    url(<span class="string">r'^schema/$'</span>, schema_view),</span><br><span class="line">    url(<span class="string">r'^docs/'</span>, include_docs_urls(title=API_TITLE, description=API_DESCRIPTION))</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通过<code>get_resolver</code>方法，完成了对settings.ROOT_URLCONF关联的整个路由系统的加载，返回一个<code>URLResolver</code>实例；</li>
+<li>urlpatterns其实就是一个URLPattern和URLResolver的集合列表，包含inclue的为URLResolver，直接跟着一个view方法的则是URLPattern；</li>
+</ul>
+<p><strong>django.urls.conf._path</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_path</span><span class="params">(route, view, kwargs=None, name=None, Pattern=None)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> isinstance(view, (list, tuple)):</span><br><span class="line">        <span class="comment"># For include(...) processing.</span></span><br><span class="line">        pattern = Pattern(route, is_endpoint=<span class="literal">False</span>)</span><br><span class="line">        urlconf_module, app_name, namespace = view</span><br><span class="line">        <span class="keyword">return</span> URLResolver(</span><br><span class="line">            pattern,</span><br><span class="line">            urlconf_module,</span><br><span class="line">            kwargs,</span><br><span class="line">            app_name=app_name,</span><br><span class="line">            namespace=namespace,</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">elif</span> callable(view):</span><br><span class="line">        pattern = Pattern(route, name=name, is_endpoint=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> URLPattern(pattern, view, kwargs, name)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">raise</span> TypeError(<span class="string">'view must be a callable or a list/tuple in the case of include().'</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>这个方法其实就是<code>url(r&#39;^schema/$&#39;, schema_view)</code>追溯过去的，解释了上面的问题：什么情况是URLPattern和什么情况下是URLResolver；</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">URLPattern</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, pattern, callback, default_args=None, name=None)</span>:</span></span><br><span class="line">        self.pattern = pattern</span><br><span class="line">        self.callback = callback  <span class="comment"># the view</span></span><br><span class="line">        self.default_args = default_args <span class="keyword">or</span> &#123;&#125;</span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'&lt;%s %s&gt;'</span> % (self.__class__.__name__, self.pattern.describe())</span><br><span class="line">      </span><br><span class="line">  	<span class="comment">########省 略################################</span></span><br><span class="line">      </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">resolve</span><span class="params">(self, path)</span>:</span>  <span class="comment"># 负责完成path的匹配，并返回匹配的视图方法；</span></span><br><span class="line">        match = self.pattern.match(path)</span><br><span class="line">        <span class="keyword">if</span> match:</span><br><span class="line">            new_path, args, kwargs = match</span><br><span class="line">            <span class="comment"># Pass any extra_kwargs as **kwargs.</span></span><br><span class="line">            kwargs.update(self.default_args)</span><br><span class="line">            <span class="keyword">return</span> ResolverMatch(self.callback, args, kwargs, self.pattern.name)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>每个URLPattern都需要指定如下几个内容：<ul>
+<li>一个正则表达式字符串。</li>
+<li>一个可调用对象，通常为一个视图函数或一个指定视图函数路径的字符串。</li>
+<li>可选的要传递给视图函数的默认参数（字典形式）。</li>
+<li>一个可选的name参数。</li>
+</ul>
+</li>
+<li>如果有include，则递归生成上面的模式；</li>
+<li><code>resolve(self, path)</code>负责完成path的匹配，并返回匹配的视图方法；</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">URLResolver</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, pattern, urlconf_name, default_kwargs=None, app_name=None, namespace=None)</span>:</span></span><br><span class="line">        self.pattern = pattern</span><br><span class="line">        <span class="comment"># urlconf_name is the dotted Python path to the module defining</span></span><br><span class="line">        <span class="comment"># urlpatterns. It may also be an object with an urlpatterns attribute</span></span><br><span class="line">        <span class="comment"># or urlpatterns itself.</span></span><br><span class="line">        self.urlconf_name = urlconf_name</span><br><span class="line">        self.callback = <span class="literal">None</span></span><br><span class="line">        self.default_kwargs = default_kwargs <span class="keyword">or</span> &#123;&#125;</span><br><span class="line">        self.namespace = namespace</span><br><span class="line">        self.app_name = app_name</span><br><span class="line">        self._reverse_dict = &#123;&#125;</span><br><span class="line">        self._namespace_dict = &#123;&#125;</span><br><span class="line">        self._app_dict = &#123;&#125;</span><br><span class="line">        <span class="comment"># set of dotted paths to all functions and classes that are used in</span></span><br><span class="line">        <span class="comment"># urlpatterns</span></span><br><span class="line">        self._callback_strs = set()</span><br><span class="line">        self._populated = <span class="literal">False</span></span><br><span class="line">        self._local = threading.local()</span><br><span class="line">    </span><br><span class="line">    <span class="comment">################################省 略################################</span></span><br><span class="line">    </span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">resolve</span><span class="params">(self, path)</span>:</span></span><br><span class="line">        path = str(path)  <span class="comment"># path may be a reverse_lazy object</span></span><br><span class="line">        tried = []</span><br><span class="line">        match = self.pattern.match(path)</span><br><span class="line">        <span class="keyword">if</span> match:</span><br><span class="line">            new_path, args, kwargs = match</span><br><span class="line">            <span class="keyword">for</span> pattern <span class="keyword">in</span> self.url_patterns:</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    sub_match = pattern.resolve(new_path)</span><br><span class="line">                <span class="keyword">except</span> Resolver404 <span class="keyword">as</span> e:</span><br><span class="line">                    sub_tried = e.args[<span class="number">0</span>].get(<span class="string">'tried'</span>)</span><br><span class="line">                    <span class="keyword">if</span> sub_tried <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">                        tried.extend([pattern] + t <span class="keyword">for</span> t <span class="keyword">in</span> sub_tried)</span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        tried.append([pattern])</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="keyword">if</span> sub_match:</span><br><span class="line">                        <span class="comment"># Merge captured arguments in match with submatch</span></span><br><span class="line">                        sub_match_dict = &#123;**kwargs, **self.default_kwargs&#125;</span><br><span class="line">                        <span class="comment"># Update the sub_match_dict with the kwargs from the sub_match.</span></span><br><span class="line">                        sub_match_dict.update(sub_match.kwargs)</span><br><span class="line">                        <span class="comment"># If there are *any* named groups, ignore all non-named groups.</span></span><br><span class="line">                        <span class="comment"># Otherwise, pass all non-named arguments as positional arguments.</span></span><br><span class="line">                        sub_match_args = sub_match.args</span><br><span class="line">                        <span class="keyword">if</span> <span class="keyword">not</span> sub_match_dict:</span><br><span class="line">                            sub_match_args = args + sub_match.args</span><br><span class="line">                        <span class="keyword">return</span> ResolverMatch(</span><br><span class="line">                            sub_match.func,</span><br><span class="line">                            sub_match_args,</span><br><span class="line">                            sub_match_dict,</span><br><span class="line">                            sub_match.url_name,</span><br><span class="line">                            [self.app_name] + sub_match.app_names,</span><br><span class="line">                            [self.namespace] + sub_match.namespaces,</span><br><span class="line">                        )</span><br><span class="line">                    tried.append([pattern])</span><br><span class="line">            <span class="keyword">raise</span> Resolver404(&#123;<span class="string">'tried'</span>: tried, <span class="string">'path'</span>: new_path&#125;)</span><br><span class="line">        <span class="keyword">raise</span> Resolver404(&#123;<span class="string">'path'</span>: path&#125;)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @cached_property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">urlconf_module</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(self.urlconf_name, str):</span><br><span class="line">            <span class="keyword">return</span> import_module(self.urlconf_name)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> self.urlconf_name</span><br><span class="line"></span><br><span class="line"><span class="meta">    @cached_property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">url_patterns</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># urlconf_module might be a valid set of patterns, so we default to it</span></span><br><span class="line">        patterns = getattr(self.urlconf_module, <span class="string">"urlpatterns"</span>, self.urlconf_module)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            iter(patterns)</span><br><span class="line">        <span class="keyword">except</span> TypeError:</span><br><span class="line">            msg = (</span><br><span class="line">                <span class="string">"The included URLconf '&#123;name&#125;' does not appear to have any "</span></span><br><span class="line">                <span class="string">"patterns in it. If you see valid patterns in the file then "</span></span><br><span class="line">                <span class="string">"the issue is probably caused by a circular import."</span></span><br><span class="line">            )</span><br><span class="line">            <span class="keyword">raise</span> ImproperlyConfigured(msg.format(name=self.urlconf_name))</span><br><span class="line">        <span class="keyword">return</span> patterns</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>一个URL Resolve可以包含多个URL Pattern，也可以包含多个其他URL Resolve。 通过这种包含结构设计，实现Django对URL的层级解析，也是Django实现app与项目解耦的关键。通常由include方法操作的URL配置模块，最终会被解释成为URL分解器。</p>
+</li>
+<li><p>每个URL分解器都包含两个重要的变量:</p>
+<ul>
+<li>一个正则表达式字符串。URL开始部分是否匹配正则表达式，如匹配，去除成功匹配部分后余下部分匹配包含的URL模式和URL分解器。</li>
+<li>URL配置模块名或URL配置模块的引用。</li>
+</ul>
+</li>
+<li><code>resolve(self, path)</code>在这个方法开始遍历URLResolve，直到获得正确匹配的URLPattern，并调用其<code>resolve</code>方法</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ResolverMatch</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, func, args, kwargs, url_name=None, app_names=None, namespaces=None)</span>:</span></span><br><span class="line">        self.func = func</span><br><span class="line">        self.args = args</span><br><span class="line">        self.kwargs = kwargs</span><br><span class="line">        self.url_name = url_name</span><br><span class="line"></span><br><span class="line">        <span class="comment"># If a URLRegexResolver doesn't have a namespace or app_name, it passes</span></span><br><span class="line">        <span class="comment"># in an empty value.</span></span><br><span class="line">        self.app_names = [x <span class="keyword">for</span> x <span class="keyword">in</span> app_names <span class="keyword">if</span> x] <span class="keyword">if</span> app_names <span class="keyword">else</span> []</span><br><span class="line">        self.app_name = <span class="string">':'</span>.join(self.app_names)</span><br><span class="line">        self.namespaces = [x <span class="keyword">for</span> x <span class="keyword">in</span> namespaces <span class="keyword">if</span> x] <span class="keyword">if</span> namespaces <span class="keyword">else</span> []</span><br><span class="line">        self.namespace = <span class="string">':'</span>.join(self.namespaces)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(func, <span class="string">'__name__'</span>):</span><br><span class="line">            <span class="comment"># A class-based view</span></span><br><span class="line">            self._func_path = func.__class__.__module__ + <span class="string">'.'</span> + func.__class__.__name__</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="comment"># A function-based view</span></span><br><span class="line">            self._func_path = func.__module__ + <span class="string">'.'</span> + func.__name__</span><br><span class="line"></span><br><span class="line">        view_path = url_name <span class="keyword">or</span> self._func_path</span><br><span class="line">        self.view_name = <span class="string">':'</span>.join(self.namespaces + [view_path])</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> (self.func, self.args, self.kwargs)[index]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">"ResolverMatch(func=%s, args=%s, kwargs=%s, url_name=%s, app_names=%s, namespaces=%s)"</span> % (</span><br><span class="line">            self._func_path, self.args, self.kwargs, self.url_name,</span><br><span class="line">            self.app_names, self.namespaces,</span><br><span class="line">        )匹配结果（Resolver Match）</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>匹配结果是指当URL被正确匹配时，需返回的匹配结果，匹配结果需指定以下几个内容:</p>
+<ul>
+<li>一个可调用对象。通常是视图函数</li>
+<li>视图函数参数。通常是URL模式中正则表达式命名组匹配的值</li>
+<li>视图函数关键字参数。通常是url方法中设置传递给视图函数的参数(字典形式)</li>
+<li>可选的URL名称参数。</li>
+<li>可选的APP名称参数。</li>
+<li>可选的命名空间参数。</li>
+</ul>
+</li>
+<li><p>用来表示匹配结果。ResolverMatch类实现了<code>__getitem__</code>方法，可以同元组操作一样,获取视图函数引用与视图函数参数，从而具备调用视图函数的条件。</p>
+</li>
+</ul>
+<h3 id="四、总结"><a href="#四、总结" class="headerlink" title="四、总结"></a>四、总结</h3><p>上面所有的过程都是Django的服务启动后，一个新的request达到后，经过怎么的流程到达对应view方法的步骤，简单做一个总结；</p>
+<ol>
+<li>在启动Django服务的时候，会调用<code>load_middleware</code>来加载所有的中间键到BaseHandler的<code>_middleware_chain</code>变量中，可以等同一个多层的装饰器；</li>
+<li>当一个新的请求到达后，会调用WSGIHandler的<code>__call__</code>方法，最终执行到BaseHandler中的<code>get_reponse</code>方法；</li>
+<li>在<code>get_reponse</code>方法中调用了<code>_middleware_chain</code>方法，即依次倒序执行中间件中的方法，最后执行到<code>_get_response</code>方法；</li>
+<li>在这个方法，request对应的视图方法被匹配到，执行并返回结果，即URLResolver根据path info匹配到正确的ResolverMatch，然后调用其中的view方法，并返回respone。</li>
+</ol>
+<p><strong>参考</strong>：<a href="https://yijingping.github.io/2014/03/12/django-2.html" target="_blank" rel="noopener">Django 源码学习（2）——url路由</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/26/Django源码分析--服务启动/" rel="next" title="Django源码分析一：服务启动">
+                <i class="fa fa-chevron-left"></i> Django源码分析一：服务启动
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、准备工作"><span class="nav-number">1.</span> <span class="nav-text">一、准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、说明"><span class="nav-number">2.</span> <span class="nav-text">二、说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、分析流程"><span class="nav-number">3.</span> <span class="nav-text">三、分析流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、总结"><span class="nav-number">4.</span> <span class="nav-text">四、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
