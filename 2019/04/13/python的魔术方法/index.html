@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，比如最常见的 __init__，这些方法被称为魔法方法（magic method）或特殊方法（special method）。简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类，比如 __init__ 方法可以对实例属性进行初始化。 完整的特殊方法列表可在这里查看，本文就一些常见的方法简单做一个说明，">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python的魔术方法">
+<meta property="og:url" content="http://yoursite.com/2019/04/13/python的魔术方法/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，比如最常见的 __init__，这些方法被称为魔法方法（magic method）或特殊方法（special method）。简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类，比如 __init__ 方法可以对实例属性进行初始化。 完整的特殊方法列表可在这里查看，本文就一些常见的方法简单做一个说明，">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-09-27T07:55:14.628Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python的魔术方法">
+<meta name="twitter:description" content="在 Python 中，我们可以经常看到以双下划线 __ 包裹起来的方法，比如最常见的 __init__，这些方法被称为魔法方法（magic method）或特殊方法（special method）。简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类，比如 __init__ 方法可以对实例属性进行初始化。 完整的特殊方法列表可在这里查看，本文就一些常见的方法简单做一个说明，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/13/python的魔术方法/">
+
+
+
+
+
+  <title>Python的魔术方法 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/python的魔术方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python的魔术方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T21:55:22+08:00">
+                2019-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Python-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在 Python 中，我们可以经常看到以双下划线 <code>__</code> 包裹起来的方法，比如最常见的 <code>__init__</code>，这些方法被称为<strong>魔法方法（magic method）或特殊方法（special method）</strong>。简单地说，这些方法可以给 Python 的类提供特殊功能，方便我们定制一个类，比如 <code>__init__</code> 方法可以对实例属性进行初始化。</p>
+<p>完整的特殊方法列表可在<a href="https://docs.python.org/zh-cn/3/reference/datamodel.html#special-method-names" target="_blank" rel="noopener">这里</a>查看，本文就一些常见的方法简单做一个说明，方便记忆：</p>
+<a id="more"></a>
+<h3 id="一、call"><a href="#一、call" class="headerlink" title="一、call"></a>一、call</h3><p>之前一直以Java作为第一工作语言，初始在接触Django源码时，经常会遇到一个问题，就是：卧槽，这怎么调过来的？？习惯了Java语言Function to Next Funcation的分析步骤，突然间发现没有任何显式调用方法，这个Object怎么就执行了，这个时候就不得不提一下<code>__call__</code>方法，本文就这个方法简单做一个说明，方便记忆～</p>
+<p>python中所有的东西都被称为对象，对象分为可以被调用和不可以被调用，可调用对象：即是任何通过函数操作符()来调用的对象，例如函数，函数是对象，可以被调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(x)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:   </span><br><span class="line">    a = foo(<span class="number">3</span>) </span><br><span class="line">    print(a)   <span class="comment"># 3</span></span><br><span class="line">    print(callable(a))  <span class="comment"># False</span></span><br><span class="line">    print(callable(foo)) <span class="comment"># True</span></span><br></pre></td></tr></table></figure>
+<p>但是如果是类的话会发生什么情况呢？Python给类提供了名为<code>__call__</code>的特别方法，该方法允许程序员创建可调用的对象(实例)。默认情况下，<code>__call__</code>方法是没有实现的，这意味着大多数情况下实例是不可调用的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">method</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    a = Test()</span><br><span class="line">    print(callable(a)) <span class="comment"># False</span></span><br></pre></td></tr></table></figure>
+<p>如何解决这一个问题？这里就用到<strong>call</strong>函数</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    a = Test()</span><br><span class="line">    print(callable(a)) <span class="comment"># True</span></span><br><span class="line">    print(a())  <span class="comment"># 1</span></span><br></pre></td></tr></table></figure>
+<p>任何设计都是为了解决问题而存在的，那么<code>__call__</code>方法的用途是什么呢？<code>__call__</code>在那些类的实例经常改变状态的时候会非常有效。调用这个实例是一种改变这个对象状态的直接和优雅的做法:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Entity</span>:</span></span><br><span class="line">    <span class="string">"""调用实体来改变实体的位置"""</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, size, x, y)</span>:</span></span><br><span class="line">        self.x, self.y = x, y</span><br><span class="line">        self.size = size</span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, x, y)</span>:</span></span><br><span class="line">        <span class="string">"""改变实体的位置"""</span></span><br><span class="line">        self.x, self.y = x, y</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    e = Entity(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)  <span class="comment"># 创建实例</span></span><br><span class="line">    e(<span class="number">4</span>, <span class="number">5</span>)  <span class="comment"># 实例可以象函数那样执行，并传入x y值，修改对象的x y</span></span><br></pre></td></tr></table></figure>
+<h3 id="二、new-amp-init"><a href="#二、new-amp-init" class="headerlink" title="二、new &amp; init"></a>二、new &amp; init</h3><p><strong>1）<code>__new__</code></strong></p>
+<ul>
+<li><p><code>__new__</code>调用以创建一个 <em>cls</em> 类的新实例；</p>
+</li>
+<li><p>如果 <code>__new__</code>未返回一个 <em>cls</em> 的实例，则新实例的 <code>__init__()</code>方法就不会被执行；</p>
+</li>
+<li><p><code>__new__</code>的目的主要是允许不可变类型的子类 (例如 int, str 或 tuple) 定制实例创建过程。</p>
+</li>
+</ul>
+<p><strong>2）<code>__init__</code></strong></p>
+<ul>
+<li>在实例通过 <code>__new__</code>被创建之后，返回调用者之前调用；</li>
+<li>对象是由 <code>__new__</code>和 <code>__init__</code>协作构造完成的 </li>
+</ul>
+<h3 id="三、str-amp-repr"><a href="#三、str-amp-repr" class="headerlink" title="三、str &amp; repr"></a>三、str &amp; repr</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> Foo(<span class="string">'ethan'</span>)</span><br><span class="line">&lt;__main__.Foo object at <span class="number">0x10c37aa50</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，我们使用 print 打印一个实例对象，但如果我们想打印更多信息呢，比如把 name 也打印出来，这时，我们可以在类中加入 <code>__str__</code> 方法，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Foo object (name: %s)'</span> % self.name</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> Foo(<span class="string">'ethan'</span>)      <span class="comment"># 使用 print</span></span><br><span class="line">Foo object (name: ethan)</span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>str(Foo(<span class="string">'ethan'</span>))       <span class="comment"># 使用 str</span></span><br><span class="line"><span class="string">'Foo object (name: ethan)'</span></span><br><span class="line">&gt;&gt;&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Foo(<span class="string">'ethan'</span>)             <span class="comment"># 直接显示</span></span><br><span class="line">&lt;__main__.Foo at <span class="number">0x10c37a490</span>&gt;</span><br></pre></td></tr></table></figure>
+<p>可以看到，使用 print 和 str 输出的是 <code>__str__</code> 方法返回的内容，但如果直接显示则不是，那能不能修改它的输出呢？当然可以，我们只需在类中加入 <code>__repr__</code> 方法，比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Foo object (name: %s)'</span> % self.name</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Foo object (name: %s)'</span> % self.name</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Foo(<span class="string">'ethan'</span>)</span><br><span class="line"><span class="string">'Foo object (name: ethan)'</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，现在直接使用 <code>Foo(&#39;ethan&#39;)</code> 也可以显示我们想要的结果了，然而，我们发现上面的代码中，<code>__str__</code> 和 <code>__repr__</code> 方法的代码是一样的，能不能精简一点呢，当然可以，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Foo object (name: %s)'</span> % self.name</span><br><span class="line">    __repr__ = __str__</span><br></pre></td></tr></table></figure>
+<h3 id="四、iter"><a href="#四、iter" class="headerlink" title="四、iter"></a>四、iter</h3><p>在某些情况下，我们希望实例对象可被用于 <code>for...in</code> 循环，这时我们需要在类中定义 <code>__iter__</code> 和 <code>next</code>（在 Python3 中是 <code>__next__</code>）方法，其中，<code>__iter__</code> 返回一个迭代对象，<code>next</code> 返回容器的下一个元素，在没有后续元素时抛出 <code>StopIteration</code> 异常，看一个斐波那契数列的例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fib</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.a, self.b = <span class="number">0</span>, <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span>  <span class="comment"># 返回迭代器对象本身</span></span><br><span class="line">        <span class="keyword">return</span> self      </span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">next</span><span class="params">(self)</span>:</span>      <span class="comment"># 返回容器下一个元素</span></span><br><span class="line">        self.a, self.b = self.b, self.a + self.b</span><br><span class="line">        <span class="keyword">return</span> self.a    </span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>fib = Fib()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">for</span> i <span class="keyword">in</span> fib:</span><br><span class="line"><span class="meta">... </span>    <span class="keyword">if</span> i &gt; <span class="number">10</span>:</span><br><span class="line"><span class="meta">... </span>        <span class="keyword">break</span></span><br><span class="line"><span class="meta">... </span>    <span class="keyword">print</span> i</span><br><span class="line">...</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="number">8</span></span><br></pre></td></tr></table></figure>
+<h3 id="五、getitem"><a href="#五、getitem" class="headerlink" title="五、getitem"></a>五、getitem</h3><p>有时，我们希望可以使用 <code>obj[n]</code> 这种方式对实例对象进行取值，比如对斐波那契数列，我们希望可以取出其中的某一项，这时我们需要在类中实现 <code>__getitem__</code> 方法，比如下面的例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fib</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, n)</span>:</span></span><br><span class="line">        a, b = <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">        <span class="keyword">for</span> x <span class="keyword">in</span> xrange(n):</span><br><span class="line">            a, b = b, a + b</span><br><span class="line">        <span class="keyword">return</span> a</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>fib = Fib()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>fib[<span class="number">0</span>], fib[<span class="number">1</span>], fib[<span class="number">2</span>], fib[<span class="number">3</span>], fib[<span class="number">4</span>], fib[<span class="number">5</span>]</span><br><span class="line">(<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<p>我们还想更进一步，希望支持 <code>obj[1:3]</code> 这种切片方法来取值，这时 <code>__getitem__</code> 方法传入的参数可能是一个整数，也可能是一个切片对象 slice，因此，我们需要对传入的参数进行判断，可以使用 <code>isinstance</code> 进行判断，改后的代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fib</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, n)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> isinstance(n, slice):   <span class="comment"># 如果 n 是 slice 对象</span></span><br><span class="line">            a, b = <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">            start, stop = n.start, n.stop</span><br><span class="line">            L = []</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> xrange(stop):</span><br><span class="line">                <span class="keyword">if</span> i &gt;= start:</span><br><span class="line">                    L.append(a)</span><br><span class="line">                a, b = b, a + b</span><br><span class="line">            <span class="keyword">return</span> L</span><br><span class="line">        <span class="keyword">if</span> isinstance(n, int):     <span class="comment"># 如果 n 是 int 型</span></span><br><span class="line">            a, b = <span class="number">1</span>, <span class="number">1</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> xrange(n):</span><br><span class="line">                a, b = b, a + b</span><br><span class="line">            <span class="keyword">return</span> a</span><br></pre></td></tr></table></figure>
+<p>现在，我们试试用切片方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>fib = Fib()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>fib[<span class="number">0</span>:<span class="number">3</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>fib[<span class="number">2</span>:<span class="number">6</span>]</span><br><span class="line">[<span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>]</span><br></pre></td></tr></table></figure>
+<p>上面，我们只是简单地演示了 getitem 的操作，但是它还很不完善，比如没有对负数处理，不支持带 step 参数的切片操作 <code>obj[1:2:5]</code> 等等，读者有兴趣的话可以自己实现看看。</p>
+<p><code>__geitem__</code> 用于获取值，类似地，<code>__setitem__</code> 用于设置值，<code>__delitem__</code> 用于删除值，让我们看下面一个例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.coordinate = &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">"point(%s)"</span> % self.coordinate</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, key)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.coordinate.get(key)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setitem__</span><span class="params">(self, key, value)</span>:</span></span><br><span class="line">        self.coordinate[key] = value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__delitem__</span><span class="params">(self, key)</span>:</span></span><br><span class="line">        <span class="keyword">del</span> self.coordinate[key]</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'delete %s'</span> % key</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> len(self.coordinate)</span><br><span class="line"></span><br><span class="line">    __repr__ = __str__</span><br></pre></td></tr></table></figure>
+<p>在上面，我们定义了一个 Point 类，它有一个属性 coordinate（坐标），是一个字典，让我们看看使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>p = Point()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p[<span class="string">'x'</span>] = <span class="number">2</span>    <span class="comment"># 对应于 p.__setitem__('x', 2)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p[<span class="string">'y'</span>] = <span class="number">5</span>    <span class="comment"># 对应于 p.__setitem__('y', 5)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p             <span class="comment"># 对应于 __repr__</span></span><br><span class="line">point(&#123;<span class="string">'y'</span>: <span class="number">5</span>, <span class="string">'x'</span>: <span class="number">2</span>&#125;)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>len(p)        <span class="comment"># 对应于 p.__len__</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p[<span class="string">'x'</span>]        <span class="comment"># 对应于 p.__getitem__('x')</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p[<span class="string">'y'</span>]        <span class="comment"># 对应于 p.__getitem__('y')</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">del</span> p[<span class="string">'x'</span>]    <span class="comment"># 对应于 p.__delitem__('x')</span></span><br><span class="line">delete x</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p</span><br><span class="line">point(&#123;<span class="string">'y'</span>: <span class="number">5</span>&#125;)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>len(p)</span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="六、getattr"><a href="#六、getattr" class="headerlink" title="六、getattr"></a>六、getattr</h3><p>当我们获取对象的某个属性，如果该属性不存在，会抛出 AttributeError 异常，比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, x=<span class="number">0</span>, y=<span class="number">0</span>)</span>:</span></span><br><span class="line">        self.x = x</span><br><span class="line">        self.y = y</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p = Point(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.x, p.y</span><br><span class="line">(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.z</span><br><span class="line">---------------------------------------------------------------------------</span><br><span class="line">AttributeError                            Traceback (most recent call last)</span><br><span class="line">&lt;ipython-input<span class="number">-547</span><span class="number">-6</span>dce4e43e15c&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line">----&gt; 1 p.z</span><br><span class="line"></span><br><span class="line">AttributeError: <span class="string">'Point'</span> object has no attribute <span class="string">'z'</span></span><br></pre></td></tr></table></figure>
+<p>那有没有办法不让它抛出异常呢？当然有，只需在类的定义中加入 <code>__getattr__</code> 方法，比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, x=<span class="number">0</span>, y=<span class="number">0</span>)</span>:</span></span><br><span class="line">        self.x = x</span><br><span class="line">        self.y = y</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, attr)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> attr == <span class="string">'z'</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p = Point(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.z</span><br><span class="line"><span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>现在，当我们调用不存在的属性（比如 z）时，解释器就会试图调用 <code>__getattr__(self, &#39;z&#39;)</code> 来获取值，但是，上面的实现还有一个问题，当我们调用其他属性，比如 w ，会返回 None，因为 <code>__getattr__</code> 默认返回就是 None，只有当 attr 等于 ‘z’ 时才返回 0，如果我们想让 <code>__getattr__</code> 只响应几个特定的属性，可以加入异常处理，修改 <code>__getattr__</code> 方法，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, attr)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> attr == <span class="string">'z'</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    <span class="keyword">raise</span> AttributeError(<span class="string">"Point object has no attribute %s"</span> % attr)</span><br></pre></td></tr></table></figure>
+<p>这里再强调一点，<code>__getattr__</code> 只有在属性不存在的情况下才会被调用，对已存在的属性不会调用 <code>__getattr__</code>。</p>
+<p>与 <code>__getattr__</code> 一起使用的还有 <code>__setattr__</code>, <code>__delattr__</code>，类似 <code>obj.attr = value</code>, <code>del obj.attr</code>，看下面一个例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, x=<span class="number">0</span>, y=<span class="number">0</span>)</span>:</span></span><br><span class="line">        self.x = x</span><br><span class="line">        self.y = y</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, attr)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> attr == <span class="string">'z'</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        <span class="keyword">raise</span> AttributeError(<span class="string">"Point object has no attribute %s"</span> % attr)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setattr__</span><span class="params">(self, *args, **kwargs)</span>:</span>  </span><br><span class="line">        <span class="keyword">print</span> <span class="string">'call func set attr (%s, %s)'</span> % (args, kwargs)</span><br><span class="line">        <span class="keyword">return</span> object.__setattr__(self, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__delattr__</span><span class="params">(self, *args, **kwargs)</span>:</span>  </span><br><span class="line">        <span class="keyword">print</span> <span class="string">'call func del attr (%s, %s)'</span> % (args, kwargs)</span><br><span class="line">        <span class="keyword">return</span> object.__delattr__(self, *args, **kwargs)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p = Point(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">call func set attr ((<span class="string">'x'</span>, <span class="number">3</span>), &#123;&#125;)</span><br><span class="line">call func set attr ((<span class="string">'y'</span>, <span class="number">4</span>), &#123;&#125;)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.z</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.z = <span class="number">7</span></span><br><span class="line">call func set attr ((<span class="string">'z'</span>, <span class="number">7</span>), &#123;&#125;)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.z</span><br><span class="line"><span class="number">7</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.w</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">8</span>, <span class="keyword">in</span> __getattr__</span><br><span class="line">AttributeError: Point object has no attribute w</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.w = <span class="number">8</span></span><br><span class="line">call func set attr ((<span class="string">'w'</span>, <span class="number">8</span>), &#123;&#125;)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.w</span><br><span class="line"><span class="number">8</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">del</span> p.w</span><br><span class="line">call func <span class="keyword">del</span> attr ((<span class="string">'w'</span>,), &#123;&#125;)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p.__dict__</span><br><span class="line">&#123;<span class="string">'y'</span>: <span class="number">4</span>, <span class="string">'x'</span>: <span class="number">3</span>, <span class="string">'z'</span>: <span class="number">7</span>&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/13/Python基础学习/" rel="next" title="Python基础学习">
+                <i class="fa fa-chevron-left"></i> Python基础学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/13/Python字典对象实现原理/" rel="prev" title="Python字典对象实现原理">
+                Python字典对象实现原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、call"><span class="nav-number">1.</span> <span class="nav-text">一、call</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、new-amp-init"><span class="nav-number">2.</span> <span class="nav-text">二、new &amp; init</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、str-amp-repr"><span class="nav-number">3.</span> <span class="nav-text">三、str &amp; repr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、iter"><span class="nav-number">4.</span> <span class="nav-text">四、iter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、getitem"><span class="nav-number">5.</span> <span class="nav-text">五、getitem</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、getattr"><span class="nav-number">6.</span> <span class="nav-text">六、getattr</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
