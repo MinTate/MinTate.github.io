@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="备忘,Linux,">
+  <meta name="keywords" content="备忘,Docker,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
-<meta name="keywords" content="备忘,Linux">
+<meta name="description" content="一、问题在Docker容器创建好之后，可能会发现容器时间跟宿主机时间不一致，比如： 1234567宿主机时间[root@slave-1 ~]# dateFri May 12 11:20:30 CST 2017容器时间[root@slave-1 ~]# docker exec -ti 87986863838b /bin/bashroot@87986863838b:/# date">
+<meta name="keywords" content="备忘,Docker">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Ubuntu crontab日志的开启">
-<meta property="og:url" content="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/index.html">
+<meta property="og:title" content="容器时间跟宿主机时间同步">
+<meta property="og:url" content="http://yoursite.com/2019/04/13/容器时间跟宿主机时间同步/index.html">
 <meta property="og:site_name" content="Min HelloWorld">
-<meta property="og:description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
+<meta property="og:description" content="一、问题在Docker容器创建好之后，可能会发现容器时间跟宿主机时间不一致，比如： 1234567宿主机时间[root@slave-1 ~]# dateFri May 12 11:20:30 CST 2017容器时间[root@slave-1 ~]# docker exec -ti 87986863838b /bin/bashroot@87986863838b:/# date">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T10:20:00.918Z">
+<meta property="og:updated_time" content="2019-10-10T07:15:43.806Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ubuntu crontab日志的开启">
-<meta name="twitter:description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
+<meta name="twitter:title" content="容器时间跟宿主机时间同步">
+<meta name="twitter:description" content="一、问题在Docker容器创建好之后，可能会发现容器时间跟宿主机时间不一致，比如： 1234567宿主机时间[root@slave-1 ~]# dateFri May 12 11:20:30 CST 2017容器时间[root@slave-1 ~]# docker exec -ti 87986863838b /bin/bashroot@87986863838b:/# date">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/">
+  <link rel="canonical" href="http://yoursite.com/2019/04/13/容器时间跟宿主机时间同步/">
 
 
 
 
 
-  <title>Ubuntu crontab日志的开启 | Min HelloWorld</title>
+  <title>容器时间跟宿主机时间同步 | Min HelloWorld</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/容器时间跟宿主机时间同步/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MinTate">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Ubuntu crontab日志的开启</h1>
+          <h1 class="post-title" itemprop="name headline">容器时间跟宿主机时间同步</h1>
         
 
         <div class="post-meta">
@@ -282,7 +282,7 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T18:10:22+08:00">
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T18:08:41+08:00">
                 2019-04-13
               </time>
             
@@ -305,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-使用记录/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux-使用记录</span>
+                  <a href="/categories/Docker-问题记录/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker-问题记录</span>
                   </a>
                 </span>
 
@@ -342,11 +342,11 @@
       
 
       
-        <p>Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log</p>
+        <h3 id="一、问题"><a href="#一、问题" class="headerlink" title="一、问题"></a>一、问题</h3><p>在Docker容器创建好之后，可能会发现容器时间跟宿主机时间不一致，比如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">宿主机时间</span><br><span class="line">[root@slave-1 ~]<span class="comment"># date</span></span><br><span class="line">Fri May 12 11:20:30 CST 2017</span><br><span class="line">容器时间</span><br><span class="line">[root@slave-1 ~]<span class="comment"># docker exec -ti 87986863838b /bin/bash</span></span><br><span class="line">root@87986863838b:/<span class="comment"># date                                                                                                                    </span></span><br><span class="line">Fri May 12 03:20:33 UTC 2017</span><br></pre></td></tr></table></figure>
 <a id="more"></a>
-<p>开启日志：</p>
-<p>1）<figure class="highlight bash"><figcaption><span>vi</span><a href="/etc/rsyslog.d/50-default.conf">```</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">打开文件，在文件中找到cron.*，把前面的<span class="comment">#去掉，保存退出。</span></span><br><span class="line"></span><br><span class="line">2)  ```bash sudo service rsyslog restart</span><br></pre></td></tr></table></figure></p>
-<p>重启系统日志，然后稍微等下应该就能在/var/log目录下看到cron.log，vi cron.log就可以查看cron运行日志了。</p>
+<h3 id="二、解决方案"><a href="#二、解决方案" class="headerlink" title="二、解决方案"></a>二、解决方案</h3><p>发现两者之间的时间相差了八个小时！宿主机采用了CST时区，CST应该是指（China Shanghai Time，东八区时间）容器采用了UTC时区，UTC应该是指（Coordinated Universal Time，标准时间）这就需要同步它们的时间，让容器时间跟宿主机时间保持一致。具体有如下两种方法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1）共享主机的localtime</span><br><span class="line">创建容器的时候指定启动参数，挂载localtime文件到容器内，保证两者所采用的时区是一致的。</span><br><span class="line"><span class="comment"># docker run -ti -d --name my-nginx -v /etc/localtime:/etc/localtime:ro  docker.io/nginx  /bin/bash</span></span><br><span class="line"> </span><br><span class="line">2)复制主机的localtime</span><br><span class="line">[root@slave-1 ~]<span class="comment"># docker cp /etc/localtime 87986863838b:/etc/</span></span><br><span class="line"> </span><br><span class="line">然后再登陆容器，查看时间，发现已经跟宿主机时间同步了</span><br><span class="line">[root@slave-1 ~]<span class="comment"># docker exec -ti 87986863838b /bin/bash</span></span><br><span class="line">root@87986863838b:/<span class="comment"># date                                                                                                                    </span></span><br><span class="line">Fri May 12 11:26:19 CST 2017</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -366,7 +366,7 @@
           
             <a href="/tags/备忘/" rel="tag"># 备忘</a>
           
-            <a href="/tags/Linux/" rel="tag"># Linux</a>
+            <a href="/tags/Docker/" rel="tag"># Docker</a>
           
         </div>
       
@@ -379,8 +379,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/13/容器时间跟宿主机时间同步/" rel="next" title="容器时间跟宿主机时间同步">
-                <i class="fa fa-chevron-left"></i> 容器时间跟宿主机时间同步
+              <a href="/2019/04/13/Android Settings中账户图片冲突问题的分析/" rel="next" title="Android Settings中账户图片冲突问题的分析">
+                <i class="fa fa-chevron-left"></i> Android Settings中账户图片冲突问题的分析
               </a>
             
           </div>
@@ -389,8 +389,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/13/Python字符编码/" rel="prev" title="Python字符编码">
-                Python字符编码 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/04/13/Ubuntu crontab日志的开启/" rel="prev" title="Ubuntu crontab日志的开启">
+                Ubuntu crontab日志的开启 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -443,8 +443,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -554,6 +563,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、问题"><span class="nav-number">1.</span> <span class="nav-text">一、问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、解决方案"><span class="nav-number">2.</span> <span class="nav-text">二、解决方案</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

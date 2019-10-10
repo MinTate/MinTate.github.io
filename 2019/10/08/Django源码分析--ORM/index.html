@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Django,源码分析,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta name="keywords" content="Python,Django,源码分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Django源码分析三：ORM">
+<meta property="og:url" content="http://yoursite.com/2019/10/08/Django源码分析--ORM/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="1、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-10-10T13:23:40.780Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Django源码分析三：ORM">
+<meta name="twitter:description" content="1、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/08/Django源码分析--ORM/">
+
+
+
+
+
+  <title>Django源码分析三：ORM | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/08/Django源码分析--ORM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Django源码分析三：ORM</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-08T19:10:02+08:00">
+                2019-10-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Django-学习/" itemprop="url" rel="index">
+                    <span itemprop="name">Django-学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="1、准备工作"><a href="#1、准备工作" class="headerlink" title="1、准备工作"></a>1、准备工作</h3><ul>
+<li>Python 3.5.2</li>
+<li>Django 2.1.2 </li>
+<li>PyCharm 2018.2.1 (Professional Edition) </li>
+<li>启动项目</li>
+</ul>
+<a id="more"></a>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[min:] ~/Desktop/python/Demo$ python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
+<h3 id="2、说明"><a href="#2、说明" class="headerlink" title="2、说明"></a>2、说明</h3><p>这部分标题比较大，按照之前的分析方法肯定会比较复杂且不够系统，所以从另一个角度出发，我们通过对几个关键问题的追溯来帮助我们了解整个Django ORM的设计思想：</p>
+<ul>
+<li>Django ORM如何做到多数据库支持的；</li>
+<li>Filter方法的查询流程；</li>
+</ul>
+<h3 id="3、分析流程"><a href="#3、分析流程" class="headerlink" title="3、分析流程"></a>3、分析流程</h3><p>现在我们开始根据上述提到的问题进行逐个的分析。</p>
+<h4 id="3-1、Django-ORM如何做到多数据库支持的"><a href="#3-1、Django-ORM如何做到多数据库支持的" class="headerlink" title="3.1、Django ORM如何做到多数据库支持的"></a>3.1、Django ORM如何做到多数据库支持的</h4><h5 id="3-3-1、-Django-db-source-tree"><a href="#3-3-1、-Django-db-source-tree" class="headerlink" title="3.3.1、 Django db source tree"></a>3.3.1、 Django db source tree</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">├── __init__.py</span><br><span class="line">├── backends</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   ├── base</span><br><span class="line">│   ├── ddl_references.py</span><br><span class="line">│   ├── dummy</span><br><span class="line">│   ├── mysql</span><br><span class="line">│   ├── oracle</span><br><span class="line">│   ├── postgresql</span><br><span class="line">│   ├── postgresql_psycopg2</span><br><span class="line">│   ├── signals.py</span><br><span class="line">│   ├── sqlite3</span><br><span class="line">│   └── utils.py</span><br><span class="line">├── migrations</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   ├── ........</span><br><span class="line">│   └── writer.py</span><br><span class="line">├── models</span><br><span class="line">│   ├── __init__.py</span><br><span class="line">│   ├── ........</span><br><span class="line">│   └── utils.py</span><br><span class="line">├── transaction.py</span><br><span class="line">└── utils.py</span><br></pre></td></tr></table></figure>
+<p>按照科学的推断，如果要做到多数据库的支持，一般的结构肯定是有一个Wrapper保证对外的接口一致，然后在这个Wrapper中，负责加载不同的数据库类型，执行相应的方法。而Django db的源码也和我们的猜想差不多，将后端的集中到backends中，在此结构下差异化不同的数据库；</p>
+<h5 id="3-3-2、具体的差异化加载流程"><a href="#3-3-2、具体的差异化加载流程" class="headerlink" title="3.3.2、具体的差异化加载流程"></a>3.3.2、具体的差异化加载流程</h5><p>以Django服务启动时的数据库连接检查为例：</p>
+<ol>
+<li><p>在<a href="https://mintate.github.io/2019/08/26/Django%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90--%E6%9C%8D%E5%8A%A1%E5%90%AF%E5%8A%A8/" target="_blank" rel="noopener">Django源码分析一：服务启动</a>一文中，我们有分析过Django服务的启动流程，在这个过程中间也包含了对数据库连接的检查，具体路径如下：django.core.management.base.BaseCommand#check_migrations，在这个方法中，引用了django.db.connections:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.db <span class="keyword">import</span> DEFAULT_DB_ALIAS, connections  <span class="comment"># 调用ConnectionHandler的__init__方法</span></span><br><span class="line"> <span class="comment">#.............省略...............</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">check_migrations</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Print a warning if the set of migrations on disk don't match the</span></span><br><span class="line"><span class="string">    migrations in the database.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">from</span> django.db.migrations.executor <span class="keyword">import</span> MigrationExecutor</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">     	  <span class="comment"># python的魔术方法，调用到ConnectionHandler的__getitem__方法</span></span><br><span class="line">        executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])</span><br><span class="line">    <span class="keyword">except</span> ImproperlyConfigured:</span><br><span class="line">        <span class="comment"># No databases are configured (or the dummy one)</span></span><br><span class="line">        <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>我们发现<code>connections = ConnectionHandler()</code>，查看ConnectionHandler类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ConnectionHandler</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, databases=None)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        databases is an optional dictionary of database definitions (structured</span></span><br><span class="line"><span class="string">        like settings.DATABASES).</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        self._databases = databases <span class="comment"># 调用databases(self)方法</span></span><br><span class="line">        self._connections = local()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @cached_property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">databases</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> self._databases <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            self._databases = settings.DATABASES</span><br><span class="line">        <span class="keyword">if</span> self._databases == &#123;&#125;:</span><br><span class="line">            self._databases = &#123;</span><br><span class="line">                DEFAULT_DB_ALIAS: &#123;</span><br><span class="line">                    <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.dummy'</span>,</span><br><span class="line">                &#125;,</span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">if</span> DEFAULT_DB_ALIAS <span class="keyword">not</span> <span class="keyword">in</span> self._databases:</span><br><span class="line">            <span class="keyword">raise</span> ImproperlyConfigured(<span class="string">"You must define a '%s' database."</span> % DEFAULT_DB_ALIAS)</span><br><span class="line">        <span class="keyword">if</span> self._databases[DEFAULT_DB_ALIAS] == &#123;&#125;:</span><br><span class="line">            self._databases[DEFAULT_DB_ALIAS][<span class="string">'ENGINE'</span>] = <span class="string">'django.db.backends.dummy'</span></span><br><span class="line">        <span class="keyword">return</span> self._databases</span><br><span class="line"></span><br><span class="line">    ................</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, alias)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> hasattr(self._connections, alias):</span><br><span class="line">            <span class="keyword">return</span> getattr(self._connections, alias)</span><br><span class="line"></span><br><span class="line">        self.ensure_defaults(alias)</span><br><span class="line">        self.prepare_test_settings(alias)</span><br><span class="line">        db = self.databases[alias]</span><br><span class="line">        backend = load_backend(db[<span class="string">'ENGINE'</span>]) <span class="comment"># 重要！！根据ENGINE的类型决定使用哪一种数据库</span></span><br><span class="line">        conn = backend.DatabaseWrapper(db, alias)</span><br><span class="line">        setattr(self._connections, alias, conn)</span><br><span class="line">        <span class="keyword">return</span> conn</span><br></pre></td></tr></table></figure>
+<p>从上面代码注释可以了解到在<code>__init__</code>方法中通过调用databases完成对<code>_databases</code>属性的赋值，将settings中的DATABASES赋值给这个变量；之后在<code>check_migrations</code>方法中调用了ConnectionHandler的<code>__getitem__</code>方法; </p>
+</li>
+<li><p>django.db.utils.load_backend</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">load_backend</span><span class="params">(backend_name)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Return a database backend's "base" module given a fully qualified database</span></span><br><span class="line"><span class="string">    backend name, or raise an error if it doesn't exist.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># This backend was renamed in Django 1.9.</span></span><br><span class="line">    <span class="keyword">if</span> backend_name == <span class="string">'django.db.backends.postgresql_psycopg2'</span>:</span><br><span class="line">        backend_name = <span class="string">'django.db.backends.postgresql'</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">return</span> import_module(<span class="string">'%s.base'</span> % backend_name)</span><br><span class="line">    <span class="keyword">except</span> ImportError <span class="keyword">as</span> e_user:</span><br><span class="line">        <span class="comment">#.............省略...............</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 示例settings.DATABASES</span></span><br><span class="line">DATABASES = &#123;</span><br><span class="line">    <span class="string">'default'</span>: &#123;</span><br><span class="line">        <span class="string">'ENGINE'</span>: <span class="string">'django.db.backends.mysql'</span>,</span><br><span class="line">        <span class="string">'NAME'</span>: config.DATABASES_NAME,</span><br><span class="line">        <span class="string">'USER'</span>: config.DATABASES_USER,</span><br><span class="line">        <span class="string">'PASSWORD'</span>: config.DATABASES_PASSWORD,</span><br><span class="line">        <span class="string">'HOST'</span>: config.DATABASES_HOST,</span><br><span class="line">        <span class="string">'PORT'</span>: config.DATABASES_PORT,</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个方法中，根据settings.DATABASES的ENGINE值，完成对不同类型数据库的加载；每个类型的数据库拥有一个DatabaseWrapper作为其代理，作为后续操作的具体对象。</p>
+</li>
+</ol>
+<h4 id="3-2-Filter方法的查询流程"><a href="#3-2-Filter方法的查询流程" class="headerlink" title="3.2 Filter方法的查询流程"></a>3.2 Filter方法的查询流程</h4><p>这一章节的重点是让大家理解从Object到SQL到转化，了解Django ORM是如果工作的，为了让思路更加聚焦，所以涉及到一些细节的问题，不会再在Code层进行分析，只会提一下，有兴趣的话可以单独深入分析。</p>
+<h5 id="3-2-1-django-db-models-query-py"><a href="#3-2-1-django-db-models-query-py" class="headerlink" title="3.2.1 django/db/models/query.py"></a>3.2.1 django/db/models/query.py</h5><p>在使用filter的时候，其实调用的是_filter_or_exclude方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">filter</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Return a new QuerySet instance with the args ANDed to the existing</span></span><br><span class="line"><span class="string">    set.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">return</span> self._filter_or_exclude(<span class="literal">False</span>, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_filter_or_exclude</span><span class="params">(self, negate, *args, **kwargs)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> args <span class="keyword">or</span> kwargs:</span><br><span class="line">        <span class="keyword">assert</span> self.query.can_filter(), \</span><br><span class="line">            <span class="string">"Cannot filter a query once a slice has been taken."</span></span><br><span class="line"></span><br><span class="line">    clone = self._chain()  <span class="comment"># 得到一个QuerySet的对象 </span></span><br><span class="line">    <span class="keyword">if</span> negate:</span><br><span class="line">        clone.query.add_q(~Q(*args, **kwargs))</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># filter方法，通过add_q 方法,传入Q class</span></span><br><span class="line">        clone.query.add_q(Q(*args, **kwargs)) </span><br><span class="line">    <span class="keyword">return</span> clone</span><br></pre></td></tr></table></figure>
+<h5 id="3-2-2-django-db-models-sql-query-py"><a href="#3-2-2-django-db-models-sql-query-py" class="headerlink" title="3.2.2 django/db/models/sql/query.py"></a>3.2.2 django/db/models/sql/query.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_q</span><span class="params">(self, q_object)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    A preprocessor for the internal _add_q(). Responsible for doing final</span></span><br><span class="line"><span class="string">    join promotion.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># For join promotion this case is doing an AND for the added q_object</span></span><br><span class="line">    <span class="comment"># and existing conditions. So, any existing inner join forces the join</span></span><br><span class="line">    <span class="comment"># type to remain inner. Existing outer joins can however be demoted.</span></span><br><span class="line">    <span class="comment"># (Consider case where rel_a is LOUTER and rel_a__col=1 is added - if</span></span><br><span class="line">    <span class="comment"># rel_a doesn't produce any rows, then the whole condition must fail.</span></span><br><span class="line">    <span class="comment"># So, demotion is OK.</span></span><br><span class="line">    existing_inner = &#123;a <span class="keyword">for</span> a <span class="keyword">in</span> self.alias_map <span class="keyword">if</span> self.alias_map[a].join_type == INNER&#125;</span><br><span class="line">    </span><br><span class="line">    clause, _ = self._add_q(q_object, self.used_aliases)</span><br><span class="line">    <span class="keyword">if</span> clause:</span><br><span class="line">        self.where.add(clause, AND)</span><br><span class="line">    self.demote_joins(existing_inner)</span><br></pre></td></tr></table></figure>
+<p>添加当前的Q对象到已存在的filter中，然后将返回的where对象插入到当前类的where中，且用and连接表示；另外在这个方法中同时处理了Django ORM中的通过<code>__</code>符号来连接外健的操作。</p>
+<p><strong>一般来讲，where语句写完，就应该进行查询操作，但是在重新顺着流程捋了一遍，都没有找到在什么地方有执行sql的操作，最后发现是因为Django的惰性查询关系，做完这些操作之后，并不会马上执行sql，而是等待需要用的Queryset的<code>__iter__</code>的时候，才去真正的根据QuerySet 已经设置好的各种查询条件,去编译sql语句,执行并返回结果. </strong></p>
+<p>以如下语句为例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ret = models.Book.objects.filter(title=<span class="string">"Django"</span>);</span><br><span class="line">books = list(ret)  <span class="comment"># 或者 book01 = ret[1]</span></span><br></pre></td></tr></table></figure>
+<p>在执行完filter方法之后，使用断点或者日志打印的方式发现ret其实是一个django.db.models.query.QuerySet对象，然后使用如上两种方式才可以打印出具体的Book信息，所以接下来我们就需要看一下QuerySet的<code>__iter__</code>方法。</p>
+<h5 id="3-2-3-django-db-models-query-ModelIterable"><a href="#3-2-3-django-db-models-query-ModelIterable" class="headerlink" title="3.2.3 django.db.models.query.ModelIterable"></a>3.2.3 django.db.models.query.ModelIterable</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, k)</span>:</span></span><br><span class="line">    <span class="string">"""Retrieve an item or slice from the set of results."""</span> </span><br><span class="line">		<span class="comment">#.............省略...............</span></span><br><span class="line">    qs = self._chain()</span><br><span class="line">    qs.query.set_limits(k, k + <span class="number">1</span>)</span><br><span class="line">    qs._fetch_all()  <span class="comment"># 重要！！！</span></span><br><span class="line">    <span class="keyword">return</span> qs._result_cache[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_fetch_all</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> self._result_cache <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># 调用的ModelIterable的__iter__方法</span></span><br><span class="line">        self._result_cache = list(self._iterable_class(self))</span><br><span class="line">    <span class="keyword">if</span> self._prefetch_related_lookups <span class="keyword">and</span> <span class="keyword">not</span> self._prefetch_done:</span><br><span class="line">        self._prefetch_related_objects()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ModelIterable</span><span class="params">(BaseIterable)</span>:</span></span><br><span class="line">    <span class="string">"""Iterable that yields a model instance for each row."""</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></span><br><span class="line">        queryset = self.queryset</span><br><span class="line">        db = queryset.db</span><br><span class="line">        <span class="comment">#获取sql编译器,准备编译sql语句</span></span><br><span class="line">        compiler = queryset.query.get_compiler(using=db)</span><br><span class="line">        <span class="comment"># Execute the query. This will also fill compiler.select, klass_info,</span></span><br><span class="line">        <span class="comment"># and annotations.</span></span><br><span class="line">        <span class="comment"># 真正执行Sql取回结果！！！</span></span><br><span class="line">        results = compiler.execute_sql(chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size)</span><br><span class="line">        select, klass_info, annotation_col_map = (compiler.select, compiler.klass_info,</span><br><span class="line">                                                  compiler.annotation_col_map)</span><br><span class="line">        model_cls = klass_info[<span class="string">'model'</span>]</span><br><span class="line">        select_fields = klass_info[<span class="string">'select_fields'</span>]</span><br><span class="line">        model_fields_start, model_fields_end = select_fields[<span class="number">0</span>], select_fields[<span class="number">-1</span>] + <span class="number">1</span></span><br><span class="line">        init_list = [f[<span class="number">0</span>].target.attname</span><br><span class="line">                     <span class="keyword">for</span> f <span class="keyword">in</span> select[model_fields_start:model_fields_end]]</span><br><span class="line">        related_populators = get_related_populators(klass_info, select, db)</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> compiler.results_iter(results):</span><br><span class="line">            obj = model_cls.from_db(db, init_list, row[model_fields_start:model_fields_end])</span><br><span class="line">            <span class="keyword">for</span> rel_populator <span class="keyword">in</span> related_populators:</span><br><span class="line">                rel_populator.populate(row, obj)</span><br><span class="line">            <span class="keyword">if</span> annotation_col_map:</span><br><span class="line">                <span class="keyword">for</span> attr_name, col_pos <span class="keyword">in</span> annotation_col_map.items():</span><br><span class="line">                    setattr(obj, attr_name, row[col_pos])</span><br><span class="line"></span><br><span class="line">            <span class="comment"># Add the known related objects to the model, if there are any</span></span><br><span class="line">            <span class="keyword">if</span> queryset._known_related_objects:</span><br><span class="line">                <span class="keyword">for</span> field, rel_objs <span class="keyword">in</span> queryset._known_related_objects.items():</span><br><span class="line">                    <span class="comment"># Avoid overwriting objects loaded e.g. by select_related</span></span><br><span class="line">                    <span class="keyword">if</span> field.is_cached(obj):</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line">                    pk = getattr(obj, field.get_attname())</span><br><span class="line">                    <span class="keyword">try</span>:</span><br><span class="line">                        rel_obj = rel_objs[pk]</span><br><span class="line">                    <span class="keyword">except</span> KeyError:</span><br><span class="line">                        <span class="keyword">pass</span>  <span class="comment"># may happen in qs1 | qs2 scenarios</span></span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        setattr(obj, field.name, rel_obj)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">yield</span> obj</span><br></pre></td></tr></table></figure>
+<h3 id="4、参考"><a href="#4、参考" class="headerlink" title="4、参考"></a>4、参考</h3><ol>
+<li><a href="https://blog.csdn.net/watsy/article/details/11351721" target="_blank" rel="noopener">深入学习Django源码基础9 - 简单分析DjangoORM部分</a></li>
+<li><a href="https://yijingping.github.io/2014/03/14/django-5.html" target="_blank" rel="noopener">Django 源码学习（5）—— db.models模块</a></li>
+<li><a href="[http://www.haibin.online/tags/django源码阅读](http://www.haibin.online/tags/django%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB">Django ORM源码阅读</a>)</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/Django/" rel="tag"># Django</a>
+          
+            <a href="/tags/源码分析/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/06/Django源码分析--路由分发/" rel="next" title="Django源码分析二：路由分发">
+                <i class="fa fa-chevron-left"></i> Django源码分析二：路由分发
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、准备工作"><span class="nav-number">1.</span> <span class="nav-text">1、准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、说明"><span class="nav-number">2.</span> <span class="nav-text">2、说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、分析流程"><span class="nav-number">3.</span> <span class="nav-text">3、分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1、Django-ORM如何做到多数据库支持的"><span class="nav-number">3.1.</span> <span class="nav-text">3.1、Django ORM如何做到多数据库支持的</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-1、-Django-db-source-tree"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.3.1、 Django db source tree</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-3-2、具体的差异化加载流程"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.3.2、具体的差异化加载流程</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-Filter方法的查询流程"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 Filter方法的查询流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-1-django-db-models-query-py"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1 django/db/models/query.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-2-django-db-models-sql-query-py"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.2 django/db/models/sql/query.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-2-3-django-db-models-query-ModelIterable"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.2.3 django.db.models.query.ModelIterable</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、参考"><span class="nav-number">4.</span> <span class="nav-text">4、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
