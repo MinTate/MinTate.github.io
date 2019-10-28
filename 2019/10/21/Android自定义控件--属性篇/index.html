@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,Kotlin,基础知识,">
+  <meta name="keywords" content="Android,基础知识,Kotlin,">
 
 
 
@@ -80,14 +80,14 @@
 
 
 <meta name="description" content="1、背景在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：  定义 declare-styleable 中的自定义属性，并在构造函数中获得并初始化； 实现 onMeasure、onLayout 和 onDraw 等方法。  本文我们主要记录一下关于自定义控件中的属性部分。">
-<meta name="keywords" content="Android,Kotlin,基础知识">
+<meta name="keywords" content="Android,基础知识,Kotlin">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android自定义控件—属性篇">
 <meta property="og:url" content="http://yoursite.com/2019/10/21/Android自定义控件--属性篇/index.html">
 <meta property="og:site_name" content="Min HelloWorld">
 <meta property="og:description" content="1、背景在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：  定义 declare-styleable 中的自定义属性，并在构造函数中获得并初始化； 实现 onMeasure、onLayout 和 onDraw 等方法。  本文我们主要记录一下关于自定义控件中的属性部分。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-28T14:45:18.010Z">
+<meta property="og:updated_time" content="2019-10-28T14:54:22.825Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android自定义控件—属性篇">
 <meta name="twitter:description" content="1、背景在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：  定义 declare-styleable 中的自定义属性，并在构造函数中获得并初始化； 实现 onMeasure、onLayout 和 onDraw 等方法。  本文我们主要记录一下关于自定义控件中的属性部分。">
@@ -367,13 +367,18 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> jboolean <span class="title">android_content_AssetManager_applyStyle</span><span class="params">(JNIEnv* env, jobject clazz, jint themeToken, jint defStyleAttr, jint defStyleRes, jint xmlParserToken, jintArray attrs, jintArray outValues, jintArray outIndices)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Retrieve the style class associated with the current XML tag.</span></span><br><span class="line">    <span class="comment">// 检索与当前 XML 标签关联的样式类</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Now lock down the resource object and start pulling stuff from it.</span></span><br><span class="line">    <span class="comment">// 锁定资源对象并开始从其中抽取所需要的内容</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Retrieve the default style bag, if requested.</span></span><br><span class="line">    <span class="comment">// 如有需要取出默认样式</span></span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="comment">// Retrieve the XML attributes, if requested.</span></span><br><span class="line">    <span class="comment">// 如有需要检索 XML 属性</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Now iterate through all of the attributes that the client has requested,</span></span><br><span class="line">    <span class="comment">// filling in each with whatever data we can find.</span></span><br><span class="line">    <span class="comment">// 遍历客户端请求的所有属性，填充每个可以找到的数据</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="comment">// ...) &#123;</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="comment">// Try to find a value for this attribute...  we prioritize values</span></span><br><span class="line">        <span class="comment">// coming from, first XML attributes, then XML style, then default</span></span><br><span class="line">        <span class="comment">// style, and finally the theme.</span></span><br><span class="line">        <span class="comment">// 尝试找到这个属性的值... 优先级：</span></span><br><span class="line">        <span class="comment">// 首先是 XML 中定义的，其次是 XML 中的 style 定义的，然后是默认样式，最后是主题</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> JNI_TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>从上述代码中，我们知道了一个 attribute 值的确定过程大致如下：</p>
 <ol>
-<li>xml 中查找，若未找到进入第 2 步；</li>
-<li>xml 中的 style 查找，若未找到进入第 3 步；</li>
-<li>若 defStyleAttr 不为 0，由 defStyleAttr 指定的 style 中寻找，若未找到进入第 4 步；</li>
-<li>若 defStyleAttr 为 0 或 defStyleAttr 指定的 style 中寻找失败，进入 defStyleRes 指定的 style 中寻找，若寻找失败，进入第 5 步查找；</li>
-<li>查找在当前 Theme 中指定的属性值。</li>
+<li><p>xml 中查找，若未找到进入第 2 步；</p>
+</li>
+<li><p>xml 中的 style 查找，若未找到进入第 3 步；</p>
+</li>
+<li><p>若 defStyleAttr 不为 0，由 defStyleAttr 指定的 style 中寻找，若未找到进入第 4 步；</p>
+</li>
+<li><p>若 defStyleAttr 为 0 或 defStyleAttr 指定的 style 中寻找失败，进入 defStyleRes 指定的 style 中寻找，若寻找失败，进入第 5 步查找；</p>
+</li>
+<li><p>查找在当前 Theme 中指定的属性值。</p>
+<p>至此，关于自定义控件中属性的解析就已经结束，这儿有一个Demo来验证我们的分析：<a href="https://github.com/MinTate/AndroidDemo/tree/master/CustomView" target="_blank" rel="noopener">github地址</a>；</p>
+</li>
 </ol>
-<p>至此，关于自定义控件中属性的解析就已经结束，这儿有一个Demo来验证我们的分析：；</p>
 <h2 id="3、其他"><a href="#3、其他" class="headerlink" title="3、其他"></a>3、其他</h2><h3 id="3-1、xmlns"><a href="#3-1、xmlns" class="headerlink" title="3.1、xmlns"></a>3.1、xmlns</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> </span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:background</span>=<span class="string">"@drawable/window_background"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>xmlns是 XML 文档中的一个概念：英文叫做<a href="https://link.jianshu.com?t=https://www.w3.org/TR/REC-xml-names/" target="_blank" rel="noopener"> XML namespace</a>，中文翻译为<a href="https://link.jianshu.com?t=https://zh.wikipedia.org/wiki/XML%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4" target="_blank" rel="noopener"> XML 命名空间</a>。一讲到<strong>命名空间</strong>，我想很多人会联想到<code>C++</code>中的<code>namespace</code>和<code>Java</code>中的<a href="https://link.jianshu.com?t=https://docs.oracle.com/javase/tutorial/java/package/namingpkgs.html" target="_blank" rel="noopener"> packagename</a>，而这两者的作用都是为了解决命名上的冲突(例如类名，接口名等)。类似的，<code>XML namespace</code>也是为了解决 XML 中元素和属性命名冲突，因为 XML 中的标签并不是预定义的，这一点与 HTML 是有区别的，HTML 中的标签是预定义的，所以我们会遇到命名冲突的问题。</p>
 <p>XML 命名空间定义语法为<code>xmlns:namespace-prefix=&quot;namespaceURI&quot;</code>，一共分为三个部分：</p>
@@ -421,9 +426,9 @@
           
             <a href="/tags/Android/" rel="tag"># Android</a>
           
-            <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
-          
             <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
           
         </div>
       
