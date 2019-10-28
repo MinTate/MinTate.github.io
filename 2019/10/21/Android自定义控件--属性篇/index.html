@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Kotlin,基础知识,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、背景在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：  定义 declare-styleable 中的自定义属性，并在构造函数中获得并初始化； 实现 onMeasure、onLayout 和 onDraw 等方法。  本文我们主要记录一下关于自定义控件中的属性部分。">
+<meta name="keywords" content="Android,Kotlin,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android自定义控件—属性篇">
+<meta property="og:url" content="http://yoursite.com/2019/10/21/Android自定义控件--属性篇/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="1、背景在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：  定义 declare-styleable 中的自定义属性，并在构造函数中获得并初始化； 实现 onMeasure、onLayout 和 onDraw 等方法。  本文我们主要记录一下关于自定义控件中的属性部分。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-10-28T14:45:18.010Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android自定义控件—属性篇">
+<meta name="twitter:description" content="1、背景在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：  定义 declare-styleable 中的自定义属性，并在构造函数中获得并初始化； 实现 onMeasure、onLayout 和 onDraw 等方法。  本文我们主要记录一下关于自定义控件中的属性部分。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/21/Android自定义控件--属性篇/">
+
+
+
+
+
+  <title>Android自定义控件—属性篇 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/Android自定义控件--属性篇/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android自定义控件—属性篇</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-21T19:10:02+08:00">
+                2019-10-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kotlin/" itemprop="url" rel="index">
+                    <span itemprop="name">Kotlin</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1、背景"><a href="#1、背景" class="headerlink" title="1、背景"></a>1、背景</h2><p>在Android开发的过程中，APP UI随着大众对于审美的变化总是在不断的演进，自定义 View 算是 Android 开发中常见的技巧之一，其实现主要包含两个部分：</p>
+<ul>
+<li>定义 <code>declare-styleable</code> 中的自定义属性，并在构造函数中获得并初始化；</li>
+<li>实现 <code>onMeasure</code>、<code>onLayout</code> 和 <code>onDraw</code> 等方法。</li>
+</ul>
+<p>本文我们主要记录一下关于自定义控件中的属性部分。</p>
+<a id="more"></a>
+<h2 id="2、介绍"><a href="#2、介绍" class="headerlink" title="2、介绍"></a>2、介绍</h2><p>在开始介绍自定义属性之前，我们需要先搞清楚一件事情，那就是影响控件的属性都有哪些：</p>
+<p> 1、在布局文件中的某个View节点中，直接指定的；</p>
+<p> 2、在布局文件中的某个View节点中，通过style属性中设置的；</p>
+<p>3、从defStyleAttr和defStyleRes中设置的；</p>
+<p>4、在Theme中直接设置的属性。</p>
+<p>接下来我们将通过一个简单的Demo来验证，这些属性是如何起作用的？首先来看一下，一般自定义控件的四个构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MView</span> <span class="keyword">extends</span> <span class="title">View</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MView</span><span class="params">(Context context)</span> </span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MView</span><span class="params">(Context context, @Nullable AttributeSet attrs)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MView</span><span class="params">(Context context, @Nullable AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MView</span><span class="params">(Context context, @Nullable AttributeSet attrs, <span class="keyword">int</span> defStyleAttr, <span class="keyword">int</span> defStyleRes)</span> </span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果你继承一些兼容库的控件比如AppCompatTextView，他是不提供四个参数的构造方法的。</p>
+</blockquote>
+<p>通过查看View类的源码，我们能够发现前三个方法最后都会调用的最后一个四参方法上，示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">View</span><span class="params">(Context context, @Nullable AttributeSet attrs, <span class="keyword">int</span> defStyleAttr, <span class="keyword">int</span> defStyleRes)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> TypedArray a = context.obtainStyledAttributes(</span><br><span class="line">                attrs, com.android.internal.R.styleable.View, defStyleAttr, defStyleRes);</span><br><span class="line">    <span class="comment">/*此处省略部分代码*/</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> N = a.getIndexCount();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">        <span class="keyword">int</span> attr = a.getIndex(i);</span><br><span class="line">        <span class="keyword">switch</span> (attr) &#123;</span><br><span class="line">            <span class="keyword">case</span> com.android.internal.R.styleable.View_background:</span><br><span class="line">                background = a.getDrawable(attr);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> com.android.internal.R.styleable.View_padding:</span><br><span class="line">                padding = a.getDimensionPixelSize(attr, -<span class="number">1</span>);</span><br><span class="line">                mUserPaddingLeftInitial = padding;</span><br><span class="line">                mUserPaddingRightInitial = padding;</span><br><span class="line">                leftPaddingDefined = <span class="keyword">true</span>;</span><br><span class="line">                rightPaddingDefined = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br></pre></td></tr></table></figure>
+<p>从上述代码中，可以看到它调用了obtainStyledAttributes方法，获取到TypedArray，再从TypedArray中获取相应的属性值，比如background等，并赋值给View的成员变量，接着我们看一下<code>obtainStyledAttributes</code>方法；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line"><span class="function">TypedArray <span class="title">obtainStyledAttributes</span><span class="params">(@NonNull Resources.Theme wrapper,</span></span></span><br><span class="line"><span class="function"><span class="params">									  AttributeSet set,</span></span></span><br><span class="line"><span class="function"><span class="params">									  @StyleableRes <span class="keyword">int</span>[] attrs,</span></span></span><br><span class="line"><span class="function"><span class="params">									  @AttrRes <span class="keyword">int</span> defStyleAttr,</span></span></span><br><span class="line"><span class="function"><span class="params">									  @StyleRes <span class="keyword">int</span> defStyleRes)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">synchronized</span> (mKey) &#123;</span><br><span class="line">		<span class="keyword">final</span> <span class="keyword">int</span> len = attrs.length;</span><br><span class="line">		<span class="keyword">final</span> TypedArray array = TypedArray.obtain(wrapper.getResources(), len);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// XXX note that for now we only work with compiled XML files.</span></span><br><span class="line">		<span class="comment">// To support generic XML files we will need to manually parse</span></span><br><span class="line">		<span class="comment">// out the attributes from the XML file (applying type information</span></span><br><span class="line">		<span class="comment">// contained in the resources and such).</span></span><br><span class="line">		<span class="keyword">final</span> XmlBlock.Parser parser = (XmlBlock.Parser) set;</span><br><span class="line">		mAssets.applyStyle(mTheme, defStyleAttr, defStyleRes, parser, attrs,</span><br><span class="line">						   array.mDataAddress, array.mIndicesAddress);</span><br><span class="line">		array.mTheme = wrapper;</span><br><span class="line">		array.mXml = parser;</span><br><span class="line">		<span class="keyword">return</span> array;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过一系列的跳转，然后调用到<code>android.content.res.ResourcesImpl.ThemeImpl#obtainStyledAttributes</code>方法，在这段代码中 obtain 了我们需要的 TypedArray，根据之前说过的规则通过调用 AssetManager 的 <code>applyStyle</code> 方法(本地方法)，确定了最后各个 attribute 的值。下面看看 <a href="http://androidxref.com/8.1.0_r33/xref/frameworks/base/core/jni/android_util_AssetManager.cpp#1179" target="_blank" rel="noopener">android_util_AssetManager.cpp</a> 中 <code>android_content_AssetManager_applyStyle</code> 函数的源码，里面有我们需要的 native <code>applyStyle</code> 方法(代码很长，只保留了注释)：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> jboolean <span class="title">android_content_AssetManager_applyStyle</span><span class="params">(JNIEnv* env, jobject clazz, jint themeToken, jint defStyleAttr, jint defStyleRes, jint xmlParserToken, jintArray attrs, jintArray outValues, jintArray outIndices)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Retrieve the style class associated with the current XML tag.</span></span><br><span class="line">    <span class="comment">// 检索与当前 XML 标签关联的样式类</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Now lock down the resource object and start pulling stuff from it.</span></span><br><span class="line">    <span class="comment">// 锁定资源对象并开始从其中抽取所需要的内容</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Retrieve the default style bag, if requested.</span></span><br><span class="line">    <span class="comment">// 如有需要取出默认样式</span></span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">    <span class="comment">// Retrieve the XML attributes, if requested.</span></span><br><span class="line">    <span class="comment">// 如有需要检索 XML 属性</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Now iterate through all of the attributes that the client has requested,</span></span><br><span class="line">    <span class="comment">// filling in each with whatever data we can find.</span></span><br><span class="line">    <span class="comment">// 遍历客户端请求的所有属性，填充每个可以找到的数据</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="comment">// ...) &#123;</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="comment">// Try to find a value for this attribute...  we prioritize values</span></span><br><span class="line">        <span class="comment">// coming from, first XML attributes, then XML style, then default</span></span><br><span class="line">        <span class="comment">// style, and finally the theme.</span></span><br><span class="line">        <span class="comment">// 尝试找到这个属性的值... 优先级：</span></span><br><span class="line">        <span class="comment">// 首先是 XML 中定义的，其次是 XML 中的 style 定义的，然后是默认样式，最后是主题</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> JNI_TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上述代码中，我们知道了一个 attribute 值的确定过程大致如下：</p>
+<ol>
+<li>xml 中查找，若未找到进入第 2 步；</li>
+<li>xml 中的 style 查找，若未找到进入第 3 步；</li>
+<li>若 defStyleAttr 不为 0，由 defStyleAttr 指定的 style 中寻找，若未找到进入第 4 步；</li>
+<li>若 defStyleAttr 为 0 或 defStyleAttr 指定的 style 中寻找失败，进入 defStyleRes 指定的 style 中寻找，若寻找失败，进入第 5 步查找；</li>
+<li>查找在当前 Theme 中指定的属性值。</li>
+</ol>
+<p>至此，关于自定义控件中属性的解析就已经结束，这儿有一个Demo来验证我们的分析：；</p>
+<h2 id="3、其他"><a href="#3、其他" class="headerlink" title="3、其他"></a>3、其他</h2><h3 id="3-1、xmlns"><a href="#3-1、xmlns" class="headerlink" title="3.1、xmlns"></a>3.1、xmlns</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> </span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">"http://schemas.android.com/apk/res-auto"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:background</span>=<span class="string">"@drawable/window_background"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>xmlns是 XML 文档中的一个概念：英文叫做<a href="https://link.jianshu.com?t=https://www.w3.org/TR/REC-xml-names/" target="_blank" rel="noopener"> XML namespace</a>，中文翻译为<a href="https://link.jianshu.com?t=https://zh.wikipedia.org/wiki/XML%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4" target="_blank" rel="noopener"> XML 命名空间</a>。一讲到<strong>命名空间</strong>，我想很多人会联想到<code>C++</code>中的<code>namespace</code>和<code>Java</code>中的<a href="https://link.jianshu.com?t=https://docs.oracle.com/javase/tutorial/java/package/namingpkgs.html" target="_blank" rel="noopener"> packagename</a>，而这两者的作用都是为了解决命名上的冲突(例如类名，接口名等)。类似的，<code>XML namespace</code>也是为了解决 XML 中元素和属性命名冲突，因为 XML 中的标签并不是预定义的，这一点与 HTML 是有区别的，HTML 中的标签是预定义的，所以我们会遇到命名冲突的问题。</p>
+<p>XML 命名空间定义语法为<code>xmlns:namespace-prefix=&quot;namespaceURI&quot;</code>，一共分为三个部分：</p>
+<ul>
+<li><code>xmlns</code>：声明命名空间的保留字，其实就是XML中元素的一个属性；</li>
+<li><code>namespace-prefix</code>：命名空间的前缀，这个前缀与某个命名空间相关联；</li>
+<li><code>namespaceURI</code>：命名空间的唯一标识符，一般就是一个URI引用。</li>
+</ul>
+<h4 id="3-1-1、xmlns-android"><a href="#3-1-1、xmlns-android" class="headerlink" title="3.1.1、xmlns:android"></a>3.1.1、xmlns:android</h4><p>用于 Android 系统定义的一些属性。在Android xml布局文件头部的 <code>xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</code>，即Android API的Namespace。</p>
+<h4 id="3-1-2、xmlns-app"><a href="#3-1-2、xmlns-app" class="headerlink" title="3.1.2、xmlns:app"></a>3.1.2、xmlns:app</h4><p>用于我们应用自定义的一些属性，在引用Library的第三方View时，我们需要在XML布局文件头部添加<br> <code>xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;</code><br> 或者<br> <code>xmlns:app=&quot;http://schemas.android.com/apk/res/包名&quot;</code></p>
+<h4 id="3-1-3、tools"><a href="#3-1-3、tools" class="headerlink" title="3.1.3、tools"></a>3.1.3、tools</h4><p>根据官方定义，<code>tools</code>命名空间用于在 XML 文档记录一些，当应用打包的时候，会把这部分信息给过滤掉，不会增加应用的 size，说直白点，这些属性是为IDE提供相关信息。</p>
+<h3 id="3-2、TypedArray"><a href="#3-2、TypedArray" class="headerlink" title="3.2、TypedArray"></a>3.2、TypedArray</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Container for an array of values that were retrieved with</span></span><br><span class="line"><span class="comment"> * &#123;<span class="doctag">@link</span> Resources.Theme#obtainStyledAttributes(AttributeSet, int[], int, int)&#125;</span></span><br><span class="line"><span class="comment"> * or &#123;<span class="doctag">@link</span> Resources#obtainAttributes&#125;.  Be</span></span><br><span class="line"><span class="comment"> * sure to call &#123;<span class="doctag">@link</span> #recycle&#125; when done with them.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The indices used to retrieve values from this structure correspond to</span></span><br><span class="line"><span class="comment"> * the positions of the attributes given to obtainStyledAttributes.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TypedArray</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>使用 TypedArray 类可以帮助我们简化获取 attribute 值的流程。类介绍也表明了其作用，需要的是上面用 [] 括起来的一句话：用完之后必须调用 <code>recycle</code> 方法。对，我们通常都会这么做，但是为什么要这么做？ 查看这个方法源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">recycle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mRecycled) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(toString() + <span class="string">" recycled twice!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mRecycled = <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// These may have been set by the client.</span></span><br><span class="line">    mXml = <span class="keyword">null</span>;</span><br><span class="line">    mTheme = <span class="keyword">null</span>;</span><br><span class="line">    mAssets = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    mResources.mTypedArrayPool.release(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中主要就是释放了相应的资源，注意看到 <code>mResources.mTypedArrayPool.release(this);</code> 这一行代码，mTypedArrayPool 是 Resource 类中的一个同步对象(存储 TypedArray 对象)池，这里使用了 Pool 来进行优化。</p>
+<p>既然是用了 Pool，那就肯定有获取对象的方法，焦点来到 <code>obtain</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> TypedArray <span class="title">obtain</span><span class="params">(Resources res, <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> TypedArray attrs = res.mTypedArrayPool.acquire();</span><br><span class="line">    <span class="keyword">if</span> (attrs != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 重置从 Pool 中获取到的对象</span></span><br><span class="line">        <span class="keyword">return</span> attrs;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果对象池是空，返回一个新对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> TypedArray(res, <span class="keyword">new</span> <span class="keyword">int</span>[len*AssetManager.STYLE_NUM_ENTRIES], <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">1</span>+len], len);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单总结这两个方法如下：</p>
+<ul>
+<li><code>recycle</code> 方法就相当于 Pool 中的 release，用于归还对象到 Pool 中；</li>
+<li><code>obtain</code> 方法就相当于 Pool 中的 acquire，用于从 Pool 中请求对象。</li>
+</ul>
+<p>对于 mTypedArrayPool 的大小 Android 默认是 5。对象池不能太大也不能太小，太大可能造成内存占用，太小可能造成无效对象或有无对象池无明显效果等问题。具体大小的设置，是需要根据具体的场景结合数据分析得到。</p>
+<p>Android 应用程序就是由大量 View 构成，因此 View 成了最经常使用的对象。一个 View 创建过程中有大量的 attributes 需要设置，Android 使用了 TypedArray 来简化流程，当频繁的创建和销毁对象(对象的创建成本还比较大)时，会有一定的成本及比较差的体验(如内存抖动导致掉帧)。通过使用 Pool 来实现对 TypedArray 的缓存和复用，达到优化的目的。</p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p>1、<a href="https://www.jianshu.com/p/f3c5714cf69b" target="_blank" rel="noopener">从 View 构造函数中被忽略的 {int defStyleAttr} 说起</a></p>
+<p>2、<a href="https://www.jianshu.com/p/f1fd2d8d5536" target="_blank" rel="noopener">Android中Attributes、defStyleAttr、defStyleRes关系理解与应用</a></p>
+<p>3、<a href="https://www.jianshu.com/p/be7aa6dda558" target="_blank" rel="noopener">Android xmlns</a></p>
+<p>4、<a href="https://www.jianshu.com/p/6fcaffaeffd2" target="_blank" rel="noopener">如何理解Android中的xmlns</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/21/Kotlin Basic Syntax/" rel="next" title="Kotlin Basic Syntax">
+                <i class="fa fa-chevron-left"></i> Kotlin Basic Syntax
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、背景"><span class="nav-number">1.</span> <span class="nav-text">1、背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、介绍"><span class="nav-number">2.</span> <span class="nav-text">2、介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、其他"><span class="nav-number">3.</span> <span class="nav-text">3、其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1、xmlns"><span class="nav-number">3.1.</span> <span class="nav-text">3.1、xmlns</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1、xmlns-android"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1、xmlns:android</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2、xmlns-app"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2、xmlns:app</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-3、tools"><span class="nav-number">3.1.3.</span> <span class="nav-text">3.1.3、tools</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2、TypedArray"><span class="nav-number">3.2.</span> <span class="nav-text">3.2、TypedArray</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">3.2.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
