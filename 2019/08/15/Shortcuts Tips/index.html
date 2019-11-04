@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="备忘,Linux,">
+  <meta name="keywords" content="备忘,Vim,Bash,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
-<meta name="keywords" content="备忘,Linux">
+<meta name="description" content="观书有会意处，题其衣裳，以记其事～">
+<meta name="keywords" content="备忘,Vim,Bash">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Ubuntu crontab日志的开启">
-<meta property="og:url" content="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/index.html">
+<meta property="og:title" content="Shortcuts Tips">
+<meta property="og:url" content="http://yoursite.com/2019/08/15/Shortcuts Tips/index.html">
 <meta property="og:site_name" content="Min HelloWorld">
-<meta property="og:description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
+<meta property="og:description" content="观书有会意处，题其衣裳，以记其事～">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T10:20:00.918Z">
+<meta property="og:updated_time" content="2019-11-04T02:08:41.248Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ubuntu crontab日志的开启">
-<meta name="twitter:description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
+<meta name="twitter:title" content="Shortcuts Tips">
+<meta name="twitter:description" content="观书有会意处，题其衣裳，以记其事～">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/">
+  <link rel="canonical" href="http://yoursite.com/2019/08/15/Shortcuts Tips/">
 
 
 
 
 
-  <title>Ubuntu crontab日志的开启 | Min HelloWorld</title>
+  <title>Shortcuts Tips | Min HelloWorld</title>
   
 
 
@@ -253,7 +253,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/15/Shortcuts Tips/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="MinTate">
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Ubuntu crontab日志的开启</h1>
+          <h1 class="post-title" itemprop="name headline">Shortcuts Tips</h1>
         
 
         <div class="post-meta">
@@ -282,8 +282,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T18:10:22+08:00">
-                2019-04-13
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-15T20:14:44+08:00">
+                2019-08-15
               </time>
             
 
@@ -305,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-使用记录/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux-使用记录</span>
+                  <a href="/categories/Tips/" itemprop="url" rel="index">
+                    <span itemprop="name">Tips</span>
                   </a>
                 </span>
 
@@ -342,11 +342,17 @@
       
 
       
-        <p>Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log</p>
+        <p>观书有会意处，题其衣裳，以记其事～</p>
 <a id="more"></a>
-<p>开启日志：</p>
-<p>1）<figure class="highlight bash"><figcaption><span>vi</span><a href="/etc/rsyslog.d/50-default.conf">```</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">打开文件，在文件中找到cron.*，把前面的<span class="comment">#去掉，保存退出。</span></span><br><span class="line"></span><br><span class="line">2)  ```bash sudo service rsyslog restart</span><br></pre></td></tr></table></figure></p>
-<p>重启系统日志，然后稍微等下应该就能在/var/log目录下看到cron.log，vi cron.log就可以查看cron运行日志了。</p>
+<h4 id="1、bash的快捷键"><a href="#1、bash的快捷键" class="headerlink" title="1、bash的快捷键"></a>1、bash的快捷键</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">ctrl+a:光标移到行首。</span><br><span class="line">ctrl+e:光标移到行尾。</span><br><span class="line"></span><br><span class="line">ctrl+k:清除光标后至行尾的内容。</span><br><span class="line">ctrl+u: 清除光标前至行首间的所有内容</span><br><span class="line"></span><br><span class="line">ctrl+r:搜索之前打过的命令。会有一个提示，根据你输入的关键字进行搜索bash的<span class="built_in">history</span></span><br><span class="line"></span><br><span class="line">ctrl+d: 删除光标所在字母;注意和backspace以及ctrl+h的区别，这2个是删除光标前的字符</span><br><span class="line"></span><br><span class="line">ctrl+f: 光标右移</span><br><span class="line"></span><br><span class="line">ctrl+z : 把当前进程转到后台运行，使用’ <span class="built_in">fg</span> ‘命令恢复。比如top -d1 然后ctrl+z ，到后台，然后<span class="built_in">fg</span>,重新恢复</span><br><span class="line">ctrl+l:清屏，相当于clear。</span><br></pre></td></tr></table></figure>
+<h4 id="2、vim的快捷键"><a href="#2、vim的快捷键" class="headerlink" title="2、vim的快捷键"></a>2、vim的快捷键</h4><h5 id="2-1、方向键"><a href="#2-1、方向键" class="headerlink" title="2.1、方向键"></a>2.1、方向键</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">h	光标向左移动一个字符</span><br><span class="line">j 或 Ctrl + J	光标向下移动一行</span><br><span class="line">k 或 Ctrl + P	光标向上移动一行</span><br><span class="line">l	光标向右移动一个字符</span><br><span class="line"></span><br><span class="line">0	（数字 0）移动光标至本行开头</span><br><span class="line">$	移动光标至本行末尾</span><br><span class="line"></span><br><span class="line">w	向后移动一个词 （上一个字母和数字组成的词之后）</span><br><span class="line">W	向后移动一个词 （以空格分隔的词）</span><br><span class="line"></span><br><span class="line">b	向前移动一个词 （下一个字母和数字组成的词之前）</span><br><span class="line">B	向前移动一个词 （以空格分隔的词）</span><br><span class="line"></span><br><span class="line">G	移动至文件末尾</span><br><span class="line">gg	移动至文件开头</span><br></pre></td></tr></table></figure>
+<h5 id="2-2、浏览文档"><a href="#2-2、浏览文档" class="headerlink" title="2.2、浏览文档"></a>2.2、浏览文档</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(	跳转到上一句</span><br><span class="line">)	跳转到下一句</span><br><span class="line">&#123;	跳转到上一段</span><br><span class="line">&#125;	跳转到下一段</span><br></pre></td></tr></table></figure>
+<h5 id="2-3、插入文本"><a href="#2-3、插入文本" class="headerlink" title="2.3、插入文本"></a>2.3、插入文本</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a	在光标后插入文本</span><br><span class="line">i	在光标前插入文本</span><br><span class="line"></span><br><span class="line">o	（小写字母 o）在光标下方新开一行</span><br><span class="line">O	（大写字母 O）在光标上方新开一行</span><br><span class="line"></span><br><span class="line">A	在行末插入文本</span><br></pre></td></tr></table></figure>
+<h5 id="2-4、删除文本"><a href="#2-4、删除文本" class="headerlink" title="2.4、删除文本"></a>2.4、删除文本</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">x	删除光标处字符</span><br><span class="line">dw	删除一个词</span><br><span class="line"></span><br><span class="line">d0	删至行首</span><br><span class="line">d$	删至行末</span><br><span class="line"></span><br><span class="line">dgg	删至文件开头</span><br><span class="line">dG	删至文件末尾</span><br><span class="line">dd	删除该行</span><br><span class="line">3dd	删除三行</span><br></pre></td></tr></table></figure>
+<h5 id="2-5、选择文本"><a href="#2-5、选择文本" class="headerlink" title="2.5、选择文本"></a>2.5、选择文本</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">v	进入逐字可视模式</span><br><span class="line">V	进入逐行可视模式</span><br><span class="line">Esc	退出可视模式</span><br></pre></td></tr></table></figure>
+<h5 id="2-6、复制-粘贴文本"><a href="#2-6、复制-粘贴文本" class="headerlink" title="2.6、复制/粘贴文本"></a>2.6、复制/粘贴文本</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yy	复制当前行至存储缓冲区</span><br><span class="line">p	在当前行之后粘贴存储缓冲区中的内容</span><br><span class="line">P	在当前行之前粘贴存储缓冲区中的内容</span><br></pre></td></tr></table></figure>
+<h5 id="2-7、替换文本"><a href="#2-7、替换文本" class="headerlink" title="2.7、替换文本"></a>2.7、替换文本</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">R	进入覆写模式，输入的字符将替换原有的字符</span><br></pre></td></tr></table></figure>
+<h5 id="2-8、vim-命令"><a href="#2-8、vim-命令" class="headerlink" title="2.8、vim 命令"></a>2.8、vim 命令</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> list   vim下显示回车换行符等特殊符号</span><br><span class="line"><span class="built_in">set</span> fileformat  vim下检测文件格式</span><br><span class="line"><span class="built_in">set</span> fileformats=unix,dos  vim下转换种文件格式</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -366,7 +372,9 @@
           
             <a href="/tags/备忘/" rel="tag"># 备忘</a>
           
-            <a href="/tags/Linux/" rel="tag"># Linux</a>
+            <a href="/tags/Vim/" rel="tag"># Vim</a>
+          
+            <a href="/tags/Bash/" rel="tag"># Bash</a>
           
         </div>
       
@@ -379,8 +387,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/13/容器时间跟宿主机时间同步/" rel="next" title="容器时间跟宿主机时间同步">
-                <i class="fa fa-chevron-left"></i> 容器时间跟宿主机时间同步
+              <a href="/2019/05/20/FFmpeg图片格式转换命令/" rel="next" title="FFmpeg图片格式转换命令">
+                <i class="fa fa-chevron-left"></i> FFmpeg图片格式转换命令
               </a>
             
           </div>
@@ -389,8 +397,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/04/13/Python字符编码/" rel="prev" title="Python字符编码">
-                Python字符编码 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/08/16/Shell Tips/" rel="prev" title="Shell Tips">
+                Shell Tips <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -443,8 +451,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -554,6 +571,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1、bash的快捷键"><span class="nav-number">1.</span> <span class="nav-text">1、bash的快捷键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2、vim的快捷键"><span class="nav-number">2.</span> <span class="nav-text">2、vim的快捷键</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1、方向键"><span class="nav-number">2.1.</span> <span class="nav-text">2.1、方向键</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-2、浏览文档"><span class="nav-number">2.2.</span> <span class="nav-text">2.2、浏览文档</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-3、插入文本"><span class="nav-number">2.3.</span> <span class="nav-text">2.3、插入文本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-4、删除文本"><span class="nav-number">2.4.</span> <span class="nav-text">2.4、删除文本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-5、选择文本"><span class="nav-number">2.5.</span> <span class="nav-text">2.5、选择文本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-6、复制-粘贴文本"><span class="nav-number">2.6.</span> <span class="nav-text">2.6、复制/粘贴文本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-7、替换文本"><span class="nav-number">2.7.</span> <span class="nav-text">2.7、替换文本</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-8、vim-命令"><span class="nav-number">2.8.</span> <span class="nav-text">2.8、vim 命令</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="备忘,Linux,">
+  <meta name="keywords" content="Hexo, NexT">
 
 
 
@@ -79,18 +79,16 @@
 
 
 
-<meta name="description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
-<meta name="keywords" content="备忘,Linux">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Ubuntu crontab日志的开启">
-<meta property="og:url" content="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/index.html">
+<meta name="description" content="Stay hungry, Stay foolish">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Min HelloWorld">
+<meta property="og:url" content="http://yoursite.com/tags/Bash/index.html">
 <meta property="og:site_name" content="Min HelloWorld">
-<meta property="og:description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
+<meta property="og:description" content="Stay hungry, Stay foolish">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T10:20:00.918Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ubuntu crontab日志的开启">
-<meta name="twitter:description" content="Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log">
+<meta name="twitter:title" content="Min HelloWorld">
+<meta name="twitter:description" content="Stay hungry, Stay foolish">
 
 
 
@@ -120,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/">
+  <link rel="canonical" href="http://yoursite.com/tags/Bash/">
 
 
 
 
 
-  <title>Ubuntu crontab日志的开启 | Min HelloWorld</title>
+  <title>Tag: Bash | Min HelloWorld</title>
   
 
 
@@ -145,7 +143,7 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -239,179 +237,52 @@
           <div id="content" class="content">
             
 
-  <div id="posts" class="posts-expand">
-    
+  
+  
+  
+  <div class="post-block tag">
 
-  
+    <div id="posts" class="posts-collapse">
+      <div class="collection-title">
+        <h1>Bash<small>Tag</small>
+        </h1>
+      </div>
 
-  
-  
-  
+      
+        
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/13/Ubuntu crontab日志的开启/">
+    <header class="post-header">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="MinTate">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Min HelloWorld">
-    </span>
-
-    
-      <header class="post-header">
-
+      <h2 class="post-title">
         
+            <a class="post-title-link" href="/2019/08/15/Shortcuts Tips/" itemprop="url">
+              
+                <span itemprop="name">Shortcuts Tips</span>
+              
+            </a>
         
-          <h1 class="post-title" itemprop="name headline">Ubuntu crontab日志的开启</h1>
-        
+      </h2>
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-13T18:10:22+08:00">
-                2019-04-13
-              </time>
-            
+      <div class="post-meta">
+        <time class="post-time" itemprop="dateCreated" datetime="2019-08-15T20:14:44+08:00" content="2019-08-15">
+          08-15
+        </time>
+      </div>
 
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Linux-使用记录/" itemprop="url" rel="index">
-                    <span itemprop="name">Linux-使用记录</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>Ubuntu系统默认是不打开cron日志的，日志路径：/var/log/cron.log</p>
-<a id="more"></a>
-<p>开启日志：</p>
-<p>1）<figure class="highlight bash"><figcaption><span>vi</span><a href="/etc/rsyslog.d/50-default.conf">```</a></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">打开文件，在文件中找到cron.*，把前面的<span class="comment">#去掉，保存退出。</span></span><br><span class="line"></span><br><span class="line">2)  ```bash sudo service rsyslog restart</span><br></pre></td></tr></table></figure></p>
-<p>重启系统日志，然后稍微等下应该就能在/var/log目录下看到cron.log，vi cron.log就可以查看cron运行日志了。</p>
-
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/备忘/" rel="tag"># 备忘</a>
-          
-            <a href="/tags/Linux/" rel="tag"># Linux</a>
-          
-        </div>
-      
-
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/04/13/容器时间跟宿主机时间同步/" rel="next" title="容器时间跟宿主机时间同步">
-                <i class="fa fa-chevron-left"></i> 容器时间跟宿主机时间同步
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/04/13/Python字符编码/" rel="prev" title="Python字符编码">
-                Python字符编码 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
+    </header>
   </article>
 
 
-
-    <div class="post-spread">
       
     </div>
+
   </div>
+  
+  
+  
+
+  
 
 
           </div>
@@ -419,10 +290,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -687,10 +554,6 @@
   
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 
