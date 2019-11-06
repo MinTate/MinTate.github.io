@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta name="description" content="Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Djang">
 <meta name="keywords" content="Python,Django,源码分析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Django源码分析一：服务启动">
+<meta property="og:title" content="Django源码分析--服务启动">
 <meta property="og:url" content="http://yoursite.com/2019/08/26/Django源码分析--服务启动/index.html">
 <meta property="og:site_name" content="Min HelloWorld">
-<meta property="og:description" content="1、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta property="og:description" content="Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Djang">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-10-10T06:56:06.934Z">
+<meta property="og:updated_time" content="2019-11-06T07:47:46.716Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Django源码分析一：服务启动">
-<meta name="twitter:description" content="1、准备工作 Python 3.5.2 Django 2.1.2  PyCharm 2018.2.1 (Professional Edition)  启动项目">
+<meta name="twitter:title" content="Django源码分析--服务启动">
+<meta name="twitter:description" content="Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Djang">
 
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>Django源码分析一：服务启动 | Min HelloWorld</title>
+  <title>Django源码分析--服务启动 | Min HelloWorld</title>
   
 
 
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Django源码分析一：服务启动</h1>
+          <h1 class="post-title" itemprop="name headline">Django源码分析--服务启动</h1>
         
 
         <div class="post-meta">
@@ -305,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Django-学习/" itemprop="url" rel="index">
-                    <span itemprop="name">Django-学习</span>
+                  <a href="/categories/Django/" itemprop="url" rel="index">
+                    <span itemprop="name">Django</span>
                   </a>
                 </span>
 
@@ -342,19 +342,19 @@
       
 
       
-        <h3 id="1、准备工作"><a href="#1、准备工作" class="headerlink" title="1、准备工作"></a>1、准备工作</h3><ul>
+        <p>Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Django采用wsgi是纯python代码实现，开源项目有一个uWSGI是C语言代码实现，因此现在更多的django项目实际上是运行在uWSGI上的，uWSGI不再讨论范围之内)。</p>
+<p>接下来是记录我利用pycharm提供的断点调试功能以及自己打日志整个过程的梳理和总结。</p>
+<p>源码的分析过程取决与分析人员想要关注的原理点，不同的需求就会有不同的侧重点，我当前的需求点是，想要知道django是如何通过网络层接收数据(wsgi)并将请求转发给django的urls层，因此我会朝着这个主题方向列出每个流转环节中的核心代码并做相应的注解。以后如果有机会的话我将会从另外一个侧重点(程序设计)去分析源码。</p>
+<p>每个过程我都会先将代码列出来然后在后面做注解，因此告诫自己以后重读自己的笔记时不需要努力的去看代码，而是直接看注解，然后找到对应的代码进行理解。</p>
+<a id="more"></a>
+<h3 id="1、准备工作"><a href="#1、准备工作" class="headerlink" title="1、准备工作"></a>1、准备工作</h3><ul>
 <li>Python 3.5.2</li>
 <li>Django 2.1.2 </li>
 <li>PyCharm 2018.2.1 (Professional Edition) </li>
 <li>启动项目</li>
 </ul>
-<a id="more"></a>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[min:] ~/Desktop/python/Demo$ python manage.py runserver 0.0.0.0:8000</span><br></pre></td></tr></table></figure>
-<h3 id="2、说明"><a href="#2、说明" class="headerlink" title="2、说明"></a>2、说明</h3><p>Django框架的整个数据流向、服务启动、端口监听等基础核心功能都是按照WSGI标准进行开发的。WSGI是Web Server Gateway Interface的缩写，它的主要作用是接收客户端(浏览器/软件/APP/调试程序)发送的请求和转发请求给上层服务(例如Django)。它采用了select网络模型进行数据的接收和分发，可以利用操作系统的非堵塞和线程池等特性，因此它是非常高效的(Django采用wsgi是纯python代码实现，开源项目有一个uWSGI是C语言代码实现，因此现在更多的django项目实际上是运行在uWSGI上的，uWSGI不再讨论范围之内)。</p>
-<p>接下来是记录我利用pycharm提供的断点调试功能以及自己打日志整个过程的梳理和总结。</p>
-<p>源码的分析过程取决与分析人员想要关注的原理点，不同的需求就会有不同的侧重点，我当前的需求点是，想要知道django是如何通过网络层接收数据(wsgi)并将请求转发给django的urls层，因此我会朝着这个主题方向列出每个流转环节中的核心代码并做相应的注解。以后如果有机会的话我将会从另外一个侧重点(程序设计)去分析源码。</p>
-<p>每个过程我都会先将代码列出来然后在后面做注解，因此告诫自己以后重读自己的笔记时不需要努力的去看代码，而是直接看注解，然后找到对应的代码进行理解。</p>
-<h3 id="3、分析流程"><a href="#3、分析流程" class="headerlink" title="3、分析流程"></a>3、分析流程</h3><h5 id="manage-py"><a href="#manage-py" class="headerlink" title="manage.py"></a>manage.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    os.environ.setdefault(<span class="string">"DJANGO_SETTINGS_MODULE"</span>, <span class="string">"TestDrivenDjango.settings"</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">from</span> django.core.management <span class="keyword">import</span> execute_from_command_line</span><br><span class="line">    <span class="keyword">except</span> ImportError:</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    execute_from_command_line(sys.argv)</span><br></pre></td></tr></table></figure>
+<h3 id="2、分析流程"><a href="#2、分析流程" class="headerlink" title="2、分析流程"></a>2、分析流程</h3><h5 id="manage-py"><a href="#manage-py" class="headerlink" title="manage.py"></a>manage.py</h5><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    os.environ.setdefault(<span class="string">"DJANGO_SETTINGS_MODULE"</span>, <span class="string">"TestDrivenDjango.settings"</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">from</span> django.core.management <span class="keyword">import</span> execute_from_command_line</span><br><span class="line">    <span class="keyword">except</span> ImportError:</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    execute_from_command_line(sys.argv)</span><br></pre></td></tr></table></figure>
 <ul>
 <li><code>from django.core.management import execute_from_command_line</code>当这行代码开始执行时，首先会去运行<code>django.core.management.__init__.py</code>这一整个文件，接着找到<code>execute_from_command_line</code>函数并将其导入到当前程序的命名空间中；</li>
 <li>另外在导入之前，我们不可忽视的就是这个文件本身的import语句。</li>
@@ -450,7 +450,7 @@
 <li>通过层层流转，最终进入WSGIHandler，后续的动作我们会在接下来的章节继续介绍。</li>
 <li><code>environ</code>这个变量在django的WSGIServer和WSGIRequestHandler中扮演这非常重要的角色，因为所有的<code>客户端ip</code>、<code>请求的URL</code>、<code>cookie</code>、<code>session</code>、<code>header</code>等等信息都保存在其中。</li>
 </ul>
-<h3 id="4、总结"><a href="#4、总结" class="headerlink" title="4、总结"></a>4、总结</h3><p>上面所有的过程都是django内部代码的为了启动服务而做的准备，简单的把流程给列出来。</p>
+<h3 id="3、总结"><a href="#3、总结" class="headerlink" title="3、总结"></a>3、总结</h3><p>上面所有的过程都是django内部代码的为了启动服务而做的准备，简单的把流程给列出来。</p>
 <ol>
 <li>解析运行 python manage.py 所提供的参数，例如: runserver；</li>
 <li>根据参数 找到相对应的 命令管理工具；</li>
@@ -508,8 +508,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/06/Django源码分析--路由分发/" rel="prev" title="Django源码分析二：路由分发">
-                Django源码分析二：路由分发 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/06/Django源码分析--路由分发/" rel="prev" title="Django源码分析--路由分发">
+                Django源码分析--路由分发 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -600,7 +600,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -692,7 +692,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、准备工作"><span class="nav-number">1.</span> <span class="nav-text">1、准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、说明"><span class="nav-number">2.</span> <span class="nav-text">2、说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、分析流程"><span class="nav-number">3.</span> <span class="nav-text">3、分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#manage-py"><span class="nav-number">3.0.1.</span> <span class="nav-text">manage.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-init-py"><span class="nav-number">3.0.2.</span> <span class="nav-text">django/core/management/__init__.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-contrib-staticfiles-management-commands-runserver-py"><span class="nav-number">3.0.3.</span> <span class="nav-text">django/contrib/staticfiles/management/commands/runserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-commands-runserver-py"><span class="nav-number">3.0.4.</span> <span class="nav-text">django/core/management/commands/runserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-base-py"><span class="nav-number">3.0.5.</span> <span class="nav-text">django/core/management/base.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-servers-basehttp-py"><span class="nav-number">3.0.6.</span> <span class="nav-text">django/core/servers/basehttp.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-python3-6-socketserver-py"><span class="nav-number">3.0.7.</span> <span class="nav-text">lib/python3.6/socketserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-servers-basehttp-py-1"><span class="nav-number">3.0.8.</span> <span class="nav-text">django.core.servers.basehttp.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wsgiref-handlers-py"><span class="nav-number">3.0.9.</span> <span class="nav-text">wsgiref.handlers.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-handlers-wsgi-py"><span class="nav-number">3.0.10.</span> <span class="nav-text">django.core.handlers.wsgi.py</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#4、总结"><span class="nav-number">4.</span> <span class="nav-text">4、总结</span></a></li></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、准备工作"><span class="nav-number">1.</span> <span class="nav-text">1、准备工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、分析流程"><span class="nav-number">2.</span> <span class="nav-text">2、分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#manage-py"><span class="nav-number">2.0.1.</span> <span class="nav-text">manage.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-init-py"><span class="nav-number">2.0.2.</span> <span class="nav-text">django/core/management/__init__.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-contrib-staticfiles-management-commands-runserver-py"><span class="nav-number">2.0.3.</span> <span class="nav-text">django/contrib/staticfiles/management/commands/runserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-commands-runserver-py"><span class="nav-number">2.0.4.</span> <span class="nav-text">django/core/management/commands/runserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-management-base-py"><span class="nav-number">2.0.5.</span> <span class="nav-text">django/core/management/base.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-servers-basehttp-py"><span class="nav-number">2.0.6.</span> <span class="nav-text">django/core/servers/basehttp.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lib-python3-6-socketserver-py"><span class="nav-number">2.0.7.</span> <span class="nav-text">lib/python3.6/socketserver.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-servers-basehttp-py-1"><span class="nav-number">2.0.8.</span> <span class="nav-text">django.core.servers.basehttp.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#wsgiref-handlers-py"><span class="nav-number">2.0.9.</span> <span class="nav-text">wsgiref.handlers.py</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#django-core-handlers-wsgi-py"><span class="nav-number">2.0.10.</span> <span class="nav-text">django.core.handlers.wsgi.py</span></a></li></ol></li></ol><li class="nav-item nav-level-3"><a class="nav-link" href="#3、总结"><span class="nav-number">3.</span> <span class="nav-text">3、总结</span></a></li></div>
             
 
           </div>

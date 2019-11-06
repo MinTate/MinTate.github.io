@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Min HelloWorld">
 <meta property="og:description" content="观书有会意处，题其衣裳，以记其事～">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-04T02:12:23.770Z">
+<meta property="og:updated_time" content="2019-11-06T07:31:56.328Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="容器时间跟宿主机时间同步">
 <meta name="twitter:description" content="观书有会意处，题其衣裳，以记其事～">
@@ -305,8 +305,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Docker-问题记录/" itemprop="url" rel="index">
-                    <span itemprop="name">Docker-问题记录</span>
+                  <a href="/categories/Docker/" itemprop="url" rel="index">
+                    <span itemprop="name">Docker</span>
                   </a>
                 </span>
 
@@ -344,10 +344,10 @@
       
         <p>观书有会意处，题其衣裳，以记其事～</p>
 <a id="more"></a>
-<h3 id="一、问题"><a href="#一、问题" class="headerlink" title="一、问题"></a>一、问题</h3><p>在Docker容器创建好之后，可能会发现容器时间跟宿主机时间不一致，比如：</p>
+<h3 id="1、问题"><a href="#1、问题" class="headerlink" title="1、问题"></a>1、问题</h3><p>在Docker容器创建好之后，可能会发现容器时间跟宿主机时间不一致，比如：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">宿主机时间</span><br><span class="line">[root@slave-1 ~]<span class="comment"># date</span></span><br><span class="line">Fri May 12 11:20:30 CST 2017</span><br><span class="line">容器时间</span><br><span class="line">[root@slave-1 ~]<span class="comment"># docker exec -ti 87986863838b /bin/bash</span></span><br><span class="line">root@87986863838b:/<span class="comment"># date                                                                                                                    </span></span><br><span class="line">Fri May 12 03:20:33 UTC 2017</span><br></pre></td></tr></table></figure>
 <!--more-->
-<h3 id="二、解决方案"><a href="#二、解决方案" class="headerlink" title="二、解决方案"></a>二、解决方案</h3><p>发现两者之间的时间相差了八个小时！宿主机采用了CST时区，CST应该是指（China Shanghai Time，东八区时间）容器采用了UTC时区，UTC应该是指（Coordinated Universal Time，标准时间）这就需要同步它们的时间，让容器时间跟宿主机时间保持一致。具体有如下两种方法：</p>
+<h3 id="2、解决方案"><a href="#2、解决方案" class="headerlink" title="2、解决方案"></a>2、解决方案</h3><p>发现两者之间的时间相差了八个小时！宿主机采用了CST时区，CST应该是指（China Shanghai Time，东八区时间）容器采用了UTC时区，UTC应该是指（Coordinated Universal Time，标准时间）这就需要同步它们的时间，让容器时间跟宿主机时间保持一致。具体有如下两种方法：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1）共享主机的localtime</span><br><span class="line">创建容器的时候指定启动参数，挂载localtime文件到容器内，保证两者所采用的时区是一致的。</span><br><span class="line"><span class="comment"># docker run -ti -d --name my-nginx -v /etc/localtime:/etc/localtime:ro  docker.io/nginx  /bin/bash</span></span><br><span class="line"> </span><br><span class="line">2)复制主机的localtime</span><br><span class="line">[root@slave-1 ~]<span class="comment"># docker cp /etc/localtime 87986863838b:/etc/</span></span><br><span class="line"> </span><br><span class="line">然后再登陆容器，查看时间，发现已经跟宿主机时间同步了</span><br><span class="line">[root@slave-1 ~]<span class="comment"># docker exec -ti 87986863838b /bin/bash</span></span><br><span class="line">root@87986863838b:/<span class="comment"># date                                                                                                                    </span></span><br><span class="line">Fri May 12 11:26:19 CST 2017</span><br></pre></td></tr></table></figure>
 
       
@@ -380,10 +380,6 @@
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
-            
-              <a href="/2019/04/13/Android Settings中账户图片冲突问题的分析/" rel="next" title="Android Settings中账户图片冲突问题的分析">
-                <i class="fa fa-chevron-left"></i> Android Settings中账户图片冲突问题的分析
-              </a>
             
           </div>
 
@@ -483,7 +479,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -575,7 +571,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、问题"><span class="nav-number">1.</span> <span class="nav-text">一、问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、解决方案"><span class="nav-number">2.</span> <span class="nav-text">二、解决方案</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、问题"><span class="nav-number">1.</span> <span class="nav-text">1、问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、解决方案"><span class="nav-number">2.</span> <span class="nav-text">2、解决方案</span></a></li></ol></div>
             
 
           </div>
