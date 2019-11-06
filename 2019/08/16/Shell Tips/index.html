@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Min HelloWorld">
 <meta property="og:description" content="观书有会意处，题其衣裳，以记其事～">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-04T02:08:36.035Z">
+<meta property="og:updated_time" content="2019-11-05T08:51:02.218Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Shell Tips">
 <meta name="twitter:description" content="观书有会意处，题其衣裳，以记其事～">
@@ -404,6 +404,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">funWithReturn</span></span>()&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"这个函数会对输入的两个数字进行相加运算..."</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"输入第一个数字: "</span></span><br><span class="line">    <span class="built_in">read</span> aNum</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"输入第二个数字: "</span></span><br><span class="line">    <span class="built_in">read</span> anotherNum</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"两个数字分别为 <span class="variable">$aNum</span> 和 <span class="variable">$anotherNum</span> !"</span></span><br><span class="line">    <span class="built_in">return</span> $((<span class="variable">$aNum</span>+<span class="variable">$anotherNum</span>))</span><br><span class="line">&#125;</span><br><span class="line">funWithReturn</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"输入的两个数字之和为 $? !"</span></span><br></pre></td></tr></table></figure>
 <p>2）带参数的函数</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">funWithParam</span></span>()&#123;</span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"第一个参数为 <span class="variable">$1</span> !"</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"第二个参数为 <span class="variable">$2</span> !"</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"第十个参数为 <span class="variable">$10</span> !"</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"第十个参数为 <span class="variable">$&#123;10&#125;</span> !"</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"第十一个参数为 <span class="variable">$&#123;11&#125;</span> !"</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"参数总数有 <span class="variable">$#</span> 个!"</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"作为一个字符串输出所有参数 $* !"</span></span><br><span class="line">&#125;</span><br><span class="line">funWithParam 1 2 3 4 5 6 7 8 9 34 73</span><br></pre></td></tr></table></figure>
+<h3 id="8-grep-常见用法"><a href="#8-grep-常见用法" class="headerlink" title="8. grep 常见用法"></a>8. grep 常见用法</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-c 或 --count : 计算符合样式的列数;</span><br><span class="line">-i 或 --ignore-case : 忽略字符大小写的差别;</span><br><span class="line">-E 或 --extended-regexp : 将样式为延伸的正则表达式来使用;</span><br><span class="line">-n 或 --line-number : 在显示符合样式的那一行之前，标示出该行的列数编号;</span><br></pre></td></tr></table></figure>
 <h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><ol>
 <li><p><a href="https://www.runoob.com/linux/linux-shell-func.html" target="_blank" rel="noopener">菜鸟教程 Shell教程</a></p>
 </li>
@@ -535,7 +536,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -557,7 +558,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -638,7 +639,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-CMD-输出打印行数"><span class="nav-number">1.</span> <span class="nav-text">1. CMD 输出打印行数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-分割输出，每个一行"><span class="nav-number">2.</span> <span class="nav-text">2. 分割输出，每个一行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-正则表达式提取-IP-地址"><span class="nav-number">3.</span> <span class="nav-text">3. 正则表达式提取 IP 地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-引号嵌套"><span class="nav-number">4.</span> <span class="nav-text">4. 引号嵌套</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-判断文件-文件夹是否存在"><span class="nav-number">5.</span> <span class="nav-text">5. 判断文件/文件夹是否存在</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-判断目录是否为空"><span class="nav-number">6.</span> <span class="nav-text">6. 判断目录是否为空</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Shell特殊变量"><span class="nav-number">7.</span> <span class="nav-text">7. Shell特殊变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-Shell-函数"><span class="nav-number">8.</span> <span class="nav-text">8.Shell 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考："><span class="nav-number">9.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-CMD-输出打印行数"><span class="nav-number">1.</span> <span class="nav-text">1. CMD 输出打印行数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-分割输出，每个一行"><span class="nav-number">2.</span> <span class="nav-text">2. 分割输出，每个一行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-正则表达式提取-IP-地址"><span class="nav-number">3.</span> <span class="nav-text">3. 正则表达式提取 IP 地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-引号嵌套"><span class="nav-number">4.</span> <span class="nav-text">4. 引号嵌套</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-判断文件-文件夹是否存在"><span class="nav-number">5.</span> <span class="nav-text">5. 判断文件/文件夹是否存在</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-判断目录是否为空"><span class="nav-number">6.</span> <span class="nav-text">6. 判断目录是否为空</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-Shell特殊变量"><span class="nav-number">7.</span> <span class="nav-text">7. Shell特殊变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-Shell-函数"><span class="nav-number">8.</span> <span class="nav-text">8.Shell 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-grep-常见用法"><span class="nav-number">9.</span> <span class="nav-text">8. grep 常见用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考："><span class="nav-number">10.</span> <span class="nav-text">参考：</span></a></li></ol></div>
             
 
           </div>
