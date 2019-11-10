@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,NDK,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="目前市场上越来越多的 Android App采用 C/C++ 来实现其关键逻辑，尤其是很多第三方的SDK，出于效率、安全，复用的考虑，比如人脸识别，语音识别等等。所以能分析 C/C++ 崩溃日志并能从日志中分析出原因，成为 Android 开发人员一项必备技能。本文将通过一个简单的Demo分析 Native 崩溃日志来定位出错的 C/C++ 代码及出错原因。">
+<meta name="keywords" content="Android,NDK">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android NDK开发Crash问题分析">
+<meta property="og:url" content="http://yoursite.com/2019/11/01/Android NDK开发Crash问题分析/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="目前市场上越来越多的 Android App采用 C/C++ 来实现其关键逻辑，尤其是很多第三方的SDK，出于效率、安全，复用的考虑，比如人脸识别，语音识别等等。所以能分析 C/C++ 崩溃日志并能从日志中分析出原因，成为 Android 开发人员一项必备技能。本文将通过一个简单的Demo分析 Native 崩溃日志来定位出错的 C/C++ 代码及出错原因。">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-11-10T15:07:58.296Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android NDK开发Crash问题分析">
+<meta name="twitter:description" content="目前市场上越来越多的 Android App采用 C/C++ 来实现其关键逻辑，尤其是很多第三方的SDK，出于效率、安全，复用的考虑，比如人脸识别，语音识别等等。所以能分析 C/C++ 崩溃日志并能从日志中分析出原因，成为 Android 开发人员一项必备技能。本文将通过一个简单的Demo分析 Native 崩溃日志来定位出错的 C/C++ 代码及出错原因。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/11/01/Android NDK开发Crash问题分析/">
+
+
+
+
+
+  <title>Android NDK开发Crash问题分析 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/Android NDK开发Crash问题分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Android NDK开发Crash问题分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-01T21:12:44+08:00">
+                2019-11-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前市场上越来越多的 Android App采用 C/C++ 来实现其关键逻辑，尤其是很多第三方的SDK，出于效率、安全，复用的考虑，比如人脸识别，语音识别等等。所以能分析 C/C++ 崩溃日志并能从日志中分析出原因，成为 Android 开发人员一项必备技能。本文将通过一个简单的Demo分析 Native 崩溃日志来定位出错的 C/C++ 代码及出错原因。<br><a id="more"></a></p>
+<h2 id="1、问题现场"><a href="#1、问题现场" class="headerlink" title="1、问题现场"></a>1、问题现场</h2><p>为了方便，直接使用Android Studio中Sample：<a href="https://github.com/android/ndk-samples/tree/master/hello-jni" target="_blank" rel="noopener">hello-jni</a>，修改<code>app/src/main/cpp/hello-jni.c</code>文件内容如下，手动造一个Native Crash问题，这样在App启动后，就会出现闪退，抓取logcat日志。</p>
+<blockquote>
+<p>因为使用的user版本的手机，所有没有权限读取到/data/tombstones日志，不过logcat日志对于分析本文的问题已经足够；</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Copyright (C) 2016 The Android Open Source Project</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Licensed under the Apache License, Version 2.0 (the "License");</span></span><br><span class="line"><span class="comment"> * you may not use this file except in compliance with the License.</span></span><br><span class="line"><span class="comment"> * You may obtain a copy of the License at</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *      http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Unless required by applicable law or agreed to in writing, software</span></span><br><span class="line"><span class="comment"> * distributed under the License is distributed on an "AS IS" BASIS,</span></span><br><span class="line"><span class="comment"> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></span><br><span class="line"><span class="comment"> * See the License for the specific language governing permissions and</span></span><br><span class="line"><span class="comment"> * limitations under the License.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* This is a trivial JNI example where we use a native method</span></span><br><span class="line"><span class="comment"> * to return a new VM String. See the corresponding Java source</span></span><br><span class="line"><span class="comment"> * file located at:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *   hello-jni/app/src/main/java/com/example/hellojni/HelloJni.java</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">willCrash</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> *p = <span class="literal">NULL</span>;</span><br><span class="line">    *p = <span class="number">123</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">JNIEXPORT jstring JNICALL</span><br><span class="line">Java_com_example_hellojni_HelloJni_stringFromJNI( JNIEnv* env,</span><br><span class="line">                                                  jobject thiz )</span><br><span class="line">&#123;</span><br><span class="line">    willCrash();</span><br><span class="line">    <span class="keyword">return</span> (*env)-&gt;NewStringUTF(env, <span class="string">"Hello from JNI !  Compiled with ABI"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2、分析流程"><a href="#2、分析流程" class="headerlink" title="2、分析流程"></a>2、分析流程</h2><h3 id="2-1、关于日志"><a href="#2-1、关于日志" class="headerlink" title="2.1、关于日志"></a>2.1、关于日志</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">11-10 22:08:45.968  4449  4449 I crash_dump64: performing dump of process 4418 (target tid = 4418)</span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***</span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : Build fingerprint: <span class="string">'Xiaomi/sagit/sagit:9/PKQ1.190118.001/V10.4.2.0.PCACNXM:user/release-keys'</span></span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : Revision: <span class="string">'0'</span></span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : ABI: <span class="string">'arm64'</span></span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : pid: 4418, tid: 4418, name: xample.hellojni  &gt;&gt;&gt; com.example.hellojni &lt;&lt;&lt;</span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0</span><br><span class="line">11-10 22:08:45.976  4449  4449 F DEBUG   : Cause: null pointer dereference</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x0  0000006f510e8460  x1  0000007ff2acb514  x2  0000000000000000  x3  0000006f51014c00</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x4  0000007ff2acb980  x5  0000006f38f34471  x6  766468752e63686e  x7  0000000000000000</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x8  000000000000007b  x9  0000000000000000  x10 0000000000430000  x11 0000006f50936688</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x12 000000000000018c  x13 0000006fd3eb1018  x14 0000006fd3e7e000  x15 ffffffffffffffff</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x16 0000006f38bd8fe0  x17 0000006f38bc8648  x18 0000000000000000  x19 0000006f51014c00</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x20 0000006f50850880  x21 0000006f51014c00  x22 0000007ff2acb7b0  x23 0000006f38f34471</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x24 0000000000000004  x25 0000006fd6f7a5e0  x26 0000006f51014ca0  x27 0000000000000001</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     x28 0000000000000002  x29 0000007ff2acb4f0</span><br><span class="line">11-10 22:08:45.977  4449  4449 F DEBUG   :     sp  0000007ff2acb4c0  lr  0000006f38bc8680  pc  0000006f38bc865c</span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   : </span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   : backtrace:</span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#00 pc 000000000000065c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/lib/arm64/libhello-jni.so (willCrash+20)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#01 pc 000000000000067c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/lib/arm64/libhello-jni.so (Java_com_example_hellojni_HelloJni_stringFromJNI+20)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#02 pc 000000000000909c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/oat/arm64/base.odex (offset 0x9000) (com.example.hellojni.HelloJni.stringFromJNI+124)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#03 pc 000000000055d788  /system/lib64/libart.so (art_quick_invoke_stub+584)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#04 pc 00000000000d074c  /system/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+200)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#05 pc 0000000000280dbc  /system/lib64/libart.so (art::interpreter::ArtInterpreterToCompiledCodeBridge(art::Thread*, art::ArtMethod*, art::ShadowFrame*, unsigned short, art::JValue*)+344)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#06 pc 000000000027add0  /system/lib64/libart.so (bool art::interpreter::DoCall&lt;false, false&gt;(art::ArtMethod*, art::Thread*, art::ShadowFrame&amp;, art::Instruction const*, unsigned short, art::JValue*)+968)</span></span><br><span class="line">---------------------------------省略部分-----------------------------------</span><br></pre></td></tr></table></figure>
+<p>可以看到，日志内容主要由下面几部分组成：（我们最主要的就是分析崩溃的过程和PID，终止的信号和故障地址和调用堆栈部分）</p>
+<ul>
+<li>构建指纹</li>
+<li>崩溃的过程和PID</li>
+<li>终止信号和故障地址</li>
+<li>CPU寄存器</li>
+<li>调用堆栈</li>
+</ul>
+<h4 id="2-1-1、崩溃过程和PID信息"><a href="#2-1-1、崩溃过程和PID信息" class="headerlink" title="2.1.1、崩溃过程和PID信息"></a>2.1.1、崩溃过程和PID信息</h4><p>从上面日志中的第6行中我们可以看到崩溃进程的基本信息，如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pid: 8902, tid: 8902, name: xample.hellojni  &gt;&gt;&gt; com.example.hellojni &lt;&lt;&lt;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>如果pid等于tid，那么就说明这个程序是在主线程中Crash掉的，名称的属性则表示Crash进程的名称以及在文件系统中位置。</p>
+</blockquote>
+<h4 id="2-1-2、终止信号和故障地址信息"><a href="#2-1-2、终止信号和故障地址信息" class="headerlink" title="2.1.2、终止信号和故障地址信息"></a>2.1.2、终止信号和故障地址信息</h4><p>从上面日志中的第7、8行中我们可以看到程序是因为什么信号导致了Crash以及出现错误的地址，如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">11-10 19:53:21.890  8926  8926 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0</span><br><span class="line">11-10 19:53:21.890  8926  8926 F DEBUG   : Cause: null pointer dereference</span><br></pre></td></tr></table></figure>
+<p>第7行的信息说明出现进程Crash的原因是因为程序产生了段错误的信号，访问了非法的内存空间，而访问的非法地址是0x0。另外这个例子中直接给出来问题原因是因为空指针，其他问题并不一定会给出此信息。</p>
+<h4 id="2-1-3、调用堆栈信息"><a href="#2-1-3、调用堆栈信息" class="headerlink" title="2.1.3、调用堆栈信息"></a>2.1.3、调用堆栈信息</h4><p>调用栈信息是分析程序崩溃的非常重要的一个信息，它主要记录了程序在Crash前的函数调用关系以及当前正在执行函数的信息，上面例中的backtrace的信息如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   : backtrace:</span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#00 pc 000000000000065c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/lib/arm64/libhello-jni.so (willCrash+20)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#01 pc 000000000000067c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/lib/arm64/libhello-jni.so (Java_com_example_hellojni_HelloJni_stringFromJNI+20)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#02 pc 000000000000909c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/oat/arm64/base.odex (offset 0x9000) (com.example.hellojni.HelloJni.stringFromJNI+124)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#03 pc 000000000055d788  /system/lib64/libart.so (art_quick_invoke_stub+584)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#04 pc 00000000000d074c  /system/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+200)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#05 pc 0000000000280dbc  /system/lib64/libart.so (art::interpreter::ArtInterpreterToCompiledCodeBridge(art::Thread*, art::ArtMethod*, art::ShadowFrame*, unsigned short, art::JValue*)+344)</span></span><br><span class="line">11-10 22:08:46.305  4449  4449 F DEBUG   :     <span class="comment">#06 pc 000000000027add0  /system/lib64/libart.so (bool art::interpreter::DoCall&lt;false, false&gt;(art::ArtMethod*, art::Thread*, art::ShadowFrame&amp;, art::Instruction const*, unsigned short, art::JValue*)+968)</span></span><br></pre></td></tr></table></figure>
+<p>在上面的输出信息中，## 00，＃01，＃02 ……等表示的都是函数调用栈中栈帧的编号，其中编号越小的栈帧表示着当前最近调用的函数信息，所以栈帧标号＃00表示的就是当前正在执行并导致程序崩溃函数的信息。</p>
+<p>在栈帧的每一行中，pc后面的16进制数值表示的是当前函数正在执行语句的在共享链接库或者可执行文件中的位置，然后/lib/arm/libhello-jni.so则表示的是当前执行指令是在哪个文件当中，后面的小括号则是注明对应的是哪个函数。</p>
+<p>例如，在上面的例子中，我们就可以定位到是程序是在<code>willCrash</code>中出现了错误，但是具体在那一行呢，我们还不是特别清楚，所以就需要我们进一步地使用更加高级的工具来帮助我们解析日志中有关调用栈的信息。</p>
+<h3 id="2-2、addr2line"><a href="#2-2、addr2line" class="headerlink" title="2.2、addr2line"></a>2.2、addr2line</h3><p>addr2line是NDK中用来获得指定动态链接库文件或者可执行文件中指定地址对应的源代码信息，它们位于NDK包中的如下位置中，以arm64架构为例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$<span class="variable">$NDK_HOME</span>/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-addr2line</span><br></pre></td></tr></table></figure>
+<p>其中NDK_HOME表示你的NDK的安装路径，另外具体架构和目录的对应关系如下: </p>
+<table>
+<thead>
+<tr>
+<th>工具链</th>
+<th>位置</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>arm</td>
+<td><code>$TOOLCHAIN/arm-linux-androideabi/lib/</code></td>
+</tr>
+<tr>
+<td>arm64</td>
+<td><code>$TOOLCHAIN/aarch64-linux-android/lib/</code></td>
+</tr>
+<tr>
+<td>x86</td>
+<td><code>$TOOLCHAIN/i686-linux-android/lib/</code></td>
+</tr>
+<tr>
+<td>x86_64</td>
+<td><code>$TOOLCHAIN/x86_64-linux-android/lib/</code></td>
+</tr>
+</tbody>
+</table>
+<p>addr2line的使用说明如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Usage: ./aarch64-linux-android-addr2line [option(s)] [addr(s)]</span><br><span class="line"> Convert addresses into line number/file name pairs.</span><br><span class="line"> If no addresses are specified on the <span class="built_in">command</span> line, they will be <span class="built_in">read</span> from stdin</span><br><span class="line"> The options are:</span><br><span class="line">  @&lt;file&gt;                Read options from &lt;file&gt;</span><br><span class="line">  -a --addresses         Show addresses</span><br><span class="line">  -b --target=&lt;bfdname&gt;  Set the binary file format</span><br><span class="line">  -e --exe=&lt;executable&gt;  Set the input file name (default is a.out)</span><br><span class="line">  -i --inlines           Unwind inlined <span class="built_in">functions</span></span><br><span class="line">  -j --section=&lt;name&gt;    Read section-relative offsets instead of addresses</span><br><span class="line">  -p --pretty-print      Make the output easier to <span class="built_in">read</span> <span class="keyword">for</span> humans</span><br><span class="line">  -s --basenames         Strip directory names</span><br><span class="line">  -f --<span class="built_in">functions</span>         Show <span class="keyword">function</span> names</span><br><span class="line">  -C --demangle[=style]  Demangle <span class="keyword">function</span> names</span><br><span class="line">  -h --<span class="built_in">help</span>              Display this information</span><br><span class="line">  -v --version           Display the program<span class="string">'s version</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">./aarch64-linux-android-addr2line: supported targets: elf64-littleaarch64 elf64-bigaarch64 elf32-littleaarch64 elf32-bigaarch64 elf32-littlearm elf32-bigarm elf64-little elf64-big elf32-little elf32-big plugin srec symbolsrec verilog tekhex binary ihex</span></span><br><span class="line"><span class="string">Report bugs to &lt;http://source.android.com/source/report-bugs.html&gt;</span></span><br></pre></td></tr></table></figure>
+<p>addr2line的基本用法如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./aarch64-linux-android-addr2line -f -e ~/Desktop/workspace/android/min/Demo/HelloJNI/app/build/intermediates/cmake/arm8Debug/obj/arm64-v8a/libhello-jni.so 000000000000065c</span><br><span class="line">willCrash</span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:29</span><br></pre></td></tr></table></figure>
+<p>如上所示，通过addr2line工具，我们可以看到libhello-jni.so文件中地址000000000000065c对应的源码是什么了，它对应的是源码中app/src/main/cpp/hello-jni.c:29处代码，查看上下文后，确定为空指针问题。</p>
+<h3 id="2-3、ndk-stack"><a href="#2-3、ndk-stack" class="headerlink" title="2.3、ndk-stack"></a>2.3、ndk-stack</h3><p>Android NDK自从版本r6开始，提供了一个工具ndk-stack。这个工具能自动分析tombstone文件，能将崩溃时的调用内存地址和c ++代码一行一行对应起来。</p>
+<p>ndk-stack工具同样也位于NDK包中，它的路径如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$NDK_HOME</span>/ndk-stack</span><br></pre></td></tr></table></figure>
+<p>ndk-stack的使用说明如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Usage: ndk-stack -sym PATH [-dump PATH]</span><br><span class="line">Symbolizes the stack trace from an Android native crash.</span><br><span class="line"></span><br><span class="line">  -sym PATH   sets the root directory for symbols</span><br><span class="line">  -dump PATH  sets the file containing the crash dump (default stdin)</span><br><span class="line"></span><br><span class="line">See &lt;https://developer.android.com/ndk/guides/ndk-stack.html&gt;.</span><br></pre></td></tr></table></figure>
+<p>其中，</p>
+<ul>
+<li>dump参数很容易理解，即dump下来的log文本文件，可以是logcat日志或者tombstones日志；</li>
+<li>sym参数就是你的android项目下，编译成功之后，obj目录下的文件。</li>
+</ul>
+<p>ndk-stack的基本用法如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ndk-stack -sym ~/Desktop/workspace/android/min/Demo/HelloJNI/app/build/intermediates/cmake/arm8Debug/obj/arm64-v8a/ -dump ~/Desktop/min.log |tee ~/Desktop/ndk-stack.txt</span><br></pre></td></tr></table></figure>
+<p>最后产生的结果文件如下，可以看到，堆栈信息的最后对应的是源码中app/src/main/cpp/hello-jni.c:29处代码，查看上下文后，确定为空指针问题。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">********** Crash dump: **********</span><br><span class="line">Build fingerprint: <span class="string">'Xiaomi/sagit/sagit:9/PKQ1.190118.001/V10.4.2.0.PCACNXM:user/release-keys'</span></span><br><span class="line">pid: 4418, tid: 4418, name: xample.hellojni  &gt;&gt;&gt; com.example.hellojni &lt;&lt;&lt;</span><br><span class="line">signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0</span><br><span class="line">Stack frame <span class="comment">#00 pc 000000000000065c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/lib/arm64/libhello-jni.so (willCrash+20): Routine willCrash at /Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:29</span></span><br><span class="line">Stack frame <span class="comment">#01 pc 000000000000067c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/lib/arm64/libhello-jni.so (Java_com_example_hellojni_HelloJni_stringFromJNI+20): Routine Java_com_example_hellojni_HelloJni_stringFromJNI at /Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:36</span></span><br><span class="line">Stack frame <span class="comment">#02 pc 000000000000909c  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/oat/arm64/base.odex (offset 0x9000) (com.example.hellojni.HelloJni.stringFromJNI+124)</span></span><br><span class="line">Stack frame <span class="comment">#03 pc 000000000055d788  /system/lib64/libart.so (art_quick_invoke_stub+584)</span></span><br><span class="line">Stack frame <span class="comment">#04 pc 00000000000d074c  /system/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+200)</span></span><br><span class="line">Stack frame <span class="comment">#05 pc 0000000000280dbc  /system/lib64/libart.so (art::interpreter::ArtInterpreterToCompiledCodeBridge(art::Thread*, art::ArtMethod*, art::ShadowFrame*, unsigned short, art::JValue*)+344)</span></span><br><span class="line">Stack frame <span class="comment">#06 pc 000000000027add0  /system/lib64/libart.so (bool art::interpreter::DoCall&lt;false, false&gt;(art::ArtMethod*, art::Thread*, art::ShadowFrame&amp;, art::Instruction const*, unsigned short, art::JValue*)+968)</span></span><br><span class="line">Stack frame <span class="comment">#07 pc 000000000052c8d8  /system/lib64/libart.so (MterpInvokeVirtual+588)</span></span><br><span class="line">Stack frame <span class="comment">#08 pc 000000000054fd14  /system/lib64/libart.so (ExecuteMterpImpl+14228)</span></span><br><span class="line">Stack frame <span class="comment">#09 pc 00000000001de676  /data/app/com.example.hellojni-Sytg7I9fr97KTcTz7Rrsjg==/oat/arm64/base.vdex (com.example.hellojni.HelloJni.onCreate+36)</span></span><br><span class="line">Stack frame <span class="comment">#10 pc 0000000000254ad4  /system/lib64/libart.so (_ZN3art11interpreterL7ExecuteEPNS_6ThreadERKNS_20CodeItemDataAccessorERNS_11ShadowFrameENS_6JValueEb.llvm.1893940555+488)</span></span><br><span class="line">Stack frame <span class="comment">#11 pc 000000000025a5c8  /system/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&amp;, art::ShadowFrame*, art::JValue*)+216)</span></span><br><span class="line">---------------------------------省略部分-----------------------------------</span><br></pre></td></tr></table></figure>
+<h3 id="2-4、ndk-stack"><a href="#2-4、ndk-stack" class="headerlink" title="2.4、ndk-stack"></a>2.4、ndk-stack</h3><p>上面两种工具都是将崩溃点对应到源码再进行分析，objdump 则是可以在汇编层对崩溃原因进行分析。所以这要求我们必须了解一些 arm/x86 汇编知识。</p>
+<p>objdump也是ndk自带的一个工具，通常与addr2line在同一目录:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$<span class="variable">$NDK_HOME</span>/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-objdump</span><br></pre></td></tr></table></figure>
+<p>objdump的使用说明如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">Usage: ./aarch64-linux-android-objdump &lt;option(s)&gt; &lt;file(s)&gt;</span><br><span class="line"> Display information from object &lt;file(s)&gt;.</span><br><span class="line"> At least one of the following switches must be given:</span><br><span class="line">  -a, --archive-headers    Display archive header information</span><br><span class="line">  -f, --file-headers       Display the contents of the overall file header</span><br><span class="line">  -p, --private-headers    Display object format specific file header contents</span><br><span class="line">  -P, --private=OPT,OPT... Display object format specific contents</span><br><span class="line">  -h, --[section-]headers  Display the contents of the section headers</span><br><span class="line">  -x, --all-headers        Display the contents of all headers</span><br><span class="line">  -d, --disassemble        Display assembler contents of executable sections</span><br><span class="line">  -D, --disassemble-all    Display assembler contents of all sections</span><br><span class="line">  -S, --<span class="built_in">source</span>             Intermix <span class="built_in">source</span> code with disassembly</span><br><span class="line">  -s, --full-contents      Display the full contents of all sections requested</span><br><span class="line">  -g, --debugging          Display debug information <span class="keyword">in</span> object file</span><br><span class="line">  -e, --debugging-tags     Display debug information using ctags style</span><br><span class="line">  -G, --stabs              Display (<span class="keyword">in</span> raw form) any STABS info <span class="keyword">in</span> the file</span><br><span class="line">  -W[lLiaprmfFsoRt] or</span><br><span class="line">  --dwarf[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,</span><br><span class="line">          =frames-interp,=str,=loc,=Ranges,=pubtypes,</span><br><span class="line">          =gdb_index,=trace_info,=trace_abbrev,=trace_aranges,</span><br><span class="line">          =addr,=cu_index]</span><br><span class="line">                           Display DWARF info <span class="keyword">in</span> the file</span><br><span class="line">  -t, --syms               Display the contents of the symbol table(s)</span><br><span class="line">  -T, --dynamic-syms       Display the contents of the dynamic symbol table</span><br><span class="line">  -r, --reloc              Display the relocation entries <span class="keyword">in</span> the file</span><br><span class="line">  -R, --dynamic-reloc      Display the dynamic relocation entries <span class="keyword">in</span> the file</span><br><span class="line">  @&lt;file&gt;                  Read options from &lt;file&gt;</span><br><span class="line">  -v, --version            Display this program<span class="string">'s version number</span></span><br><span class="line"><span class="string">  -i, --info               List object formats and architectures supported</span></span><br><span class="line"><span class="string">  -H, --help               Display this information</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> The following switches are optional:</span></span><br><span class="line"><span class="string">  -b, --target=BFDNAME           Specify the target object format as BFDNAME</span></span><br><span class="line"><span class="string">  -m, --architecture=MACHINE     Specify the target architecture as MACHINE</span></span><br><span class="line"><span class="string">  -j, --section=NAME             Only display information for section NAME</span></span><br><span class="line"><span class="string">  -M, --disassembler-options=OPT Pass text OPT on to the disassembler</span></span><br><span class="line"><span class="string">  -EB --endian=big               Assume big endian format when disassembling</span></span><br><span class="line"><span class="string">  -EL --endian=little            Assume little endian format when disassembling</span></span><br><span class="line"><span class="string">      --file-start-context       Include context from start of file (with -S)</span></span><br><span class="line"><span class="string">  -I, --include=DIR              Add DIR to search list for source files</span></span><br><span class="line"><span class="string">  -l, --line-numbers             Include line numbers and filenames in output</span></span><br><span class="line"><span class="string">  -F, --file-offsets             Include file offsets when displaying information</span></span><br><span class="line"><span class="string">  -C, --demangle[=STYLE]         Decode mangled/processed symbol names</span></span><br><span class="line"><span class="string">                                  The STYLE, if specified, can be `auto'</span>, `gnu<span class="string">',</span></span><br><span class="line"><span class="string">                                  `lucid'</span>, `arm<span class="string">', `hp'</span>, `edg<span class="string">', `gnu-v3'</span>, `java<span class="string">'</span></span><br><span class="line"><span class="string">                                  or `gnat'</span></span><br><span class="line">  -w, --wide                     Format output <span class="keyword">for</span> more than 80 columns</span><br><span class="line">  -z, --disassemble-zeroes       Do not skip blocks of zeroes when disassembling</span><br><span class="line">      --start-address=ADDR       Only process data whose address is &gt;= ADDR</span><br><span class="line">      --stop-address=ADDR        Only process data whose address is &lt;= ADDR</span><br><span class="line">      --prefix-addresses         Print complete address alongside disassembly</span><br><span class="line">      --[no-]show-raw-insn       Display hex alongside symbolic disassembly</span><br><span class="line">      --insn-width=WIDTH         Display WIDTH bytes on a single line <span class="keyword">for</span> -d</span><br><span class="line">      --adjust-vma=OFFSET        Add OFFSET to all displayed section addresses</span><br><span class="line">      --special-syms             Include special symbols <span class="keyword">in</span> symbol dumps</span><br><span class="line">      --prefix=PREFIX            Add PREFIX to absolute paths <span class="keyword">for</span> -S</span><br><span class="line">      --prefix-strip=LEVEL       Strip initial directory names <span class="keyword">for</span> -S</span><br><span class="line">      --dwarf-depth=N        Do not display DIEs at depth N or greater</span><br><span class="line">      --dwarf-start=N        Display DIEs starting with N, at the same depth</span><br><span class="line">                             or deeper</span><br><span class="line">      --dwarf-check          Make additional dwarf internal consistency checks.</span><br><span class="line"></span><br><span class="line">./aarch64-linux-android-objdump: supported targets: elf64-littleaarch64 elf64-bigaarch64 elf32-littleaarch64 elf32-bigaarch64 elf32-littlearm elf32-bigarm elf64-little elf64-big elf32-little elf32-big plugin srec symbolsrec verilog tekhex binary ihex</span><br><span class="line">./aarch64-linux-android-objdump: supported architectures: aarch64 aarch64:ilp32 arm armv2 armv2a armv3 armv3m armv4 armv4t armv5 armv5t armv5te xscale ep9312 iwmmxt iwmmxt2 arm_any plugin</span><br><span class="line"></span><br><span class="line">The following AARCH64 specific disassembler options are supported <span class="keyword">for</span> use</span><br><span class="line">with the -M switch (multiple options should be separated by commas):</span><br><span class="line"></span><br><span class="line">  no-aliases         Don<span class="string">'t print instruction aliases.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">  aliases            Do print instruction aliases.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">The following ARM specific disassembler options are supported for use with</span></span><br><span class="line"><span class="string">the -M switch:</span></span><br><span class="line"><span class="string">  reg-names-special-atpcs  Select special register names used in the ATPCS</span></span><br><span class="line"><span class="string">  reg-names-atpcs          Select register names used in the ATPCS</span></span><br><span class="line"><span class="string">  reg-names-apcs           Select register names used in the APCS</span></span><br><span class="line"><span class="string">  reg-names-std            Select register names used in ARM'</span>s ISA documentation</span><br><span class="line">  reg-names-gcc            Select register names used by GCC</span><br><span class="line">  reg-names-raw            Select raw register names</span><br><span class="line">  force-thumb              Assume all insns are Thumb insns</span><br><span class="line">  no-force-thumb           Examine preceding label to determine an insn<span class="string">'s type</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Report bugs to &lt;http://source.android.com/source/report-bugs.html&gt;.</span></span><br></pre></td></tr></table></figure>
+<p>objdump的基本用法如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump  ~/Desktop/workspace/android/min/Demo/HelloJNI/app/build/intermediates/cmake/arm8Debug/obj/arm64-v8a/ -dump ~/Desktop/min.log |tee ~/Desktop/ndk-stack.txt</span><br></pre></td></tr></table></figure>
+<p>最后产生的结果文件如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">0000000000000648 &lt;willCrash&gt;:</span><br><span class="line">willCrash():</span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:27</span><br><span class="line"> 648:	d10043ff 	sub	sp, sp, <span class="comment">#0x10</span></span><br><span class="line"> 64c:	52800f68 	mov	w8, <span class="comment">#0x7b                  	// #123</span></span><br><span class="line"> 650:	aa1f03e9 	mov	x9, xzr</span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:28</span><br><span class="line"> 654:	f90007e9 	str	x9, [sp,<span class="comment">#8]</span></span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:29</span><br><span class="line"> 658:	f94007e9 	ldr	x9, [sp,<span class="comment">#8]</span></span><br><span class="line"> 65c:	b9000128 	str	w8, [x9]</span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:30</span><br><span class="line"> 660:	910043ff 	add	sp, sp, <span class="comment">#0x10</span></span><br><span class="line"> 664:	d65f03c0 	ret</span><br><span class="line"></span><br><span class="line">0000000000000668 &lt;Java_com_example_hellojni_HelloJni_stringFromJNI&gt;:</span><br><span class="line">Java_com_example_hellojni_HelloJni_stringFromJNI():</span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:35</span><br><span class="line"> 668:	d100c3ff 	sub	sp, sp, <span class="comment">#0x30</span></span><br><span class="line"> 66c:	a9027bfd 	stp	x29, x30, [sp,<span class="comment">#32]</span></span><br><span class="line"> 670:	910083fd 	add	x29, sp, <span class="comment">#0x20</span></span><br><span class="line"> 674:	f81f83a0 	stur	x0, [x29,<span class="comment">#-8]</span></span><br><span class="line"> 678:	f9000be1 	str	x1, [sp,<span class="comment">#16]</span></span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:36</span><br><span class="line"> 67c:	97ffffd5 	bl	5d0 &lt;willCrash@plt&gt;</span><br><span class="line"> 680:	90000000 	adrp	x0, 0 &lt;__cxa_finalize@plt-0x5c0&gt;</span><br><span class="line"> 684:	911ad001 	add	x1, x0, <span class="comment">#0x6b4</span></span><br><span class="line">/Users/min/Desktop/workspace/android/min/Demo/HelloJNI/app/src/main/cpp/hello-jni.c:37</span><br><span class="line"> 688:	f85f83a0 	ldur	x0, [x29,<span class="comment">#-8]</span></span><br><span class="line"> 68c:	f9400000 	ldr	x0, [x0]</span><br><span class="line"> 690:	f9429c00 	ldr	x0, [x0,<span class="comment">#1336]</span></span><br><span class="line"> 694:	f85f83be 	ldur	x30, [x29,<span class="comment">#-8]</span></span><br><span class="line"> 698:	f90007e0 	str	x0, [sp,<span class="comment">#8]</span></span><br><span class="line"> 69c:	aa1e03e0 	mov	x0, x30</span><br><span class="line"> 6a0:	f94007fe 	ldr	x30, [sp,<span class="comment">#8]</span></span><br><span class="line"> 6a4:	d63f03c0 	blr	x30</span><br><span class="line"> 6a8:	a9427bfd 	ldp	x29, x30, [sp,<span class="comment">#32]</span></span><br><span class="line"> 6ac:	9100c3ff 	add	sp, sp, <span class="comment">#0x30</span></span><br><span class="line"> 6b0:	d65f03c0 	ret</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>000000000000065c</code>这个地址的相关两个汇编指令如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">658:	f94007e9 	ldr	x9, [sp,<span class="comment">#8]</span></span><br><span class="line">65c:	b9000128 	str	w8, [x9]</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>1、LDR R0, [R1]<br>LDR是把R1中的值取出放到寄存器R0中LDR：load  R0 from register R1</p>
+<p>2、STR R0, [R1]<br>STR是把R0中的值存入寄存器R1中，STR：store R0 to register R1</p>
+</blockquote>
+<p>结合<code>signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0</code>信息，配合崩溃信号列表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">信号</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">SIGSEGV</td>
+<td style="text-align:left">内存引用无效。</td>
+</tr>
+<tr>
+<td style="text-align:left">SIGBUS</td>
+<td style="text-align:left">访问内存对象的未定义部分。</td>
+</tr>
+<tr>
+<td style="text-align:left">SIGFPE</td>
+<td style="text-align:left">算术运算错误，除以零。</td>
+</tr>
+<tr>
+<td style="text-align:left">SIGILL</td>
+<td style="text-align:left">非法指令，如执行垃圾或特权指令</td>
+</tr>
+<tr>
+<td style="text-align:left">SIGSYS</td>
+<td style="text-align:left">糟糕的系统调用</td>
+</tr>
+<tr>
+<td style="text-align:left">SIGXCPU</td>
+<td style="text-align:left">超过CPU时间限制。</td>
+</tr>
+<tr>
+<td style="text-align:left">SIGXFSZ</td>
+<td style="text-align:left">文件大小限制。</td>
+</tr>
+</tbody>
+</table>
+<p>我们大体可以猜出来这一个空指针的问题。</p>
+<h2 id="3、参考"><a href="#3、参考" class="headerlink" title="3、参考"></a>3、参考</h2><ul>
+<li><p><a href="https://developer.android.com/ndk/guides/standalone_toolchain" target="_blank" rel="noopener">Android Develoers Standalone Toolchains</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/crash163/article/details/51605926" target="_blank" rel="noopener">如何分析、定位Android Native Crash</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/lxb00321/article/details/74668383" target="_blank" rel="noopener">Android NDK墓碑/崩溃分析</a></p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/NDK/" rel="tag"># NDK</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/21/Android自定义控件--属性篇/" rel="next" title="Android自定义控件--属性篇">
+                <i class="fa fa-chevron-left"></i> Android自定义控件--属性篇
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/04/Android设计模式--Builder模式/" rel="prev" title="Android设计模式--Builder模式">
+                Android设计模式--Builder模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">24</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、问题现场"><span class="nav-number">1.</span> <span class="nav-text">1、问题现场</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、分析流程"><span class="nav-number">2.</span> <span class="nav-text">2、分析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1、关于日志"><span class="nav-number">2.1.</span> <span class="nav-text">2.1、关于日志</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-1、崩溃过程和PID信息"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1、崩溃过程和PID信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-2、终止信号和故障地址信息"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2、终止信号和故障地址信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-3、调用堆栈信息"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3、调用堆栈信息</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2、addr2line"><span class="nav-number">2.2.</span> <span class="nav-text">2.2、addr2line</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3、ndk-stack"><span class="nav-number">2.3.</span> <span class="nav-text">2.3、ndk-stack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4、ndk-stack"><span class="nav-number">2.4.</span> <span class="nav-text">2.4、ndk-stack</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、参考"><span class="nav-number">3.</span> <span class="nav-text">3、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
