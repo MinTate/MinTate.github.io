@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="Min HelloWorld">
 <meta property="og:description" content="如果有自己编译过AOSP的源码，可能大家都会遇到这样的一个问题: 1ninja: error: &apos;*******&apos;, needed by &apos;*********&apos;, missing and no known rule to make it 在刚刚开始接触AOSP的时候，我基本上都会直奔主题，大概清楚问题后，然后解决问题、重新编译，所以一直都没有注意到一个关键字：”Ninja”，今天我们就一起来学习/">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2019/10/27/images/android_build.jpg">
-<meta property="og:updated_time" content="2019-12-18T11:34:13.616Z">
+<meta property="og:image" content="http://yoursite.com/images/android_build.jpg">
+<meta property="og:updated_time" content="2019-12-30T02:49:15.803Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Ninja实践">
 <meta name="twitter:description" content="如果有自己编译过AOSP的源码，可能大家都会遇到这样的一个问题: 1ninja: error: &apos;*******&apos;, needed by &apos;*********&apos;, missing and no known rule to make it 在刚刚开始接触AOSP的时候，我基本上都会直奔主题，大概清楚问题后，然后解决问题、重新编译，所以一直都没有注意到一个关键字：”Ninja”，今天我们就一起来学习/">
-<meta name="twitter:image" content="http://yoursite.com/2019/10/27/images/android_build.jpg">
+<meta name="twitter:image" content="http://yoursite.com/images/android_build.jpg">
 
 
 
@@ -354,7 +354,7 @@
 <li>Android 8.0使用Android.bp来替换Android.mk，引入Soong</li>
 <li>Android 9.0强制使用Android.bp</li>
 </ul>
-<p><img src="../images/android_build.jpg" alt="Android Build"></p>
+<p><img src="/images/android_build.jpg" alt="Android Build"></p>
 <p>上图就是各个文件之间的转化关系，这里涉及到Ninja, kati, Soong, bp概念，简单介绍一下：</p>
 <h4 id="1-Ninja"><a href="#1-Ninja" class="headerlink" title="1. Ninja"></a>1. Ninja</h4><p>ninja是一个编译框架，会根据相应的ninja格式的配置文件进行编译，但是ninja文件一般不会手动修改，而是通过将Android.bp文件转换成ninja格文件来编译。</p>
 <h4 id="2-Android-bp"><a href="#2-Android-bp" class="headerlink" title="2. Android.bp"></a>2. Android.bp</h4><p>Android.bp的出现就是为了替换Android.mk文件。bp跟mk文件不同，它是纯粹的配置，没有分支、循环等流程控制，不能做算数逻辑运算。如果需要控制逻辑，那么只能通过Go语言编写。</p>
