@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="基础知识,C++,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="观书有会意处，题其衣裳，以记其事～">
+<meta name="keywords" content="基础知识,C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ 线程锁理解">
+<meta property="og:url" content="http://yoursite.com/2019/10/09/C++ 线程锁理解/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="观书有会意处，题其衣裳，以记其事～">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-03-17T13:02:07.675Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="C++ 线程锁理解">
+<meta name="twitter:description" content="观书有会意处，题其衣裳，以记其事～">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/09/C++ 线程锁理解/">
+
+
+
+
+
+  <title>C++ 线程锁理解 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/09/C++ 线程锁理解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">C++ 线程锁理解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-09T21:14:44+08:00">
+                2019-10-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>观书有会意处，题其衣裳，以记其事～</p>
+<a id="more"></a>
+<h2 id="1、分类"><a href="#1、分类" class="headerlink" title="1、分类"></a>1、分类</h2><p>线程之间的锁有：<strong>互斥锁</strong>、<strong>条件锁</strong>、自旋锁、读写锁、递归锁。一般而言，锁的功能与性能成反比。不过我们一般不使用递归锁（C++标准库提供了std::recursive_mutex），这里仅介绍前两种锁。</p>
+<h3 id="1-1、互斥锁"><a href="#1-1、互斥锁" class="headerlink" title="1.1、互斥锁"></a>1.1、互斥锁</h3><p>互斥锁用于控制多个线程对他们之间共享资源互斥访问的一个信号量。也就是说是为了避免多个线程在某一时刻同时操作一个共享资源。例如线程池中的有多个空闲线程和一个任务队列。任何是一个线程都要使用互斥锁互斥访问任务队列，以避免多个线程同时访问任务队列以发生错乱。</p>
+<p>在某一时刻，只有一个线程可以获取互斥锁，在释放互斥锁之前其他线程都不能获取该互斥锁。如果其他线程想要获取这个互斥锁，那么这个线程只能以阻塞方式进行等待。</p>
+<p>类型：pthread_mutex_t，</p>
+<p>函数：</p>
+<ul>
+<li>pthread_mutex_init(pthread_mutex_t <em> mutex, const phtread_mutexattr_t </em> mutexattr);   //动态方式创建锁，相当于new动态创建一个对象</li>
+<li>pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;    //以静态方式创建锁</li>
+<li>pthread_mutex_destory(pthread_mutex_t *mutex)     //释放互斥锁，相当于delete</li>
+<li>pthread_mutex_lock(pthread_mutex_t *mutex) </li>
+<li>pthread_mutex_unlock(pthread_mutex_t *mutex)</li>
+<li>int pthread_mutex_trylock(pthread_mutex_t * mutex);    //会尝试对mutex加锁。如果mutex之前已经被锁定，返回非0,；如果mutex没有被锁定，则函数返回并锁定mutex；</li>
+</ul>
+<h3 id="1-2、条件锁"><a href="#1-2、条件锁" class="headerlink" title="1.2、条件锁"></a>1.2、条件锁</h3><p>条件锁就是所谓的条件变量，某一个线程因为某个条件为满足时可以使用条件变量使改程序处于阻塞状态。一旦条件满足以“信号量”的方式唤醒一个因为该条件而被阻塞的线程。最为常见就是在线程池中，起初没有任务时任务队列为空，此时线程池中的线程因为“任务队列为空”这个条件处于阻塞状态。一旦有任务进来，就会以信号量的方式唤醒一个线程来处理这个任务。这个过程中就使用到了条件变量pthread_cond_t。</p>
+<p>类型：pthread_cond_t</p>
+<p>函数：</p>
+<ul>
+<li>pthread_cond_init(pthread_cond_t <em> condtion, const phtread_condattr_t </em> condattr);   //对条件变量进行动态初始化，相当于new创建对象</li>
+<li>pthread_cond_t condition = PTHREAD_COND_INITIALIZER;//静态初始化条件变量</li>
+<li>pthread_cond_destory(pthread_cond_t * condition);     //释放动态申请的条件变量，相当于delete释放对象</li>
+<li>pthread_cond_wait(pthread_cond_t <em> cond, pthread_mutex_t </em> mutex);      //该函数以阻塞方式执行。如果某个线程中的程序执行了该函数，那么这个线程就会以阻塞方式等待，直到收到pthread_cond_signal或者pthread_cond_broadcast函数发来的信号而被唤醒。</li>
+</ul>
+<h2 id="2、示例"><a href="#2、示例" class="headerlink" title="2、示例"></a>2、示例</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">pthread_mutex_t</span> mutex = PTHREAD_MUTEX_INITIALIZER;<span class="comment">/*初始化互斥锁*/</span></span><br><span class="line"><span class="keyword">pthread_cond_t</span>  cond = PTHREAD_COND_INITIALIZER;<span class="comment">//init cond</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread1</span><span class="params">(<span class="keyword">void</span>*)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread2</span><span class="params">(<span class="keyword">void</span>*)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> i = <span class="number">1</span>; <span class="comment">//global</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> t_a;</span><br><span class="line">    <span class="keyword">pthread_t</span> t_b;<span class="comment">//two thread</span></span><br><span class="line"></span><br><span class="line">    pthread_create(&amp;t_a,<span class="literal">NULL</span>,thread2,(<span class="keyword">void</span>*)<span class="literal">NULL</span>);</span><br><span class="line">    pthread_create(&amp;t_b,<span class="literal">NULL</span>,thread1,(<span class="keyword">void</span>*)<span class="literal">NULL</span>);<span class="comment">//Create thread</span></span><br><span class="line">    </span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"t_a:0x%x, t_b:0x%x"</span>, t_a, t_b);</span><br><span class="line">    pthread_join(t_b,<span class="literal">NULL</span>);<span class="comment">//wait a_b thread end</span></span><br><span class="line">    pthread_mutex_destroy(&amp;mutex);</span><br><span class="line">    pthread_cond_destroy(&amp;cond);</span><br><span class="line">   <span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread1</span><span class="params">(<span class="keyword">void</span> *junk)</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">1</span>;i&lt;= <span class="number">9</span>; i++)&#123;</span><br><span class="line">        pthread_mutex_lock(&amp;mutex); <span class="comment">//互斥锁</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"call thread1 \n"</span>);</span><br><span class="line">        <span class="keyword">if</span>(i%<span class="number">3</span> == <span class="number">0</span>)</span><br><span class="line">        	&#123;</span><br><span class="line">            pthread_cond_signal(&amp;cond); <span class="comment">//send sianal to t_b</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"thread1:******i=%d\n"</span>, i);</span><br><span class="line">        	&#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"thread1: %d\n"</span>,i);</span><br><span class="line">        pthread_mutex_unlock(&amp;mutex);</span><br><span class="line"></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"thread1: sleep i=%d\n"</span>, i);</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"thread1: sleep i=%d******end\n"</span>, i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">thread2</span><span class="params">(<span class="keyword">void</span>*junk)</span></span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(i &lt; <span class="number">9</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        pthread_mutex_lock(&amp;mutex);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"call thread2 \n"</span>);</span><br><span class="line">        <span class="keyword">if</span>(i%<span class="number">3</span> != <span class="number">0</span>)</span><br><span class="line">            pthread_cond_wait(&amp;cond,&amp;mutex); <span class="comment">//wait</span></span><br><span class="line">         <span class="built_in">printf</span>(<span class="string">"thread2: %d\n"</span>,i);</span><br><span class="line">        pthread_mutex_unlock(&amp;mutex);</span><br><span class="line"></span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"thread2: sleep i=%d\n"</span>, i);</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"thread2: sleep i=%d******end\n"</span>, i);		</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[min@bogon:] mutex $ gcc mutex_demo.cpp -o mutex_demo</span><br><span class="line">[min@bogon:] mutex $ ./mutex_demo</span><br><span class="line">t_a:0x242f000, t_b:0x24b2000</span><br><span class="line">call thread1</span><br><span class="line">thread1: 1</span><br><span class="line">thread1: sleep i=1</span><br><span class="line">call thread2</span><br><span class="line">thread1: sleep i=1******end</span><br><span class="line">call thread1</span><br><span class="line">thread1: 2</span><br><span class="line">thread1: sleep i=2</span><br><span class="line">thread1: sleep i=2******end</span><br><span class="line">call thread1</span><br><span class="line">thread1:******i=3</span><br><span class="line">thread1: sleep i=3</span><br><span class="line">thread2: 3</span><br><span class="line">thread2: sleep i=3</span><br><span class="line">thread2: sleep i=3******end</span><br><span class="line">thread1: sleep i=3******end</span><br><span class="line">call thread2</span><br><span class="line">call thread1</span><br><span class="line">thread1: 4</span><br><span class="line">thread1: sleep i=4</span><br><span class="line">thread1: sleep i=4******end</span><br><span class="line">call thread1</span><br><span class="line">thread1: 5</span><br><span class="line">thread1: sleep i=5</span><br><span class="line">thread1: sleep i=5******end</span><br><span class="line">call thread1</span><br><span class="line">thread1:******i=6</span><br><span class="line">thread1: sleep i=6</span><br><span class="line">thread2: 6</span><br><span class="line">thread2: sleep i=6</span><br><span class="line">thread1: sleep i=6******end</span><br><span class="line">call thread1</span><br><span class="line">thread1: 7</span><br><span class="line">thread2: sleep i=7******end</span><br><span class="line">thread1: sleep i=7</span><br><span class="line">call thread2</span><br><span class="line">thread1: sleep i=7******end</span><br><span class="line">call thread1</span><br><span class="line">thread1: 8</span><br><span class="line">thread1: sleep i=8</span><br><span class="line">thread1: sleep i=8******end</span><br><span class="line">call thread1</span><br><span class="line">thread1:******i=9</span><br><span class="line">thread1: sleep i=9</span><br><span class="line">thread2: 9</span><br><span class="line">thread2: sleep i=9</span><br><span class="line">thread2: sleep i=9******end</span><br><span class="line">thread1: sleep i=9******end</span><br></pre></td></tr></table></figure>
+<h2 id="3、其他"><a href="#3、其他" class="headerlink" title="3、其他"></a>3、其他</h2><h3 id="3-1、std-mutex与pthread-mutex区别"><a href="#3-1、std-mutex与pthread-mutex区别" class="headerlink" title="3.1、std::mutex与pthread_mutex区别"></a>3.1、std::mutex与pthread_mutex区别</h3><p>pthread_mutex初始化时，需要传入参数mutexattr，其包含如下几种，但是std::mutex 只有是一种嵌套锁。</p>
+<ul>
+<li>PTHREAD_MUTEX_TIMED_NP，这是缺省值，也就是普通锁。当一个线程加锁以后，其余请求锁的线程将形成一个等待队列，并在解锁后按优先级获得锁。这种锁策略保证了资源分配的公平性。</li>
+<li>PTHREAD_MUTEX_RECURSIVE_NP，嵌套锁，允许同一个线程对同一个锁成功获得多次，并通过多次unlock解锁。如果是不同线程请求，则在加锁线程解锁时重新竞争。</li>
+<li>PTHREAD_MUTEX_ERRORCHECK_NP，检错锁，如果同一个线程请求同一个锁，则返回EDEADLK，否则与PTHREAD_MUTEX_TIMED_NP类型动作相同。这样就保证当不允许多次加锁时不会出现最简单情况下的死锁。</li>
+<li>PTHREAD_MUTEX_ADAPTIVE_NP，适应锁，动作最简单的锁类型，仅等待解锁后重新竞争。</li>
+</ul>
+<h1 id="4、参考"><a href="#4、参考" class="headerlink" title="4、参考"></a>4、参考</h1><ul>
+<li><a href="https://blog.csdn.net/bian_qing_quan11/article/details/73734157" target="_blank" rel="noopener">c++线程中的几种锁</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/基础知识/" rel="tag"># 基础知识</a>
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/09/C++ Memorandum/" rel="next" title="C++ Memorandum">
+                <i class="fa fa-chevron-left"></i> C++ Memorandum
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/10/Jenkins使用问题记录/" rel="prev" title="Jenkins 使用问题记录">
+                Jenkins 使用问题记录 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、分类"><span class="nav-number">1.</span> <span class="nav-text">1、分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1、互斥锁"><span class="nav-number">1.1.</span> <span class="nav-text">1.1、互斥锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2、条件锁"><span class="nav-number">1.2.</span> <span class="nav-text">1.2、条件锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、示例"><span class="nav-number">2.</span> <span class="nav-text">2、示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、其他"><span class="nav-number">3.</span> <span class="nav-text">3、其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1、std-mutex与pthread-mutex区别"><span class="nav-number">3.1.</span> <span class="nav-text">3.1、std::mutex与pthread_mutex区别</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#4、参考"><span class="nav-number"></span> <span class="nav-text">4、参考</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
