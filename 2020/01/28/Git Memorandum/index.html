@@ -87,14 +87,14 @@
 <meta property="og:site_name" content="Min HelloWorld">
 <meta property="og:description" content="观书有会意处，题其衣裳，以记其事～">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://yoursite.com/2020/01/28/images/git_origin.jpg">
-<meta property="og:image" content="http://yoursite.com/2020/01/28/images/git_merge.jpg">
-<meta property="og:image" content="http://yoursite.com/2020/01/28/images/git_rebase.jpg">
-<meta property="og:updated_time" content="2020-03-14T12:14:03.676Z">
+<meta property="og:image" content="http://yoursite.com/images/git_origin.jpg">
+<meta property="og:image" content="http://yoursite.com/images/git_merge.jpg">
+<meta property="og:image" content="http://yoursite.com/images/git_rebase.jpg">
+<meta property="og:updated_time" content="2020-05-19T05:47:52.572Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Git Memorandum">
 <meta name="twitter:description" content="观书有会意处，题其衣裳，以记其事～">
-<meta name="twitter:image" content="http://yoursite.com/2020/01/28/images/git_origin.jpg">
+<meta name="twitter:image" content="http://yoursite.com/images/git_origin.jpg">
 
 
 
@@ -366,11 +366,11 @@
 <p>使用场景：比如我创建了一个OpenCV Repo，添加了一些自己的修改，并使用Gitlab进行管理，但是又希望可以及时同步Github最新的commit到Gitlab上，所以好的方式就是有两个remote，然后本地有两个分支分别对应gitlab和github，如果有新的commit，我就可以使用cherry-pick/merge命令同步到gitlab上，</p>
 </blockquote>
 <h4 id="6、git-rebase-git-merge"><a href="#6、git-rebase-git-merge" class="headerlink" title="6、git rebase/git merge"></a>6、git rebase/git merge</h4><p>现在我们有这样的两个分支,origin和mywork，提交如下：</p>
-<p><img src="../images/git_origin.jpg" alt="git-origin"></p>
+<p><img src="/images/git_origin.jpg" alt="git-origin"></p>
 <p>在my work执行git merge origin,然后会得到如下结果：</p>
-<p><img src="../images/git_merge.jpg" alt="git-origin"></p>
+<p><img src="/images/git_merge.jpg" alt="git-origin"></p>
 <p>在my work执行git rebase origin，然后得到如下结果：</p>
-<p><img src="../images/git_rebase.jpg" alt="git-origin"></p>
+<p><img src="/images/git_rebase.jpg" alt="git-origin"></p>
 <p>可以看到，merge操作会生成一个新的节点，之前的提交分开显示。而rebase操作不会生成新的节点，是将两个分支融合成一个线性的提交。</p>
 <blockquote>
 <p>不要在公共分支上使用！！！</p>
@@ -501,7 +501,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -512,7 +512,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -523,7 +523,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>

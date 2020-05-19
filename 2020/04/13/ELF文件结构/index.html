@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="NDK,C++,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="作为一名Android开发工程师，尤其是音视频领域，NDK开发一直都是主流，但是我们是否有认真了解过我们经常使用的.so等文件具体是怎样的一个格式呢？？">
+<meta name="keywords" content="NDK,C++">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELF文件结构">
+<meta property="og:url" content="http://yoursite.com/2020/04/13/ELF文件结构/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="作为一名Android开发工程师，尤其是音视频领域，NDK开发一直都是主流，但是我们是否有认真了解过我们经常使用的.so等文件具体是怎样的一个格式呢？？">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/images/elf-file-format.png">
+<meta property="og:updated_time" content="2020-05-19T06:02:53.448Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ELF文件结构">
+<meta name="twitter:description" content="作为一名Android开发工程师，尤其是音视频领域，NDK开发一直都是主流，但是我们是否有认真了解过我们经常使用的.so等文件具体是怎样的一个格式呢？？">
+<meta name="twitter:image" content="http://yoursite.com/images/elf-file-format.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/13/ELF文件结构/">
+
+
+
+
+
+  <title>ELF文件结构 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/13/ELF文件结构/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ELF文件结构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-13T12:10:02+08:00">
+                2020-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C++</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>作为一名Android开发工程师，尤其是音视频领域，NDK开发一直都是主流，但是我们是否有认真了解过我们经常使用的.so等文件具体是怎样的一个格式呢？？</p>
+<a id="more"></a>
+<h2 id="一、ELF简介"><a href="#一、ELF简介" class="headerlink" title="一、ELF简介"></a>一、ELF简介</h2><p>ELF（Executableand Linking Format 可执行和链接格式），ELF文件格式是一个开放标准,各种UNIX系统的可执行文件都采用ELF格式,它有三种不同的类型:</p>
+<ol>
+<li>可重定位的目标文件(Relocatable)也就是通常称的目标文件，后缀为<code>.o</code></li>
+<li>可执行文件(Executable)</li>
+<li>共享库(Shared Object)共享文件：也就是通常称的库文件，后缀为<code>.so</code></li>
+</ol>
+<h2 id="二、ELF文件结构"><a href="#二、ELF文件结构" class="headerlink" title="二、ELF文件结构"></a>二、ELF文件结构</h2><p><img src="/images/elf-file-format.png" alt="elf-file-format"></p>
+<p><strong>注意：段（<code>Segment</code>）与节（<code>Section</code>）的区别。很多地方对两者有所混淆。段是程序执行的必要组成，当多个目标文件链接成一个可执行文件时，会将相同权限的节合并到一个段中。相比而言，节的粒度更小。</strong></p>
+<p>如图所示，为ELF文件的基本结构，其主要由四部分组成：</p>
+<ul>
+<li>ELF Header</li>
+<li>ELF Program Header Table (或称Program Headers、程序头)</li>
+<li>ELF Section Header Table (或称Section Headers、节头表)</li>
+<li>ELF Sections</li>
+</ul>
+<p>从图中，我们就能看出它们各自的数据结构以及相互之间的索引关系。</p>
+<h2 id="三、ELF示例"><a href="#三、ELF示例" class="headerlink" title="三、ELF示例"></a>三、ELF示例</h2><p>如下是一个C语言的Hello world示例，来帮助我们理解ELF文件类型：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"Hello, World!"</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用如下命令编译：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc hello_world.c -o hello_world</span><br></pre></td></tr></table></figure>
+<p>在编译完成后，使用如下命令查看编译完成后的<code>hello_world</code>ELF文件信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readelf -a hello_world</span><br></pre></td></tr></table></figure>
+<p>显示信息如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br></pre></td><td class="code"><pre><span class="line">ELF Header:</span><br><span class="line">  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 </span><br><span class="line">  Class:                             ELF64</span><br><span class="line">  Data:                              2<span class="string">'s complement, little endian</span></span><br><span class="line"><span class="string">  Version:                           1 (current)</span></span><br><span class="line"><span class="string">  OS/ABI:                            UNIX - System V</span></span><br><span class="line"><span class="string">  ABI Version:                       0</span></span><br><span class="line"><span class="string">  Type:                              EXEC (Executable file)</span></span><br><span class="line"><span class="string">  Machine:                           Advanced Micro Devices X86-64</span></span><br><span class="line"><span class="string">  Version:                           0x1</span></span><br><span class="line"><span class="string">  Entry point address:               0x400430</span></span><br><span class="line"><span class="string">  Start of program headers:          64 (bytes into file)</span></span><br><span class="line"><span class="string">  Start of section headers:          6624 (bytes into file)</span></span><br><span class="line"><span class="string">  Flags:                             0x0</span></span><br><span class="line"><span class="string">  Size of this header:               64 (bytes)</span></span><br><span class="line"><span class="string">  Size of program headers:           56 (bytes)</span></span><br><span class="line"><span class="string">  Number of program headers:         9</span></span><br><span class="line"><span class="string">  Size of section headers:           64 (bytes)</span></span><br><span class="line"><span class="string">  Number of section headers:         31</span></span><br><span class="line"><span class="string">  Section header string table index: 28</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Section Headers:</span></span><br><span class="line"><span class="string">  [Nr] Name              Type             Address           Offset</span></span><br><span class="line"><span class="string">       Size              EntSize          Flags  Link  Info  Align</span></span><br><span class="line"><span class="string">  [ 0]                   NULL             0000000000000000  00000000</span></span><br><span class="line"><span class="string">       0000000000000000  0000000000000000           0     0     0</span></span><br><span class="line"><span class="string">  [ 1] .interp           PROGBITS         0000000000400238  00000238</span></span><br><span class="line"><span class="string">       000000000000001c  0000000000000000   A       0     0     1</span></span><br><span class="line"><span class="string">  [ 2] .note.ABI-tag     NOTE             0000000000400254  00000254</span></span><br><span class="line"><span class="string">       0000000000000020  0000000000000000   A       0     0     4</span></span><br><span class="line"><span class="string">  [ 3] .note.gnu.build-i NOTE             0000000000400274  00000274</span></span><br><span class="line"><span class="string">       0000000000000024  0000000000000000   A       0     0     4</span></span><br><span class="line"><span class="string">  [ 4] .gnu.hash         GNU_HASH         0000000000400298  00000298</span></span><br><span class="line"><span class="string">       000000000000001c  0000000000000000   A       5     0     8</span></span><br><span class="line"><span class="string">  [ 5] .dynsym           DYNSYM           00000000004002b8  000002b8</span></span><br><span class="line"><span class="string">       0000000000000060  0000000000000018   A       6     1     8</span></span><br><span class="line"><span class="string">  [ 6] .dynstr           STRTAB           0000000000400318  00000318</span></span><br><span class="line"><span class="string">       000000000000003f  0000000000000000   A       0     0     1</span></span><br><span class="line"><span class="string">  [ 7] .gnu.version      VERSYM           0000000000400358  00000358</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000002   A       5     0     2</span></span><br><span class="line"><span class="string">  [ 8] .gnu.version_r    VERNEED          0000000000400360  00000360</span></span><br><span class="line"><span class="string">       0000000000000020  0000000000000000   A       6     1     8</span></span><br><span class="line"><span class="string">  [ 9] .rela.dyn         RELA             0000000000400380  00000380</span></span><br><span class="line"><span class="string">       0000000000000018  0000000000000018   A       5     0     8</span></span><br><span class="line"><span class="string">  [10] .rela.plt         RELA             0000000000400398  00000398</span></span><br><span class="line"><span class="string">       0000000000000030  0000000000000018  AI       5    24     8</span></span><br><span class="line"><span class="string">  [11] .init             PROGBITS         00000000004003c8  000003c8</span></span><br><span class="line"><span class="string">       000000000000001a  0000000000000000  AX       0     0     4</span></span><br><span class="line"><span class="string">  [12] .plt              PROGBITS         00000000004003f0  000003f0</span></span><br><span class="line"><span class="string">       0000000000000030  0000000000000010  AX       0     0     16</span></span><br><span class="line"><span class="string">  [13] .plt.got          PROGBITS         0000000000400420  00000420</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000000  AX       0     0     8</span></span><br><span class="line"><span class="string">  [14] .text             PROGBITS         0000000000400430  00000430</span></span><br><span class="line"><span class="string">       0000000000000182  0000000000000000  AX       0     0     16</span></span><br><span class="line"><span class="string">  [15] .fini             PROGBITS         00000000004005b4  000005b4</span></span><br><span class="line"><span class="string">       0000000000000009  0000000000000000  AX       0     0     4</span></span><br><span class="line"><span class="string">  [16] .rodata           PROGBITS         00000000004005c0  000005c0</span></span><br><span class="line"><span class="string">       0000000000000012  0000000000000000   A       0     0     4</span></span><br><span class="line"><span class="string">  [17] .eh_frame_hdr     PROGBITS         00000000004005d4  000005d4</span></span><br><span class="line"><span class="string">       0000000000000034  0000000000000000   A       0     0     4</span></span><br><span class="line"><span class="string">  [18] .eh_frame         PROGBITS         0000000000400608  00000608</span></span><br><span class="line"><span class="string">       00000000000000f4  0000000000000000   A       0     0     8</span></span><br><span class="line"><span class="string">  [19] .init_array       INIT_ARRAY       0000000000600e10  00000e10</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000000  WA       0     0     8</span></span><br><span class="line"><span class="string">  [20] .fini_array       FINI_ARRAY       0000000000600e18  00000e18</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000000  WA       0     0     8</span></span><br><span class="line"><span class="string">  [21] .jcr              PROGBITS         0000000000600e20  00000e20</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000000  WA       0     0     8</span></span><br><span class="line"><span class="string">  [22] .dynamic          DYNAMIC          0000000000600e28  00000e28</span></span><br><span class="line"><span class="string">       00000000000001d0  0000000000000010  WA       6     0     8</span></span><br><span class="line"><span class="string">  [23] .got              PROGBITS         0000000000600ff8  00000ff8</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000008  WA       0     0     8</span></span><br><span class="line"><span class="string">  [24] .got.plt          PROGBITS         0000000000601000  00001000</span></span><br><span class="line"><span class="string">       0000000000000028  0000000000000008  WA       0     0     8</span></span><br><span class="line"><span class="string">  [25] .data             PROGBITS         0000000000601028  00001028</span></span><br><span class="line"><span class="string">       0000000000000010  0000000000000000  WA       0     0     8</span></span><br><span class="line"><span class="string">  [26] .bss              NOBITS           0000000000601038  00001038</span></span><br><span class="line"><span class="string">       0000000000000008  0000000000000000  WA       0     0     1</span></span><br><span class="line"><span class="string">  [27] .comment          PROGBITS         0000000000000000  00001038</span></span><br><span class="line"><span class="string">       0000000000000035  0000000000000001  MS       0     0     1</span></span><br><span class="line"><span class="string">  [28] .shstrtab         STRTAB           0000000000000000  000018d4</span></span><br><span class="line"><span class="string">       000000000000010c  0000000000000000           0     0     1</span></span><br><span class="line"><span class="string">  [29] .symtab           SYMTAB           0000000000000000  00001070</span></span><br><span class="line"><span class="string">       0000000000000648  0000000000000018          30    47     8</span></span><br><span class="line"><span class="string">  [30] .strtab           STRTAB           0000000000000000  000016b8</span></span><br><span class="line"><span class="string">       000000000000021c  0000000000000000           0     0     1</span></span><br><span class="line"><span class="string">Key to Flags:</span></span><br><span class="line"><span class="string">  W (write), A (alloc), X (execute), M (merge), S (strings), l (large)</span></span><br><span class="line"><span class="string">  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)</span></span><br><span class="line"><span class="string">  O (extra OS processing required) o (OS specific), p (processor specific)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">There are no section groups in this file.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Program Headers:</span></span><br><span class="line"><span class="string">  Type           Offset             VirtAddr           PhysAddr</span></span><br><span class="line"><span class="string">                 FileSiz            MemSiz              Flags  Align</span></span><br><span class="line"><span class="string">  PHDR           0x0000000000000040 0x0000000000400040 0x0000000000400040</span></span><br><span class="line"><span class="string">                 0x00000000000001f8 0x00000000000001f8  R E    8</span></span><br><span class="line"><span class="string">  INTERP         0x0000000000000238 0x0000000000400238 0x0000000000400238</span></span><br><span class="line"><span class="string">                 0x000000000000001c 0x000000000000001c  R      1</span></span><br><span class="line"><span class="string">      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]</span></span><br><span class="line"><span class="string">  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000</span></span><br><span class="line"><span class="string">                 0x00000000000006fc 0x00000000000006fc  R E    200000</span></span><br><span class="line"><span class="string">  LOAD           0x0000000000000e10 0x0000000000600e10 0x0000000000600e10</span></span><br><span class="line"><span class="string">                 0x0000000000000228 0x0000000000000230  RW     200000</span></span><br><span class="line"><span class="string">  DYNAMIC        0x0000000000000e28 0x0000000000600e28 0x0000000000600e28</span></span><br><span class="line"><span class="string">                 0x00000000000001d0 0x00000000000001d0  RW     8</span></span><br><span class="line"><span class="string">  NOTE           0x0000000000000254 0x0000000000400254 0x0000000000400254</span></span><br><span class="line"><span class="string">                 0x0000000000000044 0x0000000000000044  R      4</span></span><br><span class="line"><span class="string">  GNU_EH_FRAME   0x00000000000005d4 0x00000000004005d4 0x00000000004005d4</span></span><br><span class="line"><span class="string">                 0x0000000000000034 0x0000000000000034  R      4</span></span><br><span class="line"><span class="string">  GNU_STACK      0x0000000000000000 0x0000000000000000 0x0000000000000000</span></span><br><span class="line"><span class="string">                 0x0000000000000000 0x0000000000000000  RW     10</span></span><br><span class="line"><span class="string">  GNU_RELRO      0x0000000000000e10 0x0000000000600e10 0x0000000000600e10</span></span><br><span class="line"><span class="string">                 0x00000000000001f0 0x00000000000001f0  R      1</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> Section to Segment mapping:</span></span><br><span class="line"><span class="string">  Segment Sections...</span></span><br><span class="line"><span class="string">   00     </span></span><br><span class="line"><span class="string">   01     .interp </span></span><br><span class="line"><span class="string">   02     .interp .note.ABI-tag .note.gnu.build-id .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt .init .plt .plt.got .text .fini .rodata .eh_frame_hdr .eh_frame </span></span><br><span class="line"><span class="string">   03     .init_array .fini_array .jcr .dynamic .got .got.plt .data .bss </span></span><br><span class="line"><span class="string">   04     .dynamic </span></span><br><span class="line"><span class="string">   05     .note.ABI-tag .note.gnu.build-id </span></span><br><span class="line"><span class="string">   06     .eh_frame_hdr </span></span><br><span class="line"><span class="string">   07     </span></span><br><span class="line"><span class="string">   08     .init_array .fini_array .jcr .dynamic .got </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Dynamic section at offset 0xe28 contains 24 entries:</span></span><br><span class="line"><span class="string">  Tag        Type                         Name/Value</span></span><br><span class="line"><span class="string"> 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]</span></span><br><span class="line"><span class="string"> 0x000000000000000c (INIT)               0x4003c8</span></span><br><span class="line"><span class="string"> 0x000000000000000d (FINI)               0x4005b4</span></span><br><span class="line"><span class="string"> 0x0000000000000019 (INIT_ARRAY)         0x600e10</span></span><br><span class="line"><span class="string"> 0x000000000000001b (INIT_ARRAYSZ)       8 (bytes)</span></span><br><span class="line"><span class="string"> 0x000000000000001a (FINI_ARRAY)         0x600e18</span></span><br><span class="line"><span class="string"> 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)</span></span><br><span class="line"><span class="string"> 0x000000006ffffef5 (GNU_HASH)           0x400298</span></span><br><span class="line"><span class="string"> 0x0000000000000005 (STRTAB)             0x400318</span></span><br><span class="line"><span class="string"> 0x0000000000000006 (SYMTAB)             0x4002b8</span></span><br><span class="line"><span class="string"> 0x000000000000000a (STRSZ)              63 (bytes)</span></span><br><span class="line"><span class="string"> 0x000000000000000b (SYMENT)             24 (bytes)</span></span><br><span class="line"><span class="string"> 0x0000000000000015 (DEBUG)              0x0</span></span><br><span class="line"><span class="string"> 0x0000000000000003 (PLTGOT)             0x601000</span></span><br><span class="line"><span class="string"> 0x0000000000000002 (PLTRELSZ)           48 (bytes)</span></span><br><span class="line"><span class="string"> 0x0000000000000014 (PLTREL)             RELA</span></span><br><span class="line"><span class="string"> 0x0000000000000017 (JMPREL)             0x400398</span></span><br><span class="line"><span class="string"> 0x0000000000000007 (RELA)               0x400380</span></span><br><span class="line"><span class="string"> 0x0000000000000008 (RELASZ)             24 (bytes)</span></span><br><span class="line"><span class="string"> 0x0000000000000009 (RELAENT)            24 (bytes)</span></span><br><span class="line"><span class="string"> 0x000000006ffffffe (VERNEED)            0x400360</span></span><br><span class="line"><span class="string"> 0x000000006fffffff (VERNEEDNUM)         1</span></span><br><span class="line"><span class="string"> 0x000000006ffffff0 (VERSYM)             0x400358</span></span><br><span class="line"><span class="string"> 0x0000000000000000 (NULL)               0x0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Relocation section '</span>.rela.dyn<span class="string">' at offset 0x380 contains 1 entries:</span></span><br><span class="line"><span class="string">  Offset          Info           Type           Sym. Value    Sym. Name + Addend</span></span><br><span class="line"><span class="string">000000600ff8  000300000006 R_X86_64_GLOB_DAT 0000000000000000 __gmon_start__ + 0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Relocation section '</span>.rela.plt<span class="string">' at offset 0x398 contains 2 entries:</span></span><br><span class="line"><span class="string">  Offset          Info           Type           Sym. Value    Sym. Name + Addend</span></span><br><span class="line"><span class="string">000000601018  000100000007 R_X86_64_JUMP_SLO 0000000000000000 printf@GLIBC_2.2.5 + 0</span></span><br><span class="line"><span class="string">000000601020  000200000007 R_X86_64_JUMP_SLO 0000000000000000 __libc_start_main@GLIBC_2.2.5 + 0</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">The decoding of unwind sections for machine type Advanced Micro Devices X86-64 is not currently supported.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Symbol table '</span>.dynsym<span class="string">' contains 4 entries:</span></span><br><span class="line"><span class="string">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span></span><br><span class="line"><span class="string">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span></span><br><span class="line"><span class="string">     1: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND printf@GLIBC_2.2.5 (2)</span></span><br><span class="line"><span class="string">     2: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@GLIBC_2.2.5 (2)</span></span><br><span class="line"><span class="string">     3: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Symbol table '</span>.symtab<span class="string">' contains 67 entries:</span></span><br><span class="line"><span class="string">   Num:    Value          Size Type    Bind   Vis      Ndx Name</span></span><br><span class="line"><span class="string">     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND </span></span><br><span class="line"><span class="string">     1: 0000000000400238     0 SECTION LOCAL  DEFAULT    1 </span></span><br><span class="line"><span class="string">     2: 0000000000400254     0 SECTION LOCAL  DEFAULT    2 </span></span><br><span class="line"><span class="string">     3: 0000000000400274     0 SECTION LOCAL  DEFAULT    3 </span></span><br><span class="line"><span class="string">     4: 0000000000400298     0 SECTION LOCAL  DEFAULT    4 </span></span><br><span class="line"><span class="string">     5: 00000000004002b8     0 SECTION LOCAL  DEFAULT    5 </span></span><br><span class="line"><span class="string">     6: 0000000000400318     0 SECTION LOCAL  DEFAULT    6 </span></span><br><span class="line"><span class="string">     7: 0000000000400358     0 SECTION LOCAL  DEFAULT    7 </span></span><br><span class="line"><span class="string">     8: 0000000000400360     0 SECTION LOCAL  DEFAULT    8 </span></span><br><span class="line"><span class="string">     9: 0000000000400380     0 SECTION LOCAL  DEFAULT    9 </span></span><br><span class="line"><span class="string">    10: 0000000000400398     0 SECTION LOCAL  DEFAULT   10 </span></span><br><span class="line"><span class="string">    11: 00000000004003c8     0 SECTION LOCAL  DEFAULT   11 </span></span><br><span class="line"><span class="string">    12: 00000000004003f0     0 SECTION LOCAL  DEFAULT   12 </span></span><br><span class="line"><span class="string">    13: 0000000000400420     0 SECTION LOCAL  DEFAULT   13 </span></span><br><span class="line"><span class="string">    14: 0000000000400430     0 SECTION LOCAL  DEFAULT   14 </span></span><br><span class="line"><span class="string">    15: 00000000004005b4     0 SECTION LOCAL  DEFAULT   15 </span></span><br><span class="line"><span class="string">    16: 00000000004005c0     0 SECTION LOCAL  DEFAULT   16 </span></span><br><span class="line"><span class="string">    17: 00000000004005d4     0 SECTION LOCAL  DEFAULT   17 </span></span><br><span class="line"><span class="string">    18: 0000000000400608     0 SECTION LOCAL  DEFAULT   18 </span></span><br><span class="line"><span class="string">    19: 0000000000600e10     0 SECTION LOCAL  DEFAULT   19 </span></span><br><span class="line"><span class="string">    20: 0000000000600e18     0 SECTION LOCAL  DEFAULT   20 </span></span><br><span class="line"><span class="string">    21: 0000000000600e20     0 SECTION LOCAL  DEFAULT   21 </span></span><br><span class="line"><span class="string">    22: 0000000000600e28     0 SECTION LOCAL  DEFAULT   22 </span></span><br><span class="line"><span class="string">    23: 0000000000600ff8     0 SECTION LOCAL  DEFAULT   23 </span></span><br><span class="line"><span class="string">    24: 0000000000601000     0 SECTION LOCAL  DEFAULT   24 </span></span><br><span class="line"><span class="string">    25: 0000000000601028     0 SECTION LOCAL  DEFAULT   25 </span></span><br><span class="line"><span class="string">    26: 0000000000601038     0 SECTION LOCAL  DEFAULT   26 </span></span><br><span class="line"><span class="string">    27: 0000000000000000     0 SECTION LOCAL  DEFAULT   27 </span></span><br><span class="line"><span class="string">    28: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS crtstuff.c</span></span><br><span class="line"><span class="string">    29: 0000000000600e20     0 OBJECT  LOCAL  DEFAULT   21 __JCR_LIST__</span></span><br><span class="line"><span class="string">    30: 0000000000400460     0 FUNC    LOCAL  DEFAULT   14 deregister_tm_clones</span></span><br><span class="line"><span class="string">    31: 00000000004004a0     0 FUNC    LOCAL  DEFAULT   14 register_tm_clones</span></span><br><span class="line"><span class="string">    32: 00000000004004e0     0 FUNC    LOCAL  DEFAULT   14 __do_global_dtors_aux</span></span><br><span class="line"><span class="string">    33: 0000000000601038     1 OBJECT  LOCAL  DEFAULT   26 completed.7594</span></span><br><span class="line"><span class="string">    34: 0000000000600e18     0 OBJECT  LOCAL  DEFAULT   20 __do_global_dtors_aux_fin</span></span><br><span class="line"><span class="string">    35: 0000000000400500     0 FUNC    LOCAL  DEFAULT   14 frame_dummy</span></span><br><span class="line"><span class="string">    36: 0000000000600e10     0 OBJECT  LOCAL  DEFAULT   19 __frame_dummy_init_array_</span></span><br><span class="line"><span class="string">    37: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS hello_world.c</span></span><br><span class="line"><span class="string">    38: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS crtstuff.c</span></span><br><span class="line"><span class="string">    39: 00000000004006f8     0 OBJECT  LOCAL  DEFAULT   18 __FRAME_END__</span></span><br><span class="line"><span class="string">    40: 0000000000600e20     0 OBJECT  LOCAL  DEFAULT   21 __JCR_END__</span></span><br><span class="line"><span class="string">    41: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS </span></span><br><span class="line"><span class="string">    42: 0000000000600e18     0 NOTYPE  LOCAL  DEFAULT   19 __init_array_end</span></span><br><span class="line"><span class="string">    43: 0000000000600e28     0 OBJECT  LOCAL  DEFAULT   22 _DYNAMIC</span></span><br><span class="line"><span class="string">    44: 0000000000600e10     0 NOTYPE  LOCAL  DEFAULT   19 __init_array_start</span></span><br><span class="line"><span class="string">    45: 00000000004005d4     0 NOTYPE  LOCAL  DEFAULT   17 __GNU_EH_FRAME_HDR</span></span><br><span class="line"><span class="string">    46: 0000000000601000     0 OBJECT  LOCAL  DEFAULT   24 _GLOBAL_OFFSET_TABLE_</span></span><br><span class="line"><span class="string">    47: 00000000004005b0     2 FUNC    GLOBAL DEFAULT   14 __libc_csu_fini</span></span><br><span class="line"><span class="string">    48: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_deregisterTMCloneTab</span></span><br><span class="line"><span class="string">    49: 0000000000601028     0 NOTYPE  WEAK   DEFAULT   25 data_start</span></span><br><span class="line"><span class="string">    50: 0000000000601038     0 NOTYPE  GLOBAL DEFAULT   25 _edata</span></span><br><span class="line"><span class="string">    51: 00000000004005b4     0 FUNC    GLOBAL DEFAULT   15 _fini</span></span><br><span class="line"><span class="string">    52: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND printf@@GLIBC_2.2.5</span></span><br><span class="line"><span class="string">    53: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@@GLIBC_</span></span><br><span class="line"><span class="string">    54: 0000000000601028     0 NOTYPE  GLOBAL DEFAULT   25 __data_start</span></span><br><span class="line"><span class="string">    55: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__</span></span><br><span class="line"><span class="string">    56: 0000000000601030     0 OBJECT  GLOBAL HIDDEN    25 __dso_handle</span></span><br><span class="line"><span class="string">    57: 00000000004005c0     4 OBJECT  GLOBAL DEFAULT   16 _IO_stdin_used</span></span><br><span class="line"><span class="string">    58: 0000000000400540   101 FUNC    GLOBAL DEFAULT   14 __libc_csu_init</span></span><br><span class="line"><span class="string">    59: 0000000000601040     0 NOTYPE  GLOBAL DEFAULT   26 _end</span></span><br><span class="line"><span class="string">    60: 0000000000400430    42 FUNC    GLOBAL DEFAULT   14 _start</span></span><br><span class="line"><span class="string">    61: 0000000000601038     0 NOTYPE  GLOBAL DEFAULT   26 __bss_start</span></span><br><span class="line"><span class="string">    62: 0000000000400526    26 FUNC    GLOBAL DEFAULT   14 main</span></span><br><span class="line"><span class="string">    63: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _Jv_RegisterClasses</span></span><br><span class="line"><span class="string">    64: 0000000000601038     0 OBJECT  GLOBAL HIDDEN    25 __TMC_END__</span></span><br><span class="line"><span class="string">    65: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_registerTMCloneTable</span></span><br><span class="line"><span class="string">    66: 00000000004003c8     0 FUNC    GLOBAL DEFAULT   11 _init</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Version symbols section '</span>.gnu.version<span class="string">' contains 4 entries:</span></span><br><span class="line"><span class="string"> Addr: 0000000000400358  Offset: 0x000358  Link: 5 (.dynsym)</span></span><br><span class="line"><span class="string">  000:   0 (*local*)       2 (GLIBC_2.2.5)   2 (GLIBC_2.2.5)   0 (*local*)    </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Version needs section '</span>.gnu.version_r<span class="string">' contains 1 entries:</span></span><br><span class="line"><span class="string"> Addr: 0x0000000000400360  Offset: 0x000360  Link: 6 (.dynstr)</span></span><br><span class="line"><span class="string">  000000: Version: 1  File: libc.so.6  Cnt: 1</span></span><br><span class="line"><span class="string">  0x0010:   Name: GLIBC_2.2.5  Flags: none  Version: 2</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Displaying notes found at file offset 0x00000254 with length 0x00000020:</span></span><br><span class="line"><span class="string">  Owner                 Data size	Description</span></span><br><span class="line"><span class="string">  GNU                  0x00000010	NT_GNU_ABI_TAG (ABI version tag)</span></span><br><span class="line"><span class="string">    OS: Linux, ABI: 2.6.32</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Displaying notes found at file offset 0x00000274 with length 0x00000024:</span></span><br><span class="line"><span class="string">  Owner                 Data size	Description</span></span><br><span class="line"><span class="string">  GNU                  0x00000014	NT_GNU_BUILD_ID (unique build ID bitstring)</span></span><br><span class="line"><span class="string">    Build ID: 8536b12b7afe5ab7bc13e77d30f3d4c84fa099ee</span></span><br></pre></td></tr></table></figure>
+<p>如上是一个完成的ELF文件信息，其实对于我们来讲，分析ELF文件格式更多是为了帮助我们理解程序运行的原理，比如程序是如何找到对应的函数等等，其实都是有特定的规则，比如在此文件的238行，我们能够找到我们写的<code>main</code>函数以及228行中的print函数等，这些信息都是可以帮助我们理解计算机世界里的活动轨迹，关于ELF的更多细节，详见参考链接。</p>
+<h2 id="四、参考"><a href="#四、参考" class="headerlink" title="四、参考"></a>四、参考</h2><ul>
+<li><a href="http://www.chuquan.me/2018/05/21/elf-introduce/" target="_blank" rel="noopener">计算机那些事(4)——ELF文件结构</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/NDK/" rel="tag"># NDK</a>
+          
+            <a href="/tags/C/" rel="tag"># C++</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/01/使用Bazel构建Android应用/" rel="next" title="使用Bazel构建Android应用">
+                <i class="fa fa-chevron-left"></i> 使用Bazel构建Android应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/15/Gradle 基础/" rel="prev" title="Gradle 基础知识">
+                Gradle 基础知识 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、ELF简介"><span class="nav-number">1.</span> <span class="nav-text">一、ELF简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、ELF文件结构"><span class="nav-number">2.</span> <span class="nav-text">二、ELF文件结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、ELF示例"><span class="nav-number">3.</span> <span class="nav-text">三、ELF示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、参考"><span class="nav-number">4.</span> <span class="nav-text">四、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

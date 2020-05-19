@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Compile,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文将对Gradle的一些基本概念、用法进行总结，从而避免自己在Android开发过程中的“会而不知所以然”，关于Gradle的高阶用法可以见参考，本文就不再赘述；">
+<meta name="keywords" content="Android,Compile">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gradle 基础知识">
+<meta property="og:url" content="http://yoursite.com/2020/04/15/Gradle 基础/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="本文将对Gradle的一些基本概念、用法进行总结，从而避免自己在Android开发过程中的“会而不知所以然”，关于Gradle的高阶用法可以见参考，本文就不再赘述；">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/images/gradle-deamon.png">
+<meta property="og:updated_time" content="2020-05-19T06:03:04.497Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Gradle 基础知识">
+<meta name="twitter:description" content="本文将对Gradle的一些基本概念、用法进行总结，从而避免自己在Android开发过程中的“会而不知所以然”，关于Gradle的高阶用法可以见参考，本文就不再赘述；">
+<meta name="twitter:image" content="http://yoursite.com/images/gradle-deamon.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/15/Gradle 基础/">
+
+
+
+
+
+  <title>Gradle 基础知识 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/15/Gradle 基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Gradle 基础知识</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-15T16:10:02+08:00">
+                2020-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文将对Gradle的一些基本概念、用法进行总结，从而避免自己在Android开发过程中的“会而不知所以然”，关于Gradle的高阶用法可以见参考，本文就不再赘述；</p>
+<a id="more"></a>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="Wrapper"><a href="#Wrapper" class="headerlink" title="Wrapper"></a>Wrapper</h3><p>为了保证gradle版本的一致性，比如我们下载某个Android工程，编译运行前，wrapper会检查你本地是否存在gradle-wrapper.properties文件中声明的gradle版本，如果不存在，就会去下载，通常是个gradlew配合一起使用的，如下示例，可以帮助你更好的理解wrapper的概念；</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">[min@TATEMIN-MB0:] gradle $ mkdir wrapper-demo  <span class="comment"># 创建一个空的wrapper-demo</span></span><br><span class="line">[min@TATEMIN-MB0:] gradle $ <span class="built_in">cd</span> wrapper-demo/</span><br><span class="line">[min@TATEMIN-MB0:] wrapper-demo $ gradle -v		<span class="comment"># 查看当前gradle的版本</span></span><br><span class="line"></span><br><span class="line">------------------------------------------------------------</span><br><span class="line">Gradle 5.4.1</span><br><span class="line">------------------------------------------------------------</span><br><span class="line"></span><br><span class="line">Build time:   2019-04-26 08:14:42 UTC</span><br><span class="line">Revision:     261d171646b36a6a28d5a19a69676cd098a4c19d</span><br><span class="line"></span><br><span class="line">Kotlin:       1.3.21</span><br><span class="line">Groovy:       2.5.4</span><br><span class="line">Ant:          Apache Ant(TM) version 1.9.13 compiled on July 10 2018</span><br><span class="line">JVM:          1.8.0_241 (Oracle Corporation 25.241-b07)</span><br><span class="line">OS:           Mac OS X 10.15.4 x86_64</span><br><span class="line"></span><br><span class="line">[min@TATEMIN-MB0:] wrapper-demo $ gradle wrapper <span class="comment"># 创建一个gradle wrapper</span></span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 0s</span><br><span class="line">1 actionable task: 1 executed</span><br><span class="line">[min@TATEMIN-MB0:] wrapper-demo $ tree</span><br><span class="line">.</span><br><span class="line">├── gradle</span><br><span class="line">│   └── wrapper</span><br><span class="line">│       ├── gradle-wrapper.jar</span><br><span class="line">│       └── gradle-wrapper.properties</span><br><span class="line">├── gradlew</span><br><span class="line">└── gradlew.bat</span><br><span class="line"></span><br><span class="line">2 directories, 4 files</span><br><span class="line"><span class="comment"># 查看wrapper的内容，可以看到distributionUrl的版本号和我们本地的对齐，此工程如果那运作在一台没有安装过gradle-5.4.1的设备上，会先去下载gradle-5.4.1对应的包，此过程由gradlew+gradle-wrapper.jar完成；</span></span><br><span class="line">[min@TATEMIN-MB0:] wrapper-demo $ cat gradle/wrapper/gradle-wrapper.properties</span><br><span class="line">distributionBase=GRADLE_USER_HOME</span><br><span class="line">distributionPath=wrapper/dists</span><br><span class="line">distributionUrl=https\://services.gradle.org/distributions/gradle-5.4.1-bin.zip</span><br><span class="line">zipStoreBase=GRADLE_USER_HOME</span><br><span class="line">zipStorePath=wrapper/dists</span><br></pre></td></tr></table></figure>
+<h3 id="GradleUserHome"><a href="#GradleUserHome" class="headerlink" title="GradleUserHome"></a>GradleUserHome</h3><p>在Mac/Linux系统上，此目录即为～/.gradle目录，可以理解为gradle的workspace。</p>
+<h3 id="Daemon"><a href="#Daemon" class="headerlink" title="Daemon"></a>Daemon</h3><p>因为JVM启动速度很慢，大约每次启动在10s左右，所以gradle为了解决这个问题，将gradle设计为如下结构：</p>
+<p><img src="/images/gradle-deamon.png" alt="gradle-deamon"></p>
+<p>大体的意思即使说，在启动gradle后会同时启动两个进程，一个Client，一个Daemon，Client负责具体的交互，比如命令的接收、日志的打印等等，Daemon负责具体的编译工作并和Client完成交互，Client端推出后，Daemon并不立即退出，如果期间没有新的Client发消息进来，会存活3小时左右，这样就避免了每次gradle启动时等待JVM启动的耗时，<strong>另外如果当前启动的Client版本和Daemon不一致，会重新启动一个Deamon</strong>。</p>
+<blockquote>
+<p>Daemon 4.0以前，CI相关编译建议加上–no-daemon，因为此时Daemon并不稳定，后续版本无此问题。</p>
+</blockquote>
+<h2 id="Groovy基础"><a href="#Groovy基础" class="headerlink" title="Groovy基础"></a>Groovy基础</h2><h3 id="动态调用和MOP"><a href="#动态调用和MOP" class="headerlink" title="动态调用和MOP"></a>动态调用和MOP</h3><p>MOP：元对象协议。由 Groovy 语言中的一种协议。该协议的出现为元编程提供了优雅的解决方案。而 MOP 机制的核心就是 MetaClass。<br> 元编程：编写能够操作程序的程序，也包括操作程序自身，示例如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">string = <span class="string">'hello'</span></span><br><span class="line">targetMethod = string.metaClass.getMetaMethod(<span class="string">'toUpperCase'</span>)</span><br><span class="line">println(targetMethod.invoke(string))</span><br></pre></td></tr></table></figure>
+<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><ul>
+<li><p><strong>闭包是一个开放，匿名的代码块，可以接受参数，返回值并分配给变量</strong>；</p>
+</li>
+<li><p>闭包定义：{ [closureParameters -&gt; ] statements }，示例：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//执行一句话  </span></span><br><span class="line">&#123; printf <span class="string">'Hello World'</span> &#125;                                   </span><br><span class="line">    </span><br><span class="line"><span class="comment">//闭包有默认参数it，且不用申明      </span></span><br><span class="line">&#123; println it &#125;                   </span><br><span class="line"></span><br><span class="line"><span class="comment">//闭包有默认参数it，申明了也无所谓                </span></span><br><span class="line">&#123; it -&gt; println it &#125;      </span><br><span class="line">    </span><br><span class="line"><span class="comment">// name是自定义的参数名  </span></span><br><span class="line">&#123; name -&gt; println name &#125;                 </span><br><span class="line"></span><br><span class="line"> <span class="comment">//多个参数的闭包</span></span><br><span class="line">&#123; String x, <span class="keyword">int</span> y -&gt;                                </span><br><span class="line">    println <span class="string">"hey $&#123;x&#125; the value is $&#123;y&#125;"</span>    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Android示例：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> android(closure) = &#123;</span><br><span class="line">    closure()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> ext(closure) = &#123;</span><br><span class="line">    closure()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    ext &#123;</span><br><span class="line">        println(<span class="string">"i am ext"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="Gradle-构建"><a href="#Gradle-构建" class="headerlink" title="Gradle 构建"></a>Gradle 构建</h2><p>主要理解gradle的核心模型</p>
+<ul>
+<li><p>Project</p>
+<p>每个Gradle构建都由一个或多个Project组成。</p>
+</li>
+<li><p>Task</p>
+<p>每个Project由一个或多个Task组成，Task代表构建执行的一些原子工作，比如编译某些类、创建JAR、生成Javadoc等等；</p>
+</li>
+<li><p>Lifecycle与Hook</p>
+<p>Gradle构建的声明周期都分为三个不同的阶段.</p>
+<ul>
+<li><p>Initialization</p>
+<p>Gradle支持单项目和多项目构建. 在初始化阶段，Gradle确定将要参与构建的Project，并为每个Project创建一个<a href="https://s0docs0gradle0org.icopy.site/current/dsl/org.gradle.api.Project.html" target="_blank" rel="noopener">Project</a>实例（构建文件与Gradle交互的主要API.）</p>
+</li>
+<li><p>Configuration</p>
+<p>在此阶段，将配置项目对象，执行作为构建一部分的<em>所有</em>项目的构建脚本.</p>
+</li>
+<li><p>Execution</p>
+<p>Gradle确定要在配置阶段创建和配置的任务子集. 子集由传递给<code>gradle</code>命令的任务名称参数和当前目录确定. 然后Gradle执行每个选定的任务.</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>下面是一个非常好的例子可以理解一下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">task(<span class="string">"hello_world"</span>) &#123;</span><br><span class="line">    println(<span class="string">"configuration"</span>)</span><br><span class="line"></span><br><span class="line">    doLast &#123;</span><br><span class="line">        println(<span class="string">"execution task"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="number">1.</span><span class="number">.10</span>).each &#123; i -&gt;</span><br><span class="line">    task(<span class="string">"task_$&#123;i&#125;"</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> index = i</span><br><span class="line">        <span class="keyword">if</span> (index % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            dependsOn(<span class="string">"hello_world"</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        doLast &#123;</span><br><span class="line">            println(<span class="string">"executing task_$&#123;index&#125;"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">afterEvaluate &#123;</span><br><span class="line">    println(<span class="string">"after evaluate"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此脚本最后执行结果如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[min@TATEMIN-MB0:] wrapper-demo $ ./gradlew task_2</span><br><span class="line"></span><br><span class="line">&gt; Configure project :  <span class="comment"># Configuration阶段</span></span><br><span class="line">configuration</span><br><span class="line">after evaluate</span><br><span class="line"></span><br><span class="line">&gt; Task :hello_world    <span class="comment"># Execution阶段</span></span><br><span class="line">execution task</span><br><span class="line"></span><br><span class="line">&gt; Task :task_2				 <span class="comment"># Execution阶段</span></span><br><span class="line">executing task_2</span><br><span class="line"></span><br><span class="line">BUILD SUCCESSFUL <span class="keyword">in</span> 1s</span><br><span class="line">2 actionable tasks: 2 executed</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://juejin.im/post/5ccf02e36fb9a0322e73a3db#heading-15" target="_blank" rel="noopener">Gradle插件从入门到进阶</a></li>
+<li><a href="https://s0docs0gradle0org.icopy.site/current/userguide/plugins.html" target="_blank" rel="noopener">Gradle User Manual</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Compile/" rel="tag"># Compile</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/13/ELF文件结构/" rel="next" title="ELF文件结构">
+                <i class="fa fa-chevron-left"></i> ELF文件结构
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/21/《Flutter 实战》笔记/" rel="prev" title="《Flutter 实战》笔记">
+                《Flutter 实战》笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Wrapper"><span class="nav-number">1.1.</span> <span class="nav-text">Wrapper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GradleUserHome"><span class="nav-number">1.2.</span> <span class="nav-text">GradleUserHome</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Daemon"><span class="nav-number">1.3.</span> <span class="nav-text">Daemon</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Groovy基础"><span class="nav-number">2.</span> <span class="nav-text">Groovy基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动态调用和MOP"><span class="nav-number">2.1.</span> <span class="nav-text">动态调用和MOP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#闭包"><span class="nav-number">2.2.</span> <span class="nav-text">闭包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gradle-构建"><span class="nav-number">3.</span> <span class="nav-text">Gradle 构建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
