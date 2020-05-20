@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Flutter,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="在接触到Flutter后，我就在思考一个问题，作为一个跨平台方案，Flutter究竟是如何在不同的CPU架构、不同的操作系统上运行的呢，它采取了怎么的编译策略，对应平台的编译产物是什么呢？本文以Android平台为例，进行了分析整理。">
+<meta name="keywords" content="Flutter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flutter 编译模式">
+<meta property="og:url" content="http://yoursite.com/2020/04/25/Flutter-编译模式/index.html">
+<meta property="og:site_name" content="Min HelloWorld">
+<meta property="og:description" content="在接触到Flutter后，我就在思考一个问题，作为一个跨平台方案，Flutter究竟是如何在不同的CPU架构、不同的操作系统上运行的呢，它采取了怎么的编译策略，对应平台的编译产物是什么呢？本文以Android平台为例，进行了分析整理。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/images/dart_compile_pattern.png">
+<meta property="og:image" content="http://yoursite.com/images/flutter_artifacts_debug.png">
+<meta property="og:image" content="http://yoursite.com/images/flutter_artifacts_release.png">
+<meta property="og:updated_time" content="2020-05-20T10:55:56.210Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flutter 编译模式">
+<meta name="twitter:description" content="在接触到Flutter后，我就在思考一个问题，作为一个跨平台方案，Flutter究竟是如何在不同的CPU架构、不同的操作系统上运行的呢，它采取了怎么的编译策略，对应平台的编译产物是什么呢？本文以Android平台为例，进行了分析整理。">
+<meta name="twitter:image" content="http://yoursite.com/images/dart_compile_pattern.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/04/25/Flutter-编译模式/">
+
+
+
+
+
+  <title>Flutter 编译模式 | Min HelloWorld</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Min HelloWorld</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/25/Flutter-编译模式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MinTate">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Min HelloWorld">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Flutter 编译模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-25T16:10:02+08:00">
+                2020-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Flutter/" itemprop="url" rel="index">
+                    <span itemprop="name">Flutter</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在接触到Flutter后，我就在思考一个问题，作为一个跨平台方案，Flutter究竟是如何在不同的CPU架构、不同的操作系统上运行的呢，它采取了怎么的编译策略，对应平台的编译产物是什么呢？本文以Android平台为例，进行了分析整理。</p>
+<a id="more"></a>
+<h2 id="一、基础说明"><a href="#一、基础说明" class="headerlink" title="一、基础说明"></a>一、基础说明</h2><p>编程语言要达到可运行的目的需要经过编译，一般地来说，编译模式分为两类：JIT 和 AOT。</p>
+<ul>
+<li><p>JIT JIT(Just In Time) 翻译为 即时编译，指的是在程序运行中，将热点代码编译成机器码，提高运行效率。常见例子有 V8 引擎和 JVM，JIT 可以充分利用解释型语言的优点，动态执行源码，而不用考虑平台差异性。这里需要注意的是，对于 JVM 来说，源码指字节码，而不是 Java 源码。</p>
+</li>
+<li><p>AOT AOT(Ahead Of Time) 称为 运行前编译，指的是在程序运行之前，已经编译成对应平台的机器码，不需要在运行中解释编译，就可以直接运行。常见例子有 C 和 C++。 虽然，我们会区别 JIT 和 AOT 两种编译模式，但实际上，有很多语言并不是完全使用 JIT 或者 AOT 的，通常它们会混用这两种模式，来达到最大的性能优化。</p>
+</li>
+</ul>
+<h2 id="二、Dart编译模式"><a href="#二、Dart编译模式" class="headerlink" title="二、Dart编译模式"></a>二、Dart编译模式</h2><ul>
+<li><p>Script：最普通的 JIT模式，在 PC命令行调用 dart vm执行 dart源代码文件即是这种模式。</p>
+</li>
+<li><p>Script Snapshot：JIT模式，和上一个不同的是，这里载入的是已经 token化的 dart源代码，提前执行了上一步的 lexer步骤。</p>
+</li>
+<li><p>Application Snapshot：JIT模式，这种模式来源于 dart vm直接载入源码后 dump出数据。dart vm通过这种数据启动会更快。不过值得一提的是这种模式是区分架构的，在 x64上生成的数据不可以给 arm使用。</p>
+</li>
+<li><p>AOT：AOT模式，直接将 dart源码编译出 .S文件，然后通过汇编器生成对应架构的代码。 </p>
+</li>
+</ul>
+<p><img src="/images/dart_compile_pattern.png" alt="Dart编译模式"></p>
+<h2 id="三、Flutter编译模式"><a href="#三、Flutter编译模式" class="headerlink" title="三、Flutter编译模式"></a>三、Flutter编译模式</h2><ul>
+<li><p>Script：同 Dart Script模式一致，虽然 Flutter支持，但暂未看到使用，毕竟影响启动速度。</p>
+</li>
+<li><p>Kernel Snapshot：Dart的 bytecode 模式，bytecode模式是不区分架构的。Kernel Snapshot在 Flutter项目内也叫 Core Snapshot。bytecode模式可以归类为 AOT编译。</p>
+</li>
+<li><p>Core JIT：Dart的一种二进制模式，将指令代码和 heap数据打包成文件，然后在 vm和 isolate启动时载入，直接标记内存可执行，可以说这是一种 AOT模式。Core JIT也被叫做 AOTBlob</p>
+</li>
+<li><p>AOT Assembly: 即 Dart的 AOT模式。直接生成汇编源代码文件，由各平台自行汇编。包体积比较大，区分架构。</p>
+</li>
+</ul>
+<p>可以看出来，Flutter将 Dart的编译模式复杂化了，多了不少概念，其实主要是为了解决Flutter在开发阶段、生产阶段的不同开发需求。</p>
+<h2 id="开发阶段的编译模式"><a href="#开发阶段的编译模式" class="headerlink" title="开发阶段的编译模式"></a>开发阶段的编译模式</h2><p>在开发阶段，我们需要 Flutter的 Hot Reload和 Hot Restart功能，方便 UI快速成型。同时，框架层也需要比较高的性能来进行视图渲染展现。因此开发模式下，Flutter使用了 Kernel Snapshot模式编译。以Android为例，使用如下命令编译：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> flutter build apk --target-platform=android-arm64 --debug</span><br><span class="line">`</span><br></pre></td></tr></table></figure></p>
+<p>编译完成后，具体的打包产物如下：</p>
+<p><img src="/images/flutter_artifacts_debug.png" alt="Flutter 构建产物分析（Android）"></p>
+<ul>
+<li>isolate_snapshot_data：用于加速 isolate启动，业务无关代码，固定，仅和 flutter engine版本有关；</li>
+<li>vm_snapshot_data: 用于加速 dart vm启动的产物，业务无关代码，仅和 flutter engine版本有关；</li>
+<li>kernel_blob.bin：业务代码产物；</li>
+<li>flutter.so：Flutter引擎；<blockquote>
+<p>此处和一些博客中的记录有所出入，我理解应该是Flutter在演进过程中带来的差异；</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="生产阶段的编译模式"><a href="#生产阶段的编译模式" class="headerlink" title="生产阶段的编译模式"></a>生产阶段的编译模式</h2><p>在生产阶段，应用需要的是非常快的速度，所以 Android和 iOS target毫无意外地都选择了 AOT打包。以Android为例，使用如下命令编译：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flutter build apk --target-platform=android-arm64 --release</span><br></pre></td></tr></table></figure></p>
+<p>编译完成后，具体的打包产物如下：</p>
+<p><img src="/images/flutter_artifacts_release.png" alt="Flutter Release模式产物"></p>
+<ul>
+<li>libapp.so：业务代码产物；</li>
+<li>flutter.so：Flutter引擎；</li>
+</ul>
+<blockquote>
+<p>此外，Flutter还又一种Profile模式，，主要用于性能分析阶段，用于分析真实设备的实际运行性能，跟Release并无太大差异，只是多了对服务扩展的支持，此处就不展开了，有兴趣的同学可以自己Google一下；</p>
+</blockquote>
+<h2 id="四、参考"><a href="#四、参考" class="headerlink" title="四、参考"></a>四、参考</h2><ul>
+<li><a href="https://juejin.im/post/5d71d88551882535841706e7" target="_blank" rel="noopener">Flutter 编译原理</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Flutter/" rel="tag"># Flutter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/21/《Flutter 实战》笔记/" rel="next" title="《Flutter 实战》笔记">
+                <i class="fa fa-chevron-left"></i> 《Flutter 实战》笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/04/28/Flutter-Widget-生命周期/" rel="prev" title="Flutter Widget 生命周期">
+                Flutter Widget 生命周期 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars3.githubusercontent.com/u/16069375?s=460&v=4" alt="MinTate">
+            
+              <p class="site-author-name" itemprop="name">MinTate</p>
+              <p class="site-description motion-element" itemprop="description">Stay hungry, Stay foolish</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">39</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/MinTate" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/5a2905a41ee1" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:min.helloworld@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Manito Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://example.com/" title="Deep into Android" target="_blank">Deep into Android</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://androidxref.com/" title="AndroidXref" target="_blank">AndroidXref</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://github.com/google" title="Google GitHub" target="_blank">Google GitHub</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.android.com/?hl=zh-cn" title="Android Developers" target="_blank">Android Developers</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、基础说明"><span class="nav-number">1.</span> <span class="nav-text">一、基础说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、Dart编译模式"><span class="nav-number">2.</span> <span class="nav-text">二、Dart编译模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、Flutter编译模式"><span class="nav-number">3.</span> <span class="nav-text">三、Flutter编译模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发阶段的编译模式"><span class="nav-number">4.</span> <span class="nav-text">开发阶段的编译模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生产阶段的编译模式"><span class="nav-number">5.</span> <span class="nav-text">生产阶段的编译模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、参考"><span class="nav-number">6.</span> <span class="nav-text">四、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MinTate</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
